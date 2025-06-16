@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Righteous } from "next/font/google";
 import "./globals.css";
+import { AppContextProvider } from "@/context/AppContext";
+import { Toaster } from "react-hot-toast";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const righteous = Righteous({
+  weight: "400",
   subsets: ["latin"],
+  variable: "--font-righteous",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -24,10 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${righteous.variable} ${inter.variable} antialiased`}>
+        <AppContextProvider>
+          <Toaster/>
+          {children}
+          </AppContextProvider>
       </body>
     </html>
   );
