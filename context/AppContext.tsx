@@ -72,6 +72,8 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     loadCookieData();
   }, []);
 
+  console.log("cookie data",cookieData)
+
   return (
     <AppContext.Provider
       value={{

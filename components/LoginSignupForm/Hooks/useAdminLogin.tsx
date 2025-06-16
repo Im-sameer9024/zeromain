@@ -37,6 +37,11 @@ const[showPassword,setShowPassword]=useState(false)
         data
       );
 
+      
+      if (response.status === 200) {
+        router.push("/admin/dashboard");
+      }
+
       const responseData = response.data?.data;
 
       console.log("login data is here", responseData);

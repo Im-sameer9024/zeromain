@@ -14,7 +14,7 @@ const TagBar = () => {
 
   return (
     <>
-      <div className=" flex justify-between items-center px-8 ">
+      <div className=" flex sticky z-30 bg-white top-0 py-4 justify-between items-center px-8 ">
         {/*------------------- left side section ------------------  */}
         <div className=" flex items-center gap-8">
           <h2 className=" font-bold text-xl text-center">Tag Management</h2>

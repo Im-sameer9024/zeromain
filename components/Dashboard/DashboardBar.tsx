@@ -14,7 +14,7 @@ const DashboardBar = () => {
 
   return (
     <>
-      <div className=" flex justify-between items-center px-8">
+      <div className=" flex justify-between items-center px-8 sticky z-30 bg-white py-4 top-0">
         {/*------------------- left side section ------------------  */}
         <div className=" flex items-center gap-8">
           {/*--------------- dropdown-----------------  */}

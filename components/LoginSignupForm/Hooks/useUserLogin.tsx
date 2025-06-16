@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -17,8 +17,7 @@ interface UserFormProps {
 const useUserLogin = () => {
   const router = useRouter();
 
-const[showPassword,setShowPassword]=useState(false)
-
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -39,6 +38,10 @@ const[showPassword,setShowPassword]=useState(false)
         data
       );
 
+      if (response.status === 200) {
+        router.push("/user/dashboard");
+      }
+
       const responseData = response.data?.data;
 
       console.log("login data is here", responseData);
@@ -53,7 +56,7 @@ const[showPassword,setShowPassword]=useState(false)
 
       Cookies.set("cookieData", JSON.stringify(cookieData), { expires: 7 });
       Cookies.set("token", cookieData.token, { expires: 7 });
-      router.push("/user/dashboard");
+
       toast.success(" User Login successful!", { id: toastId });
     } catch (error: any) {
       let errorMessage = "Login failed";
@@ -73,7 +76,8 @@ const[showPassword,setShowPassword]=useState(false)
       errors,
       isSubmitting,
       onSubmit,
-      showPassword,setShowPassword
+      showPassword,
+      setShowPassword,
     },
   };
 };

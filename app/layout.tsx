@@ -3,6 +3,7 @@ import { Inter, Righteous } from "next/font/google";
 import "./globals.css";
 import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
+import Providers from "@/provider/providers";
 
 const righteous = Righteous({
   weight: "400",
@@ -31,9 +32,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${righteous.variable} ${inter.variable} antialiased`}>
         <AppContextProvider>
-          <Toaster/>
-          {children}
-          </AppContextProvider>
+          <Providers>
+            <Toaster />
+            {children}
+          </Providers>
+        </AppContextProvider>
       </body>
     </html>
   );

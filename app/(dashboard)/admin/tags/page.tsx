@@ -4,7 +4,7 @@ import React from "react";
 
 const TagsPage = () => {
   return (
-    <div className=" p-4">
+    <div className=" px-4 overflow-y-scroll h-[500px] relative">
       {/*------------------- Tag Bar ------------------------------ */}
       <TagBar />
 
