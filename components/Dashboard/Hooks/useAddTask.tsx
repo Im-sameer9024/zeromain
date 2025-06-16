@@ -4,15 +4,12 @@ import axios from 'axios';
 import React, { useRef } from 'react'
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import useGetTags from './useGetTags';
 
 const useAddTask = () => {
-  const { cookieData,open,setOpen } = useAppContext();
+  const { cookieData,open,setOpen,setAllTasks } = useAppContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { allTags } = useGetTags();
 
-  console.log("allTags is here",allTags)
 
   const {
     register,
@@ -22,7 +19,7 @@ const useAddTask = () => {
     formState: { errors, isSubmitting },
   } = useForm<any>({
     defaultValues: {
-      title: "Example Task 1",
+      title: "",
       description: "",
       tags: [],
       attachments: [],
@@ -54,6 +51,8 @@ const useAddTask = () => {
         formData
       );
 
+      setAllTasks((prevTasks:any[]) => [...prevTasks, response.data?.data]);
+
       console.log("task is created successfully ", response);
 
       toast.success("Task created successfully!", { id: toastId });
@@ -84,7 +83,7 @@ const useAddTask = () => {
     if (currentTags.includes(tag.id)) {
       setValue(
         "tags",
-        currentTags.filter((t) => t !== tag.id)
+        currentTags.filter((t:any) => t !== tag.id)
       );
     } else {
       setValue("tags", [...currentTags, tag.id]);
@@ -94,7 +93,7 @@ const useAddTask = () => {
   const handleRemoveTag = (tagId: string) => {
     setValue(
       "tags",
-      watch("tags").filter((t) => t !== tagId)
+      watch("tags").filter((t:any) => t !== tagId)
     );
   };
 

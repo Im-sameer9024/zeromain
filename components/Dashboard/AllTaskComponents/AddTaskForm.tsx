@@ -15,7 +15,8 @@ import {
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import useAddTask from "./Hooks/useAddTask";
+import useAddTask from "../Hooks/useAddTask";
+import useGetTags from "../Hooks/useGetTags";
 
 const popupVariants = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -24,6 +25,9 @@ const popupVariants = {
 };
 
 const AddTaskForm = () => {
+
+
+
   const {
     selectedTags,
     attachments,
@@ -38,8 +42,11 @@ const AddTaskForm = () => {
     handleSubmit,
     errors,
     isSubmitting,setValue,
-    setOpen
+    setOpen,
+    
   } = useAddTask();
+
+  const {allTags} = useGetTags()
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
@@ -62,9 +69,7 @@ const AddTaskForm = () => {
         </Button>
       </div>
 
-      {errors.title && (
-        <span className="text-red-500 text-sm">{errors.title.message}</span>
-      )}
+     
 
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Title Section */}
@@ -81,7 +86,7 @@ const AddTaskForm = () => {
 
         {/* Tags Section */}
         <div className="flex gap-2 items-center flex-wrap">
-          {selectedTags.map((tagId) => {
+          {selectedTags.map((tagId:any) => {
             const tag = allTags.find((t) => t.id === tagId);
             return tag ? (
               <div key={tag.id} className="relative inline-block m-1 group">
@@ -201,7 +206,7 @@ const AddTaskForm = () => {
           </div>
 
           <div className="mt-2 space-y-2  ">
-            {attachments.map((file, index) => (
+            {attachments.map((file:any, index:any) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-2 bg-gray-50 rounded"

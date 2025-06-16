@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -9,55 +8,82 @@ import {
   useState,
 } from "react";
 import Cookies from "js-cookie";
-import { TagDataProps } from "@/types/Task.types";
+import { TagDataProps, TaskProps } from "@/types/Task.types";
+
+interface UserData {
+  id: string;
+  role: string;
+  // Add other user properties as needed
+}
 
 interface AppContextType {
-  cookieData: any;
+  cookieData: UserData | null;
+  isCookieLoading: boolean;
   open: boolean;
   setOpen: (value: boolean) => void;
-  setCookieData: (data: any) => void;
+  setCookieData: (data: UserData | null) => void;
   allTags: TagDataProps[];
   setAllTags: (tags: TagDataProps[]) => void;
+  allTasks: TaskProps[];
+  setAllTasks: (tasks: TaskProps[]) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
   cookieData: null,
-  setCookieData: () => {},
+  isCookieLoading: true,
   open: false,
   setOpen: () => {},
+  setCookieData: () => {},
   allTags: [],
   setAllTags: () => {},
+  allTasks: [],
+  setAllTasks: () => {},
 });
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
-  const [cookieData, setCookieData] = useState<any>(null);
-  const [open, setOpen] = useState<boolean>(false);
+  const [cookieData, setCookieData] = useState<UserData | null>(null);
+  const [isCookieLoading, setIsCookieLoading] = useState(true);
+  const [open, setOpen] = useState(false);
   const [allTags, setAllTags] = useState<TagDataProps[]>([]);
+  const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
 
   useEffect(() => {
     const loadCookieData = () => {
-      const adminCookie = Cookies.get("cookieData");
-      if (adminCookie) {
+      setIsCookieLoading(true);
+      const cookie = Cookies.get("cookieData");
+      
+      if (cookie) {
         try {
-          const parsedData = JSON.parse(adminCookie);
-          setCookieData(parsedData);
+          const parsedData = JSON.parse(cookie) as UserData;
+          if (parsedData.id && parsedData.role) {
+            setCookieData(parsedData);
+          } else {
+            console.warn("Invalid cookie data structure");
+            Cookies.remove("cookieData");
+          }
         } catch (error) {
-          console.error("Error parsing admin data", error);
+          console.error("Error parsing cookie data", error);
+          Cookies.remove("cookieData");
         }
       }
+      setIsCookieLoading(false);
     };
+
     loadCookieData();
   }, []);
 
   return (
     <AppContext.Provider
       value={{
-        allTags,
-        setAllTags,
+        cookieData,
+        isCookieLoading,
         open,
         setOpen,
-        cookieData,
         setCookieData,
+        allTags,
+        setAllTags,
+        allTasks,
+        setAllTasks,
       }}
     >
       {children}

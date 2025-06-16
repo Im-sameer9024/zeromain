@@ -1,6 +1,8 @@
+"use client"
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
@@ -12,7 +14,7 @@ interface AdminFormProps {
 }
 
 const useAdminLogin = () => {
-//   const router = useRouter();
+  const router = useRouter();
 
 const[showPassword,setShowPassword]=useState(false)
 
@@ -49,7 +51,7 @@ const[showPassword,setShowPassword]=useState(false)
 
       Cookies.set("cookieData", JSON.stringify(cookieData), { expires: 7 });
       Cookies.set("token", cookieData.token, { expires: 7 });
-    //   router.push("/admin/dashboard");
+      router.push("/admin/dashboard");
       toast.success("Admin Login successful!", { id: toastId });
     } catch (error: any) {
       let errorMessage = "Login failed";

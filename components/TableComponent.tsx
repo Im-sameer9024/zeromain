@@ -19,7 +19,7 @@ const TableComponent = <T,>({
   data,
 }: TableComponentProps<T>) => {
   return (
-    <div className="grid grid-rows-[auto_1fr] h-[400px] overflow-hidden border rounded-lg">
+    <div className="grid grid-rows-auto h-[400px] overflow-hidden border rounded-lg">
       {/* Header */}
       <div className="overflow-hidden">
         <Table>

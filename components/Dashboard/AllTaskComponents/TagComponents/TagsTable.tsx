@@ -5,7 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { CiEdit } from "react-icons/ci";
 import { useAppContext } from "@/context/AppContext";
 import { TagDataProps } from "@/types/Task.types";
-import useGetTags from "../Hooks/useGetTags";
+import useGetTags from "../../Hooks/useGetTags";
 
 interface ColumnProps {
   header: string;
@@ -64,7 +64,7 @@ const TagsTable = () => {
     return <div className="text-center text-gray-500 h-64">Loading user data...</div>;
   }
 
-  
+
 
   return (
     <div className="bg-[#fafafbe9] p-1 rounded-md mt-2 w-1/2">

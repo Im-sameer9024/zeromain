@@ -10,7 +10,7 @@ import {
 import { X } from "lucide-react";
 import { HexColorPicker } from "react-colorful";
 
-import useAddTag from "../Hooks/useAddTag";
+import useAddTag from "../../Hooks/useAddTag";
 
 
 const AddTagForm = () => {
