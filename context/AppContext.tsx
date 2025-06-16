@@ -9,17 +9,30 @@ import {
   useState,
 } from "react";
 import Cookies from "js-cookie";
+import { TagDataProps } from "@/types/Task.types";
 
-export const AppContext = createContext<{
+interface AppContextType {
   cookieData: any;
-  setCookieData: React.Dispatch<React.SetStateAction<any>>;
-}>({
+  open: boolean;
+  setOpen: (value: boolean) => void;
+  setCookieData: (data: any) => void;
+  allTags: TagDataProps[];
+  setAllTags: (tags: TagDataProps[]) => void;
+}
+
+export const AppContext = createContext<AppContextType>({
   cookieData: null,
   setCookieData: () => {},
+  open: false,
+  setOpen: () => {},
+  allTags: [],
+  setAllTags: () => {},
 });
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
-  const [cookieData, setCookieData] = useState();
+  const [cookieData, setCookieData] = useState<any>(null);
+  const [open, setOpen] = useState<boolean>(false);
+  const [allTags, setAllTags] = useState<TagDataProps[]>([]);
 
   useEffect(() => {
     const loadCookieData = () => {
@@ -36,19 +49,26 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     loadCookieData();
   }, []);
 
-  console.log("cookie data in context api ",cookieData)
-
   return (
-    <AppContext.Provider value={{ cookieData, setCookieData }}>
+    <AppContext.Provider
+      value={{
+        allTags,
+        setAllTags,
+        open,
+        setOpen,
+        cookieData,
+        setCookieData,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
 };
 
-export function useAppContext() {
+export const useAppContext = () => {
   const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error("useAppContext must be used within a AppContextProvider");
+  if (!context) {
+    throw new Error("useAppContext must be used within AppContextProvider");
   }
   return context;
-}
+};

@@ -1,11 +1,14 @@
-import React from 'react'
+import DashboardBar from "@/components/Dashboard/DashboardBar";
+import React from "react";
 
 const AdminDashboardPage = () => {
   return (
-    <div>
-      
-    </div>
-  )
-}
+    <div className=" p-4">
+      {/*----------------------- dashboard bar ----------------------------- */}
 
-export default AdminDashboardPage
+      <DashboardBar />
+    </div>
+  );
+};
+
+export default AdminDashboardPage;

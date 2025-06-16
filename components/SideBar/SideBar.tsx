@@ -24,7 +24,7 @@ const SideBar = () => {
 
   const role = cookieData?.role.toLowerCase() as string;
 
-  console.log("role os is ", role);
+//   console.log("role os is ", role);
 
   const menuItems: MenuItem[] = [
     {
