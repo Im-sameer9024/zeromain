@@ -5,8 +5,12 @@ import { Bell, Clock, Search, CheckCheck } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import useNavbar from "./Hooks/useNavbar";
+import { useAppContext } from "@/context/AppContext";
+import useLogout from "../LoginSignupForm/Hooks/useLogout";
 
 const Navbar = () => {
+  const { cookieData } = useAppContext();
+
   const {
     notifications,
     handleBellClick,
@@ -20,8 +24,10 @@ const Navbar = () => {
     markAsRead,
     loading,
     modalRef,
-    pagination
+    pagination,
   } = useNavbar();
+
+  const { LogOut } = useLogout();
 
   return (
     <>
@@ -57,7 +63,7 @@ const Navbar = () => {
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             </button>
-            <span className="bg-[#CED0F8FF] rounded-full p-1">
+            <span className="bg-[#CED0F8FF] group rounded-full p-1">
               <Image
                 src={"/images/user.jpg"}
                 alt="userImage"
@@ -65,6 +71,14 @@ const Navbar = () => {
                 height={40}
                 className="rounded-full"
               />
+              {cookieData && (
+                <div className=" group-hover:block hidden absolute right-6 top-14 w-fit  bg-white z-40 space-y-2  shadow-lg rounded-lg p-3">
+                  <p className=" text-center">{cookieData?.role}</p>
+                  <Button onClick={LogOut} className=" hover:cursor-pointer ">
+                    LogOut
+                  </Button>
+                </div>
+              )}
             </span>
           </div>
         </div>

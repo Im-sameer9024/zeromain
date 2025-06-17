@@ -6,10 +6,10 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Eye, EyeOff } from 'lucide-react';
 
+
 const AdminForm = () => {
 
        const { adminInfo } = useAdminLogin();
-
   const handleSubmit = adminInfo?.handleSubmit;
   const register = adminInfo?.register;
   const errors = adminInfo?.errors;
@@ -17,6 +17,7 @@ const AdminForm = () => {
   const isSubmitting = adminInfo?.isSubmitting;
   const showPassword = adminInfo?.showPassword;
   const setShowPassword = adminInfo?.setShowPassword;
+
 
   return (
      <div className="w-full flex justify-center items-center">

@@ -14,7 +14,10 @@ const useGetTasks = () => {
   const { cookieData, isCookieLoading, allTasks, setAllTasks } = useAppContext();
 
   const fetchTasks = useCallback(async (cancelToken: CancelTokenSource) => {
-    if (!cookieData?.id || !cookieData?.role) {
+
+    console.log('test 1 => ', cookieData, isCookieLoading)
+
+    if (!cookieData) {
       setLoading(false);
       return;
     }
@@ -41,6 +44,8 @@ const useGetTasks = () => {
         }
       );
 
+      console.log('tasks response => ', response)
+
       if (!response.data?.data || !Array.isArray(response.data.data)) {
         throw new Error("Invalid tasks data structure");
       }
@@ -59,8 +64,9 @@ const useGetTasks = () => {
       setLoading(false);
       toast.dismiss(loadingId);
     }
-  }, [cookieData?.id, cookieData?.role, setAllTasks]);
+  }, [isCookieLoading, cookieData]);
 
+  
   useEffect(() => {
     if (isCookieLoading) return;
 

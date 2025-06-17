@@ -33,7 +33,6 @@ const columns: ColumnProps[] = [
 
 const TagsTable = () => {
   const { allTags } = useGetTags();
-  const { cookieData } = useAppContext();
 
   const renderRow = (item: TagDataProps) => (
     <TableRow
@@ -60,8 +59,8 @@ const TagsTable = () => {
     </TableRow>
   );
 
-  if (!cookieData) {
-    return <div className="text-center text-gray-500 h-64">Loading user data...</div>;
+  if (!allTags) {
+    return <div className="text-center flex justify-center items-center text-gray-500 h-64">Loading Tags data...</div>;
   }
 
 

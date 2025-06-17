@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { useState } from "react";
+import { useAppContext } from "@/context/AppContext";
 
 interface UserFormProps {
   email: string;
@@ -18,6 +19,8 @@ const useUserLogin = () => {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const{setCookieData} = useAppContext()
 
   const {
     register,
@@ -53,6 +56,9 @@ const useUserLogin = () => {
         token: responseData.token,
         role: responseData.role,
       };
+
+      setCookieData(cookieData)
+
 
       Cookies.set("cookieData", JSON.stringify(cookieData), { expires: 7 });
       Cookies.set("token", cookieData.token, { expires: 7 });

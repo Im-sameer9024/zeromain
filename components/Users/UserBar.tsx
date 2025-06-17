@@ -30,7 +30,6 @@ const UserBar = () => {
               <SelectContent className=" hover:cursor-pointer">
                 <SelectGroup>
                   <SelectItem value="Created Task">Created Task</SelectItem>
-                  <SelectItem value="banana">Banana</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

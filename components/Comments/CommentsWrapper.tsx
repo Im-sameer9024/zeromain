@@ -42,7 +42,7 @@ const CommentsWrapper: React.FC<CommentsWrapperProps> = ({ taskId }) => {
     <div className="mt-6">
       <CommentsBox
         taskId={taskId}
-        currentUser={cookieData}
+        currentUser={currentUser}
         onCommentChange={handleCommentChange}
       />
     </div>

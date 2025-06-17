@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { useState } from "react";
+import useGetTasks from "@/components/Dashboard/Hooks/useGetTasks";
+import { useAppContext } from "@/context/AppContext";
 
 interface AdminFormProps {
   email: string;
@@ -15,6 +17,9 @@ interface AdminFormProps {
 
 const useAdminLogin = () => {
   const router = useRouter();
+const{refreshTasks} = useGetTasks()
+const{setCookieData} = useAppContext()
+
 
 const[showPassword,setShowPassword]=useState(false)
 
@@ -40,6 +45,7 @@ const[showPassword,setShowPassword]=useState(false)
       
       if (response.status === 200) {
         router.push("/admin/dashboard");
+        
       }
 
       const responseData = response.data?.data;
@@ -53,6 +59,8 @@ const[showPassword,setShowPassword]=useState(false)
         token: responseData.token,
         role: responseData.role,
       };
+
+      setCookieData(cookieData)
 
       Cookies.set("cookieData", JSON.stringify(cookieData), { expires: 7 });
       Cookies.set("token", cookieData.token, { expires: 7 });

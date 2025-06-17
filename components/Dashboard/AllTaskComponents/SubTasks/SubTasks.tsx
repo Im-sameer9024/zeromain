@@ -147,7 +147,7 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
       case "COMPLETED":
         return "bg-green-400 hover:bg-green-500";
       case "IN_PROGRESS":
-        return "bg-blue-400 hover:top-blue-500";
+        return "bg-blue-400 hover:bg-blue-500";
       case "ON_HOLD":
         return "bg-yellow-400 hover:bg-yellow-500";
       case "CANCELLED":
@@ -181,24 +181,20 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
       </div>
 
       {subTasks && subTasks.length > 0 ? (
-        <div className="grid grid-rows-auto min-h-[300px] overflow-hidden border rounded-lg">
-          <div className="overflow-hidden">
+        <div className="border rounded-lg overflow-hidden">
+          <div className="max-h-96 overflow-y-auto">
             <Table className="relative">
-              <TableHeader className="sticky top-0 bg-white z-10">
+              <TableHeader className="sticky top-0 bg-white z-10 border-b">
                 <TableRow>
-                  <TableCell className="text-text">Title</TableCell>
-                  <TableCell className="text-text">Assigned To</TableCell>
-                  <TableCell className="text-text">Feedback Required</TableCell>
-                  <TableCell className="text-text">Time (hours)</TableCell>
-                  <TableCell className="text-text">Status</TableCell>
-                  <TableCell className="text-text">Feedback</TableCell>
-                  <TableCell className="text-text">Action</TableCell>
+                  <TableCell className="text-text font-medium">Title</TableCell>
+                  <TableCell className="text-text font-medium">Assigned To</TableCell>
+                  <TableCell className="text-text font-medium">Feedback Required</TableCell>
+                  <TableCell className="text-text font-medium">Time (hours)</TableCell>
+                  <TableCell className="text-text font-medium">Status</TableCell>
+                  <TableCell className="text-text font-medium">Feedback</TableCell>
+                  <TableCell className="text-text font-medium">Action</TableCell>
                 </TableRow>
               </TableHeader>
-            </Table>
-          </div>
-          <div className="overflow-y-auto">
-            <Table>
               <TableBody>
                 {subTasks.map((task) => (
                   <TableRow key={task.id}>

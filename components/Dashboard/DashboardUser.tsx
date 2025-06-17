@@ -20,44 +20,6 @@ interface columnsProps {
   classes?: string;
 }
 
-const columns: columnsProps[] = [
-  {
-    header: "",
-    accessor: "status",
-    classes: "hidden md:table-cell text-center",
-  },
-  {
-    header: "Name",
-    accessor: "name",
-    classes: "font-bold text-md text-text",
-  },
-  {
-    header: "Assign by",
-    accessor: "assignBy",
-    classes: "hidden md:table-cell font-bold text-md text-text text-center",
-  },
-  {
-    header: "Action",
-    accessor: "action",
-    classes: "hidden lg:table-cell font-bold text-md text-text text-center",
-  },
-  {
-    header: "Due Date",
-    accessor: "dueDate",
-    classes: "font-bold text-md text-text text-center",
-  },
-  {
-    header: "Tags",
-    accessor: "tags",
-    classes: "font-bold text-md text-text text-center",
-  },
-  {
-    header: "Actions",
-    accessor: "actions",
-    classes: "font-bold text-md text-text text-center",
-  },
-];
-
 const StatusIndicator = ({ status }: { status: string }) => {
   switch (status) {
     case "PENDING":
@@ -72,11 +34,54 @@ const StatusIndicator = ({ status }: { status: string }) => {
 };
 
 const DashboardUsers = () => {
-  const router = useRouter();
   const { cookieData } = useAppContext();
-  const { allTasks, loading, error,refreshTasks  } = useGetTasks();
+
+  const columns: columnsProps[] = [
+    {
+      header: "",
+      accessor: "status",
+      classes: "hidden md:table-cell text-center",
+    },
+    {
+      header: "Name",
+      accessor: "name",
+      classes: "font-bold text-md text-text",
+    },
+    {
+      header: "Assign by",
+      accessor: "assignBy",
+      classes: "hidden md:table-cell font-bold text-md text-text text-center",
+    },
+    {
+      header: "Action",
+      accessor: "action",
+      classes: "hidden lg:table-cell font-bold text-md text-text text-center",
+    },
+    {
+      header: "Due Date",
+      accessor: "dueDate",
+      classes: "font-bold text-md text-text text-center",
+    },
+    {
+      header: "Tags",
+      accessor: "tags",
+      classes: "font-bold text-md text-text text-center",
+    },
+    ...(cookieData?.role === "Admin"
+      ? [
+          {
+            header: "Actions",
+            accessor: "actions",
+            classes: "font-bold text-md text-text text-center",
+          },
+        ]
+      : []),
+  ];
+
+  const router = useRouter();
+  const { allTasks, loading, error, refreshTasks } = useGetTasks();
   const role = cookieData?.role?.toLowerCase() || "";
-  const{updateStatus} = useUpdateStatus()
+  const { updateStatus } = useUpdateStatus();
 
   const { removeTask } = useRemoveTask();
 
@@ -98,7 +103,7 @@ const DashboardUsers = () => {
     }
   };
 
-   const handleTaskAction = async (
+  const handleTaskAction = async (
     e: React.MouseEvent<HTMLButtonElement>,
     taskId: string,
     currentStatus: string
@@ -106,7 +111,7 @@ const DashboardUsers = () => {
     e.stopPropagation();
     try {
       let newStatus = "";
-      switch(currentStatus) {
+      switch (currentStatus) {
         case "PENDING":
           newStatus = "IN_PROGRESS";
           break;
@@ -119,7 +124,7 @@ const DashboardUsers = () => {
         default:
           return;
       }
-      
+
       await updateStatus(e, taskId, newStatus);
       refreshTasks(); // Refresh tasks after status update
     } catch (err) {
@@ -195,18 +200,17 @@ const DashboardUsers = () => {
             ))}
           </div>
         </TableCell>
-        <TableCell>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              removeTask(item.id);
-            }}
-            className="hover:bg-gray-100 p-1 rounded-full hover:cursor-pointer"
-            aria-label="Delete task"
-          >
-            <X size={16} />
-          </button>
-        </TableCell>
+        {cookieData?.role === "Admin" && (
+          <TableCell>
+            <button
+              onClick={(e) => handleDeleteTask(e, item.id)}
+              className="hover:bg-gray-100 p-1 rounded-full hover:cursor-pointer"
+              aria-label="Delete task"
+            >
+              <X size={16} />
+            </button>
+          </TableCell>
+        )}
       </TableRow>
     );
   };

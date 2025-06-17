@@ -16,7 +16,7 @@ const useUpdateStatus = () => {
       return;
     }
 
-    const loadingId = toast.loading("Fetching tasks...");
+    const loadingId = toast.loading("Update task Status...");
 
     try {
       const response = await axios.put(
@@ -27,10 +27,12 @@ const useUpdateStatus = () => {
       console.log("response is here", response);
 
       // Adjust based on your actual API response structure
-      toast.success("Tasks Fetched", { id: loadingId });
+      toast.success("Tasks Updated Successfully", { id: loadingId });
     } catch (err) {
       console.error("Error fetching tasks:", err);
       toast.error("Failed to fetch tasks", { id: loadingId });
+    }finally{
+      toast.dismiss(loadingId);
     }
   };
 
