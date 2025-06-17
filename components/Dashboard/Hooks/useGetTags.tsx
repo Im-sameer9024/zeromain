@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { useAppContext } from "@/context/AppContext";
-import toast from "react-hot-toast";
 
 const useGetTags = () => {
   const { cookieData, allTags, setAllTags } = useAppContext();
@@ -24,7 +23,6 @@ const useGetTags = () => {
         if (response.status === 200) {
           setAllTags(response.data?.data || []);
         }
-        toast.success("Tags loaded successfully", { duration: 2000 });
       } catch (error) {
         console.error("Error fetching tags:", error);
         setAllTags([]); // Reset on error

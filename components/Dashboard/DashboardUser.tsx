@@ -13,6 +13,7 @@ import { useAppContext } from "@/context/AppContext";
 import useGetTasks from "./Hooks/useGetTasks";
 import useRemoveTask from "./Hooks/useRemoveTask";
 import useUpdateStatus from "./Hooks/useUpdateStatus";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface columnsProps {
   header: string;
@@ -82,6 +83,8 @@ const DashboardUsers = () => {
   const { allTasks, loading, error, refreshTasks } = useGetTasks();
   const role = cookieData?.role?.toLowerCase() || "";
   const { updateStatus } = useUpdateStatus();
+
+  console.log("allTasks", allTasks);
 
   const { removeTask } = useRemoveTask();
 
@@ -153,15 +156,22 @@ const DashboardUsers = () => {
           </p>
         </TableCell>
         <TableCell className="hidden md:table-cell">
-          <div className="flex justify-center">
-            <Image
-              src={assginBy}
-              alt="assignee"
-              width={40}
-              height={40}
-              className="size-10 rounded-full"
-            />
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex justify-center">
+                <Image
+                  src={assginBy}
+                  alt="assignee"
+                  width={40}
+                  height={40}
+                  className="size-10 rounded-full"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{item.createdByAdmin?.name || item.createdByUser?.name}</p>
+            </TooltipContent>
+          </Tooltip>
         </TableCell>
         <TableCell className="hidden md:table-cell">
           <div className="flex gap-2 items-center justify-center">
@@ -189,13 +199,13 @@ const DashboardUsers = () => {
           </p>
         </TableCell>
         <TableCell>
-          <div className="flex gap-2 items-center justify-center flex-wrap">
-            {item.taskTags?.map((tag, i) => (
+          <div className=" items-center justify-center  flex-wrap flex gap-2">
+            {item.tags?.map((tag, i) => (
               <span
-                className="odd:bg-[#f7e9ee] rounded odd:text-[#E8618CFF] p-1 px-2 even:text-[#636AE8FF] even:bg-[#F2F2FDFF] text-xs"
+                className="odd:bg-[#f7e9ee] rounded odd:text-[#E8618CFF] p-1 w-fit px-2 even:text-[#636AE8FF] even:bg-[#F2F2FDFF] text-xs"
                 key={tag?.id || i}
               >
-                {tag?.tag?.name || "Untagged"}
+                {tag?.name}
               </span>
             ))}
           </div>

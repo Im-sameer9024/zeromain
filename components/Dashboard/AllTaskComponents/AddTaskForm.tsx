@@ -17,6 +17,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import useAddTask from "../Hooks/useAddTask";
 import useGetTags from "../Hooks/useGetTags";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const popupVariants = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -25,9 +26,6 @@ const popupVariants = {
 };
 
 const AddTaskForm = () => {
-
-
-
   const {
     selectedTags,
     attachments,
@@ -41,12 +39,12 @@ const AddTaskForm = () => {
     register,
     handleSubmit,
     errors,
-    isSubmitting,setValue,
+    isSubmitting,
+    setValue,
     setOpen,
-    
   } = useAddTask();
 
-  const {allTags} = useGetTags()
+  const { allTags } = useGetTags();
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
@@ -69,8 +67,6 @@ const AddTaskForm = () => {
         </Button>
       </div>
 
-     
-
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Title Section */}
         <div className="my-6">
@@ -86,12 +82,13 @@ const AddTaskForm = () => {
 
         {/* Tags Section */}
         <div className="flex gap-2 items-center flex-wrap">
-          {selectedTags.map((tagId:any) => {
+          {selectedTags.map((tagId: any) => {
             const tag = allTags.find((t) => t.id === tagId);
             return tag ? (
-              <div key={tag.id} className="relative inline-block m-1 group">
+              <div key={tag.id} className="relative inline-block m-1 group ">
                 <span
-                  className={`px-3 py-1 rounded-full text-xs ${tag.color} relative`}
+                  style={{ backgroundColor: tag.color }}
+                  className={`px-3 py-1 rounded-full text-white text-xs ${tag.color} relative`}
                 >
                   {tag.name}
                   <CgClose
@@ -108,6 +105,7 @@ const AddTaskForm = () => {
           <Popover>
             <PopoverTrigger asChild>
               <Button
+              disabled={selectedTags.length >= 2}
                 variant="outline"
                 className="bg-gray-200 text-text hover:bg-gray-300 flex gap-2"
               >
@@ -115,34 +113,37 @@ const AddTaskForm = () => {
                 Tags
               </Button>
             </PopoverTrigger>
+
             <PopoverContent className="w-auto p-2" align="start">
-              <motion.div
-                variants={popupVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                transition={{ duration: 0.2 }}
-                className="flex gap-2"
-              >
-                {allTags.map((tag) => (
-                  <Button
-                    key={tag.id}
-                    variant="outline"
-                    disabled={selectedTags.includes(tag.id)}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleTagSelect(tag);
-                    }}
-                  >
-                    {tag.name}
-                  </Button>
-                ))}
-              </motion.div>
+              <ScrollArea className="h-22 w-fit  rounded-md border">
+                <motion.div
+                  variants={popupVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  transition={{ duration: 0.2 }}
+                  className="grid grid-cols-4 gap-2 "
+                >
+                  {allTags.map((tag) => (
+                    <Button
+                      key={tag.id}
+                      variant="outline"
+                      className="hover:cursor-pointer bg-blue-200 disabled:cursor-not-allowed"
+                      disabled={selectedTags.length >= 2 && !selectedTags.includes(tag.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleTagSelect(tag);
+                      }}
+                    >
+                      {tag.name}
+                    </Button>
+                  ))}
+                </motion.div>
+              </ScrollArea>
             </PopoverContent>
           </Popover>
-          {errors.tags && (
-            <span className="text-red-500 text-sm">{errors.tags.message}</span>
-          )}
+
+       
         </div>
 
         {/* Due Date Section */}
@@ -206,7 +207,7 @@ const AddTaskForm = () => {
           </div>
 
           <div className="mt-2 space-y-2  ">
-            {attachments.map((file:any, index:any) => (
+            {attachments.map((file: any, index: any) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-2 bg-gray-50 rounded"

@@ -122,7 +122,7 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
   }
 
   return (
-    <div className="flex p-4 w-full !h-[500px] overflow-y-scroll">
+    <div className="flex p-4 w-full !h-[calc(100vh-80px)] overflow-y-scroll">
       {/* left side section */}
       <div className="w-2/3 pr-4">
         {/*------ image and title -------- */}

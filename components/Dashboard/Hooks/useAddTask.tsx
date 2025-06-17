@@ -1,15 +1,21 @@
+"use client";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useAppContext } from '@/context/AppContext';
-import axios from 'axios';
-import React, { useRef } from 'react'
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+import { useAppContext } from "@/context/AppContext";
+import { TaskProps } from "@/types/Task.types";
+import axios from "axios";
+import React, { useRef } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import useGetTasks from "./useGetTasks";
 
 const useAddTask = () => {
-  const { cookieData,open,setOpen,setAllTasks } = useAppContext();
+  const { cookieData, open, setOpen, setAllTasks } = useAppContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  console.log("cookies dAta", cookieData);
 
+  const { refreshTasks } = useGetTasks();
 
   const {
     register,
@@ -29,13 +35,35 @@ const useAddTask = () => {
   const onSubmit = async (data: any) => {
     const toastId = toast.loading("Creating task...");
 
+    if (!cookieData) {
+      toast.loading("Please login to create a task", {
+        id: toastId,
+        duration: 2000,
+      });
+      return;
+    }
+
+    let adId = null;
+    let usId = null;
+
+    if (cookieData.role === "Admin") {
+      adId = cookieData.id;
+    } else if (cookieData.role === "User") {
+      usId = cookieData.id;
+    }
+
+    // console.log("adminid",adId)
+    // console.log("useid",usId)
+
+
+
     try {
       const formData = {
         title: data.title,
         description: data.description,
         dueDate: data.dueDate,
-        adminId: cookieData.role === "admin" ? null : cookieData.id,
-        userId: cookieData.role === "admin" ? cookieData.id : null,
+        adminId: adId,
+        userId: usId,
         tagIds: data.tags,
         attachments: [
           "https://cdn.example.com/doc1.pdf",
@@ -43,20 +71,25 @@ const useAddTask = () => {
         ],
       };
 
-      console.log("formDAta of task is ", formData);
-
+      console.log("formDAta of task is single Task ", formData);
+      debugger;
       // Submit to API
       const response = await axios.post(
         "https://task-management-backend-kohl-omega.vercel.app/api/tasks/create-task",
         formData
       );
 
-      setAllTasks((prevTasks:any[]) => [...prevTasks, response.data?.data]);
+      setAllTasks((prevTasks: TaskProps[]) => [
+        response.data?.data as TaskProps,
+        ...prevTasks,
+      ]);
 
       console.log("task is created successfully ", response);
 
       toast.success("Task created successfully!", { id: toastId });
       setOpen(false);
+
+      refreshTasks();
     } catch (error: any) {
       console.error("Error creating task:", error);
       toast.error(error.response?.data?.message || "Failed to create task", {
@@ -83,9 +116,9 @@ const useAddTask = () => {
     if (currentTags.includes(tag.id)) {
       setValue(
         "tags",
-        currentTags.filter((t:any) => t !== tag.id)
+        currentTags.filter((t: any) => t !== tag.id)
       );
-    } else {
+    } else if (currentTags.length < 3) {
       setValue("tags", [...currentTags, tag.id]);
     }
   };
@@ -93,7 +126,7 @@ const useAddTask = () => {
   const handleRemoveTag = (tagId: string) => {
     setValue(
       "tags",
-      watch("tags").filter((t:any) => t !== tagId)
+      watch("tags").filter((t: any) => t !== tagId)
     );
   };
 
@@ -102,9 +135,24 @@ const useAddTask = () => {
   const dueDate = watch("dueDate");
 
   return {
-    selectedTags,attachments,dueDate,handleRemoveTag,handleTagSelect,handleRemoveFile,handleFileChange,onSubmit,cookieData,fileInputRef,register,
-    handleSubmit,errors, isSubmitting ,setValue,open,setOpen
-  }
-}
+    selectedTags,
+    attachments,
+    dueDate,
+    handleRemoveTag,
+    handleTagSelect,
+    handleRemoveFile,
+    handleFileChange,
+    onSubmit,
+    cookieData,
+    fileInputRef,
+    register,
+    handleSubmit,
+    errors,
+    isSubmitting,
+    setValue,
+    open,
+    setOpen,
+  };
+};
 
-export default useAddTask
+export default useAddTask;

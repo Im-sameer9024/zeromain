@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { useState } from "react";
-import useGetTasks from "@/components/Dashboard/Hooks/useGetTasks";
 import { useAppContext } from "@/context/AppContext";
 
 interface AdminFormProps {
@@ -17,11 +16,9 @@ interface AdminFormProps {
 
 const useAdminLogin = () => {
   const router = useRouter();
-const{refreshTasks} = useGetTasks()
-const{setCookieData} = useAppContext()
+  const { setCookieData } = useAppContext();
 
-
-const[showPassword,setShowPassword]=useState(false)
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -42,28 +39,17 @@ const[showPassword,setShowPassword]=useState(false)
         data
       );
 
-      
       if (response.status === 200) {
         router.push("/admin/dashboard");
-        
       }
 
-      const responseData = response.data?.data;
+      const responseData = structuredClone(response.data?.data);
 
-      console.log("login data is here", responseData);
 
-      const cookieData = {
-        id: responseData.id,
-        name: responseData.name,
-        email: responseData.email,
-        token: responseData.token,
-        role: responseData.role,
-      };
+      setCookieData(responseData);
 
-      setCookieData(cookieData)
-
-      Cookies.set("cookieData", JSON.stringify(cookieData), { expires: 7 });
-      Cookies.set("token", cookieData.token, { expires: 7 });
+      Cookies.set("cookieData", JSON.stringify(responseData), { expires: 7 });
+      Cookies.set("token", responseData.token, { expires: 7 });
       router.push("/admin/dashboard");
       toast.success("Admin Login successful!", { id: toastId });
     } catch (error: any) {
@@ -83,7 +69,9 @@ const[showPassword,setShowPassword]=useState(false)
       handleSubmit,
       errors,
       isSubmitting,
-      onSubmit,showPassword,setShowPassword
+      onSubmit,
+      showPassword,
+      setShowPassword,
     },
   };
 };
