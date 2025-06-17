@@ -27,7 +27,7 @@ const Popup: React.FC<PopupProps> = ({ openModal, content }) => {
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-white p-4 hide-scrollbar h-screen  w-[90%] lg:w-[50%] rounded-lg flex flex-col justify-center  "
+            className="bg-white p-4 hide-scrollbar w-[90%] lg:w-[50%] rounded-lg flex flex-col justify-center  "
             variants={popupVariants}
             initial="hidden"
             animate="visible"

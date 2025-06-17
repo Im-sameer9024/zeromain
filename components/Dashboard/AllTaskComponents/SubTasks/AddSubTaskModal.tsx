@@ -1,17 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
 import { debounce } from "lodash";
+import Popup from "@/components/Modal/Popup";
 
 interface AddSubTaskModalProps {
   isOpen: boolean;
@@ -65,7 +60,6 @@ const AddSubTaskModal = ({
   const [taskData, setTaskData] = useState({
     title: "",
     expectedTime: 6,
-    requiresFeedback: true,
     userId: "",
   });
   const [users, setUsers] = useState<User[]>([]);
@@ -82,10 +76,10 @@ const AddSubTaskModal = ({
       setTaskData({
         title: "",
         expectedTime: 6,
-        requiresFeedback: true,
         userId: "",
       });
       toast.success("Subtask created successfully!");
+      onOpenChange(false); // Close the modal on success
     },
     onError: (error) => {
       console.error("Error creating subtask:", error);
@@ -121,21 +115,13 @@ const AddSubTaskModal = ({
     if (isOpen && cookieData?.id) {
       fetchUsers("");
     }
-  }, [isOpen,fetchUsers, cookieData?.id]);
+  }, [isOpen, fetchUsers, cookieData?.id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setTaskData((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setTaskData((prev) => ({
-      ...prev,
-      [name]: checked,
     }));
   };
 
@@ -179,79 +165,63 @@ const AddSubTaskModal = ({
       title: trimmedTitle,
       userId: taskData.userId,
       expectedTime: taskData.expectedTime,
-      requiresFeedback: taskData.requiresFeedback,
+      requiresFeedback: true, // Hardcode to true since it's removed from the UI
     };
 
     createSubTaskMutation.mutate(payload);
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add New Subtask</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4" disabled={createSubTaskMutation.isPending}>
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium mb-1">
-              Title*
-            </label>
-            <Input
-              id="title"
-              name="title"
-              value={taskData.title}
-              onChange={handleInputChange}
-              required
-              placeholder="Enter subtask title"
-              disabled={createSubTaskMutation.isPending}
-            />
-          </div>
+  // Content for the Popup
+  const modalContent = (
+    <div className="space-y-4 p-5 shadow-lg rounded-lg">
+      <h2 className="text-lg font-medium">Add New Subtask</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label htmlFor="title" className="block text-sm font-medium mb-1">
+            Title*
+          </label>
+          <Input
+            id="title"
+            name="title"
+            value={taskData.title}
+            onChange={handleInputChange}
+            required
+            placeholder="Enter subtask title"
+            disabled={createSubTaskMutation.isPending}
+          />
+        </div>
 
-          <div>
-            <label htmlFor="expectedTime" className="block text-sm font-medium mb-1">
-              Expected Time (hours)*
-            </label>
-            <select
-              id="expectedTime"
-              name="expectedTime"
-              value={taskData.expectedTime}
-              onChange={handleSelectChange}
-              className="border rounded-md p-2 w-full"
-              required
-              disabled={createSubTaskMutation.isPending}
-            >
-              {Array.from({ length: 24 }, (_, i) => i + 1).map((hour) => (
-                <option key={hour} value={hour}>
-                  {hour} hour{hour !== 1 ? "s" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="mb-4">
+          <label htmlFor="expectedTime" className="block text-sm font-medium mb-1">
+            Expected Time (hours)*
+          </label>
+          <select
+            id="expectedTime"
+            name="expectedTime"
+            value={taskData.expectedTime}
+            onChange={handleSelectChange}
+            className="border rounded-md p-2 w-full"
+            required
+            disabled={createSubTaskMutation.isPending}
+          >
+            {Array.from({ length: 24 }, (_, i) => i + 1).map((hour) => (
+              <option key={hour} value={hour}>
+                {hour} hour{hour !== 1 ? "s" : ""}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="requiresFeedback"
-              name="requiresFeedback"
-              checked={taskData.requiresFeedback}
-              onChange={handleCheckboxChange}
-              className="h-4 w-4 rounded"
-              disabled={createSubTaskMutation.isPending}
-            />
-            <label htmlFor="requiresFeedback" className="text-sm font-medium">
-              Requires Feedback
-            </label>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium mb-1">Assign to User*</label>
-            <Input
-              placeholder="Search users..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="flex-1"
-              disabled={createSubTaskMutation.isPending}
-            />
+        <div className="space-y-2">
+          <label className="block text-sm font-medium mb-1">Assign to User*</label>
+          <Input
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="flex-1"
+            disabled={createSubTaskMutation.isPending}
+          />
+          <div className="border rounded-md h-60 overflow-y-auto">
             {loadingUsers ? (
               <div className="text-center py-4">Loading users...</div>
             ) : users.length === 0 ? (
@@ -259,40 +229,39 @@ const AddSubTaskModal = ({
                 No users found
               </div>
             ) : (
-              <div className="border rounded-md max-h-60 overflow-y-auto">
-                {users.map((user) => (
-                  <div
-                    key={user.id}
-                    onClick={() => !createSubTaskMutation.isPending && handleUserSelect(user.id)}
-                    className={`p-3 cursor-pointer hover:bg-gray-100 ${
-                      taskData.userId === user.id ? "bg-blue-50 border-l-2 border-blue-500" : ""
+              users.map((user) => (
+                <div
+                  key={user.id}
+                  onClick={() => !createSubTaskMutation.isPending && handleUserSelect(user.id)}
+                  className={`p-3 cursor-pointer hover:bg-gray-100 ${taskData.userId === user.id ? "bg-blue-50 border-l-2 border-blue-500" : ""
                     }`}
-                  >
-                    <div className="font-medium">{user.name}</div>
-                    <div className="text-sm text-gray-500">{user.email}</div>
-                  </div>
-                ))}
-              </div>
+                >
+                  <div className="font-medium">{user.name}</div>
+                  <div className="text-sm text-gray-500">{user.email}</div>
+                </div>
+              ))
             )}
           </div>
+        </div>
 
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={createSubTaskMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={createSubTaskMutation.isPending}>
-              {createSubTaskMutation.isPending ? "Creating..." : "Create Subtask"}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <div className="flex justify-end gap-2 mt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={createSubTaskMutation.isPending}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={createSubTaskMutation.isPending}>
+            {createSubTaskMutation.isPending ? "Creating..." : "Create Subtask"}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
+
+  return <Popup openModal={isOpen} content={modalContent} />;
 };
 
 export default AddSubTaskModal;
