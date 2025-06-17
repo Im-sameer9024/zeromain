@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Loader2 } from "lucide-react"; // Added Loader2 for the spinner
 
 interface FeedbackDropdownProps {
     subtaskId: string;
@@ -61,28 +61,28 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
                     bg: "bg-green-100 hover:bg-green-200",
                     text: "text-green-800",
                     border: "border-green-300",
-                    icon: "text-green-600"
+                    icon: "text-green-600",
                 };
             case "AVERAGE":
                 return {
                     bg: "bg-yellow-100 hover:bg-yellow-200",
                     text: "text-yellow-800",
                     border: "border-yellow-300",
-                    icon: "text-yellow-600"
+                    icon: "text-yellow-600",
                 };
             case "BAD":
                 return {
                     bg: "bg-red-100 hover:bg-red-200",
                     text: "text-red-800",
                     border: "border-red-300",
-                    icon: "text-red-600"
+                    icon: "text-red-600",
                 };
             default:
                 return {
                     bg: "bg-gray-100 hover:bg-gray-200",
                     text: "text-gray-700",
                     border: "border-gray-300",
-                    icon: "text-gray-500"
+                    icon: "text-gray-500",
                 };
         }
     };
@@ -124,9 +124,16 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
                 <DropdownMenuTrigger asChild>
                     <button
                         className={`flex items-center gap-2 ${currentFeedbackColors.bg} ${currentFeedbackColors.text} ${currentFeedbackColors.border} text-xs px-2 rounded-xs py-0.5 border`}
+                        disabled={feedbackMutation.isPending} // Disable button during loading
                     >
-                        <MessageSquare className={`w-4 h-4 ${currentFeedbackColors.icon}`} />
-                        {currentFeedback || "Select Feedback"}
+                        {feedbackMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 animate-spin" /> // Show spinner
+                        ) : (
+                            <>
+                                {/* <MessageSquare className={`w-4 h-4 ${currentFeedbackColors.icon}`} /> */}
+                                {currentFeedback}
+                            </>
+                        )}
                     </button>
                 </DropdownMenuTrigger>
             )}
@@ -134,8 +141,13 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
                 <DropdownMenuTrigger asChild>
                     <button
                         className={`flex items-center gap-2 ${currentFeedbackColors.bg} ${currentFeedbackColors.text} ${currentFeedbackColors.border} text-xs px-2 rounded-xs py-0.5 bg-white`}
+                        disabled={feedbackMutation.isPending} // Disable button during loading
                     >
-                        <MessageSquare className={`w-4 h-4 ${currentFeedbackColors.icon}`} />
+                        {feedbackMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 animate-spin" /> // Show spinner
+                        ) : (
+                            <MessageSquare className={`w-4 h-4 ${currentFeedbackColors.icon}`} />
+                        )}
                     </button>
                 </DropdownMenuTrigger>
             )}
