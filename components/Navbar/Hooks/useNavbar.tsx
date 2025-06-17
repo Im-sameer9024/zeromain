@@ -1,11 +1,33 @@
-"use client"
+"use client";
 
 import { useAppContext } from "@/context/AppContext";
 import { NotificationProps, PaginationProps } from "@/types/Navbar.types";
 import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+
+interface WorkSession {
+  id: string;
+  userId: string;
+  clockInTime: string;
+  clockOutTime?: string;
+  TotalTime: number;
+  Date: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+interface ClockInOutState {
+  isClocked: boolean;
+  currentSession: WorkSession | null;
+  clockLoading: boolean;
+}
 
 const useNavbar = () => {
+  // Notification states
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,12 +40,22 @@ const useNavbar = () => {
     totalPages: 0,
   });
 
+  // Clock states
+  const [clockState, setClockState] = useState<ClockInOutState>({
+    isClocked: false,
+    currentSession: null,
+    clockLoading: false,
+  });
+
   const modalRef = useRef<HTMLDivElement>(null);
   const { cookieData } = useAppContext();
 
-  const baseURL =
+  const notificationBaseURL =
     "https://task-management-backend-kohl-omega.vercel.app/api/notifications";
+  const clockBaseURL =
+    "https://task-management-backend-kohl-omega.vercel.app/api/worksession";
 
+  // Modal click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -43,6 +75,7 @@ const useNavbar = () => {
     };
   }, [isModalOpen]);
 
+  // Notification functions
   const fetchNotifications = useCallback(
     async (page = 1, limit = 10, unreadOnly = false, append = false) => {
       if (!cookieData?.id || !cookieData?.role) {
@@ -53,7 +86,7 @@ const useNavbar = () => {
         setLoading(true);
         const roleParam = cookieData.role === "Admin" ? "adminId" : "userId";
         const response = await axios.get(
-          `${baseURL}?${roleParam}=${cookieData.id}&page=${page}&limit=${limit}&unreadOnly=${unreadOnly}`
+          `${notificationBaseURL}?${roleParam}=${cookieData.id}&page=${page}&limit=${limit}&unreadOnly=${unreadOnly}`
         );
 
         const data = response.data.data || [];
@@ -84,7 +117,7 @@ const useNavbar = () => {
     try {
       const roleParam = cookieData.role === "Admin" ? "adminId" : "userId";
       const response = await axios.get(
-        `${baseURL}/unread-count?${roleParam}=${cookieData.id}`
+        `${notificationBaseURL}/unread-count?${roleParam}=${cookieData.id}`
       );
 
       setUnreadCount(response.data.count || 0);
@@ -95,8 +128,9 @@ const useNavbar = () => {
 
   const markAsRead = async (notificationId: string) => {
     try {
-      console.log("MARK AS READ");
-      const response = await axios.patch(`${baseURL}/${notificationId}/read`);
+      const response = await axios.patch(
+        `${notificationBaseURL}/${notificationId}/read`
+      );
 
       if (response.status === 200) {
         setNotifications((prev) =>
@@ -123,7 +157,7 @@ const useNavbar = () => {
     try {
       const roleParam = cookieData.role === "Admin" ? "adminId" : "userId";
       const response = await axios.patch(
-        `${baseURL}/read-all?${roleParam}=${cookieData.id}`
+        `${notificationBaseURL}/read-all?${roleParam}=${cookieData.id}`
       );
 
       if (response.status === 200) {
@@ -173,10 +207,180 @@ const useNavbar = () => {
     }
   };
 
+  // Clock functions
+  const checkActiveSession = useCallback(async () => {
+    if (!cookieData?.id || cookieData?.role !== "User") {
+      return;
+    }
+
+    try {
+      setClockState((prev) => ({ ...prev, clockLoading: true }));
+
+      const response = await axios.get(
+        `${clockBaseURL}/active/${cookieData.id}`
+      );
+
+      if (response.data.data) {
+        setClockState((prev) => ({
+          ...prev,
+          isClocked: true,
+          currentSession: response.data.data,
+          clockLoading: false,
+        }));
+      } else {
+        setClockState((prev) => ({
+          ...prev,
+          isClocked: false,
+          currentSession: null,
+          clockLoading: false,
+        }));
+      }
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setClockState((prev) => ({
+          ...prev,
+          isClocked: false,
+          currentSession: null,
+          clockLoading: false,
+        }));
+      } else {
+        console.error("Error checking active session:", error);
+        setClockState((prev) => ({ ...prev, clockLoading: false }));
+      }
+    }
+  }, [cookieData]);
+
+  const clockIn = async () => {
+    if (!cookieData?.id || cookieData?.role !== "User") {
+      toast.error("Only users can clock in/out");
+      return;
+    }
+
+    const toastId = toast.loading("Clocking in...");
+
+    try {
+      setClockState((prev) => ({ ...prev, clockLoading: true }));
+
+      const response = await axios.post(`${clockBaseURL}/clock-in`, {
+        userId: cookieData.id,
+      });
+
+      const newSession = response.data.data;
+
+      setClockState((prev) => ({
+        ...prev,
+        isClocked: true,
+        currentSession: newSession,
+        clockLoading: false,
+      }));
+
+      toast.success("Clocked in successfully!", { id: toastId });
+    } catch (error: any) {
+      console.error("Error clocking in:", error);
+      let errorMessage = "Failed to clock in";
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
+      toast.error(errorMessage, { id: toastId });
+      setClockState((prev) => ({ ...prev, clockLoading: false }));
+    }
+  };
+
+  const clockOut = async () => {
+    if (
+      !cookieData?.id ||
+      cookieData?.role !== "User" ||
+      !clockState.currentSession
+    ) {
+      toast.error("No active session to clock out");
+      return;
+    }
+
+    const toastId = toast.loading("Clocking out...");
+
+    try {
+      setClockState((prev) => ({ ...prev, clockLoading: true }));
+
+      const response = await axios.put(
+        `${clockBaseURL}/clock-out/${clockState.currentSession.id}`,
+        {
+          userId: cookieData.id,
+        }
+      );
+
+      setClockState((prev) => ({
+        ...prev,
+        isClocked: false,
+        currentSession: null,
+        clockLoading: false,
+      }));
+
+      const totalTimeFormatted = response.data.data.totalTimeFormatted;
+      toast.success(
+        `Clocked out successfully! Total time: ${totalTimeFormatted}`,
+        {
+          id: toastId,
+          duration: 5000,
+        }
+      );
+    } catch (error: any) {
+      console.error("Error clocking out:", error);
+      let errorMessage = "Failed to clock out";
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
+      toast.error(errorMessage, { id: toastId });
+      setClockState((prev) => ({ ...prev, clockLoading: false }));
+    }
+  };
+
+  const toggleClock = () => {
+    if (clockState.isClocked) {
+      clockOut();
+    } else {
+      clockIn();
+    }
+  };
+
+  const getCurrentSessionTime = useCallback(() => {
+    if (!clockState.currentSession?.clockInTime) return "00:00:00";
+
+    const clockIn = new Date(clockState.currentSession.clockInTime);
+    const now = new Date();
+    const diffInSeconds = Math.floor(
+      (now.getTime() - clockIn.getTime()) / 1000
+    );
+
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    const seconds = diffInSeconds % 60;
+
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  }, [clockState.currentSession]);
+
+  // Auto-refresh current time every second
+  useEffect(() => {
+    if (!clockState.isClocked) return;
+
+    const interval = setInterval(() => {
+      setClockState((prev) => ({ ...prev }));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [clockState.isClocked]);
+
+  // Initialize data on mount
   useEffect(() => {
     fetchNotifications();
     fetchUnreadCount();
-  }, [fetchNotifications, fetchUnreadCount]);
+    checkActiveSession();
+  }, [fetchNotifications, fetchUnreadCount, checkActiveSession]);
 
   const handleBellClick = () => {
     setIsModalOpen(true);
@@ -192,6 +396,7 @@ const useNavbar = () => {
   };
 
   return {
+    // Notification states and functions
     notifications,
     setNotifications,
     handleBellClick,
@@ -204,11 +409,20 @@ const useNavbar = () => {
     formatDate,
     error,
     markAsRead,
-    loading, 
+    loading,
     setLoading,
     modalRef,
-    pagination
+    pagination,
 
+    // Clock states and functions
+    isClocked: clockState.isClocked,
+    currentSession: clockState.currentSession,
+    clockLoading: clockState.clockLoading,
+    toggleClock,
+    clockIn,
+    clockOut,
+    getCurrentSessionTime,
+    canUseClock: cookieData?.role === "User",
   };
 };
 

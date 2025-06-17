@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "../ui/input";
-import { Bell, Clock, Search, CheckCheck } from "lucide-react";
+import { Bell, Clock, Search, CheckCheck, Timer, LogOut } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import useNavbar from "./Hooks/useNavbar";
@@ -10,8 +10,8 @@ import useLogout from "../LoginSignupForm/Hooks/useLogout";
 
 const Navbar = () => {
   const { cookieData } = useAppContext();
-
   const {
+    // Notification states
     notifications,
     handleBellClick,
     handleNotificationClick,
@@ -25,9 +25,28 @@ const Navbar = () => {
     loading,
     modalRef,
     pagination,
+
+    // Clock states and functions
+    isClocked,
+    currentSession,
+    clockLoading,
+    toggleClock,
+    getCurrentSessionTime,
+    canUseClock,
   } = useNavbar();
 
   const { LogOut } = useLogout();
+
+  const getClockButtonText = () => {
+    if (clockLoading) return "Loading...";
+    if (isClocked) return "Clock Out";
+    return "Clock In";
+  };
+
+  const getClockButtonIcon = () => {
+    if (isClocked) return <Timer />;
+    return <Clock />;
+  };
 
   return (
     <>
@@ -44,12 +63,36 @@ const Navbar = () => {
           />
         </div>
 
-        <div className="flex items-center gap-14">
-          <Button className="bg-lightBtn hover:bg-darkBlueBtn hover:scale-95 hover:cursor-pointer">
-            <Clock />
-            Clock In
-          </Button>
+        <div className="flex items-center gap-8">
+          {/* Clock In/Out Section */}
+          {canUseClock && (
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={toggleClock}
+                disabled={clockLoading}
+                className={`${
+                  isClocked
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-lightBtn hover:bg-darkBlueBtn"
+                } hover:scale-95 hover:cursor-pointer transition-all duration-200 min-w-[120px]`}
+              >
+                {getClockButtonIcon()}
+                {getClockButtonText()}
+                {isClocked && (
+                  <div className="flex flex-col items-center text-sm">
+                    <span className="text-xs font-mono font-bold">
+                      {getCurrentSessionTime()}
+                    </span>
+                  </div>
+                )}
+              </Button>
+
+              {/* Current Session Time Display */}
+            </div>
+          )}
+
           <div className="flex items-center gap-4">
+            {/* Notification Bell */}
             <button
               onClick={handleBellClick}
               className="relative hover:bg-gray-100 p-2 rounded-full transition-colors"
