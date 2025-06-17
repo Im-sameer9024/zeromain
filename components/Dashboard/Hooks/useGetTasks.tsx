@@ -44,14 +44,14 @@ const useGetTasks = () => {
         }
       );
 
-      console.log('tasks response => ', response)
+
 
       if (!response.data?.data || !Array.isArray(response.data.data)) {
         throw new Error("Invalid tasks data structure");
       }
 
       setAllTasks(response.data.data);
-      toast.success("Tasks loaded successfully", { id: loadingId });
+      toast.success("Tasks loaded successfully", { id: loadingId,duration:2000 });
     } catch (err) {
       if (!axios.isCancel(err)) {
         const errorMessage = axios.isAxiosError(err)

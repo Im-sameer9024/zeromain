@@ -47,9 +47,9 @@ interface Attachment {
 
 interface TaskTag {
   id: string;
-  taskId: string;
-  tagId: string;
-  tag: TagTypePropsFor;
+  name:string;
+  color:string;
+  createBy?:string
 }
 
 interface Subtask {
@@ -81,5 +81,5 @@ export interface TaskProps {
   createdByUser: User | null;
   attachments: Attachment[];
   subtasks: Subtask[];
-  taskTags: TaskTag[];
+  tags: TaskTag[];
 }

@@ -7,10 +7,15 @@ import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import Popup from "../Modal/Popup";
 import AddTaskForm from "./AllTaskComponents/AddTaskForm";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { useState } from "react";
 
 const DashboardBar = () => {
 
     const{open,setOpen} = useAppContext()
+
+    const [selectedValue, setSelectedValue] = useState("Created Task");
+
 
   return (
     <>
@@ -19,7 +24,20 @@ const DashboardBar = () => {
         <div className=" flex items-center gap-8">
           {/*--------------- dropdown-----------------  */}
           <div>
-            <h2 className=" font-bold text-xl">Created Task</h2>
+            <Select value={selectedValue} onValueChange={setSelectedValue}>
+              <SelectTrigger className=" !text-2xl font-bold hover:cursor-pointer border-none outline-none shadow-none">
+                <SelectValue
+                  className="text-black  "
+                />
+              </SelectTrigger>
+              <SelectContent className=" hover:cursor-pointer ">
+                <SelectGroup>
+                  
+                  <SelectItem value="Created Task">Created Task</SelectItem>
+                  <SelectItem value="Assigned Task">Assigned Task</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* -------------- Add task btn ------------------  */}
