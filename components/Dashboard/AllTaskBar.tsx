@@ -1,23 +1,14 @@
 "use client";
 
-import { Funnel, Plus, SortDescIcon, Table, User } from "lucide-react";
+import { Funnel, SortDescIcon, Table, User } from "lucide-react";
 import { FaEllipsisH } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import Popup from "../Modal/Popup";
 import AddTaskForm from "./AllTaskComponents/AddTaskForm";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 
 const DashboardBar = () => {
-  const { open, setOpen, selectedTasksType, setSelectedTasksType } =
-    useAppContext();
+  const { open } = useAppContext();
 
   return (
     <>
@@ -28,8 +19,6 @@ const DashboardBar = () => {
           <div>
             <span className="text-xl  font-bold">All Tasks</span>
           </div>
-
-         
         </div>
 
         {/*------------------- right side section ------------------  */}

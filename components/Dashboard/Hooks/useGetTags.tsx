@@ -3,7 +3,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
-import { useEffect } from "react";
 
 const useGetTags = () => {
   const { cookieData } = useAppContext();

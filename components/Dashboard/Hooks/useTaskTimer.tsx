@@ -1,4 +1,3 @@
-// hooks/useTaskTimer.ts
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -64,8 +63,12 @@ const useTaskTimer = (taskId: string, initialStatus: string, initialTime: number
       }
 
       return response.data;
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to update task status");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Failed to update task status");
+      } else {
+        toast.error("Failed to update task status");
+      }
       throw error;
     }
   }, [taskId, cookieData]);

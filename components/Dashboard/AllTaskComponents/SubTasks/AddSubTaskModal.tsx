@@ -88,26 +88,29 @@ const AddSubTaskModal = ({
   });
 
   const fetchUsers = useCallback(
-    debounce(async (term: string) => {
-      try {
-        setLoadingUsers(true);
-        const response = await fetch(
-          `https://task-management-backend-kohl-omega.vercel.app/api/auth/company-users/${cookieData.companyAdminId}?search=${term}`
-        );
+    debounce(
+      async (term: string) => {
+        try {
+          setLoadingUsers(true);
+          const response = await fetch(
+            `https://task-management-backend-kohl-omega.vercel.app/api/auth/company-users/${cookieData?.id}?search=${term}`
+          );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
+          if (!response.ok) {
+            throw new Error("Failed to fetch users");
+          }
+
+          const data = await response.json();
+          setUsers(data.data.users || []);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+          toast.error("Failed to load users");
+        } finally {
+          setLoadingUsers(false);
         }
-
-        const data = await response.json();
-        setUsers(data.data.users || []);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        toast.error("Failed to load users");
-      } finally {
-        setLoadingUsers(false);
-      }
-    }, 300),
+      },
+      300
+    ),
     [cookieData?.id]
   );
 

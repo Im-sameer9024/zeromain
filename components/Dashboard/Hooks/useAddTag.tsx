@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// hooks/useAddTag.ts
+
 "use client";
 
 import axios from "axios";
@@ -52,13 +51,15 @@ const useAddTag = () => {
   const mutation = useMutation({
     mutationFn: addTag,
     onSuccess: () => {
-      queryClient.invalidateQueries(["tags", cookieData?.id]);
+      queryClient.invalidateQueries({ queryKey: ["tags", cookieData?.id] });
       toast.success("Tag created successfully");
       setOpenAddModal(false);
       reset();
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to create tag");
+    onError: (error: import("axios").AxiosError) => {
+      toast.error(
+        (error.response?.data as { message?: string })?.message || "Failed to create tag"
+      );
     },
   });
 
@@ -73,7 +74,7 @@ const useAddTag = () => {
     handleSubmit,
     onSubmit: mutation.mutate,
     errors,
-    isSubmitting: isSubmitting || mutation.isLoading,
+    isSubmitting: isSubmitting || mutation.status === "pending",
     selectedColor,
     setSelectedColor,
     handleColorSelect,

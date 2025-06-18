@@ -2,12 +2,12 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppContext } from "@/context/AppContext";
-import { TaskProps } from "@/types/Task.types";
 import axios from "axios";
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import useGetTasks from "./useGetTasks";
+import { TaskDataProps } from "@/types/Task.types";
 
 const useAddTask = () => {
   const { cookieData, open, setOpen, setAllTasks } = useAppContext();
@@ -52,8 +52,7 @@ const useAddTask = () => {
       usId = cookieData.id;
     }
 
-    // console.log("adminid",adId)
-    // console.log("useid",usId)
+ 
 
 
 
@@ -79,10 +78,10 @@ const useAddTask = () => {
         formData
       );
 
-      setAllTasks((prevTasks: any[]) => {
+      setAllTasks((prevTasks: TaskDataProps[]) => {
         if (!response.data?.data) return prevTasks;
-        const newTasks: any[] = [...prevTasks]; // Create a copy
-        newTasks.unshift(response.data.data as any); // Add to beginning
+        const newTasks = [...prevTasks]; // Create a copy
+        newTasks.unshift(response.data.data as TaskDataProps); // Add to beginning
         return newTasks;
       });
 

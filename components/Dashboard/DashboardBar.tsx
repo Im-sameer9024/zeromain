@@ -1,20 +1,23 @@
 "use client";
 
-
 import { Funnel, Plus, SortDescIcon, Table, User } from "lucide-react";
 import { FaEllipsisH } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import Popup from "../Modal/Popup";
 import AddTaskForm from "./AllTaskComponents/AddTaskForm";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const DashboardBar = () => {
-
-    const{open,setOpen,selectedTasksType, setSelectedTasksType} = useAppContext()
-
-
-
+  const { open, setOpen, selectedTasksType, setSelectedTasksType } =
+    useAppContext();
 
   return (
     <>
@@ -23,15 +26,17 @@ const DashboardBar = () => {
         <div className=" flex items-center gap-8">
           {/*--------------- dropdown-----------------  */}
           <div>
-            <Select value={selectedTasksType} onValueChange={(value: "Created" | "Assigned") => setSelectedTasksType(value)}>
+            <Select
+              value={selectedTasksType}
+              onValueChange={(value: "Created" | "Assigned") =>
+                setSelectedTasksType(value)
+              }
+            >
               <SelectTrigger className=" !text-2xl font-bold hover:cursor-pointer border-none outline-none shadow-none">
-                <SelectValue
-                  className="text-black  "
-                />
+                <SelectValue className="text-black  " />
               </SelectTrigger>
               <SelectContent className=" hover:cursor-pointer ">
                 <SelectGroup>
-                  
                   <SelectItem value="Created">Created Task</SelectItem>
                   <SelectItem value="Assigned">Assigned Task</SelectItem>
                 </SelectGroup>
@@ -53,7 +58,7 @@ const DashboardBar = () => {
         <div className=" flex items-center justify-between gap-4">
           {/*------------------ tickets ------------ */}
 
-          <Button  className="  !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
+          <Button className="  !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
             <User />
             <span>My tickets</span>
           </Button>

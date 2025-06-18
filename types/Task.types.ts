@@ -1,32 +1,4 @@
-
-
-export interface TagDataProps{
-    id:string,
-    name:string,
-    color:string,
-
-}
-
-
-
- interface TagTypePropsFor {
-  id: string;
-  name: string;
-  color: string;
-  createdBy:string | null;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
-export interface TaskFormValuesProps {
-  title: string;
-  description: string;
-  dueDate?: Date;
-  tags: string[];
-  attachments: File[];
-}
-
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
@@ -36,51 +8,62 @@ interface User {
   updatedAt: string;
 }
 
-interface Attachment {
+export interface Admin {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  companyName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Attachment {
   id: string;
   fileUrl: string;
   taskId: string;
   uploadedAt: string;
 }
 
-
-
-interface TaskTag {
+export interface Subtask {
   id: string;
-  name:string;
-  color:string;
-  createBy?:string
+  taskId: string;
+  title: string;
+  userId: string | null;
+  adminId: string | null;
+  expectedTime: number;
+  requiresFeedback: boolean;
+  completedAt: string | null;
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+  feedback: string | null;
+  createdAt: string;
+  updatedAt: string;
+  totalTimeInSeconds: 0;
+  assignedToUser:User |null
+  assignedToAdmin:Admin | null;
 }
 
-interface Subtask {
-  // Define based on your subtask structure
-  // Currently empty in the example
-  id?: string;
-  title?: string;
-  completed?: boolean;
+export interface Tag {
+  id: string;
+  name: string;
+  color: string;
 }
 
-enum TaskStatus {
-  PENDING = "PENDING",
-  COMPLETED = "COMPLETED",
-  IN_PROGRESS = "IN_PROGRESS"
-}
-
-export interface TaskProps {
+export interface TaskDataProps {
   id: string;
   title: string;
   description: string;
-  dueDate: string; // ISO format
-  status: TaskStatus;
+  dueDate: string; // or use Date if you'll parse it
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED"; // enum for possible statuses
   adminId: string | null;
   userId: string | null;
   createdAt: string;
   updatedAt: string;
   completedAt: string | null;
-  totalTimeInSeconds:number;
-  createdByAdmin: User | null;
+  totalTimeInSeconds: number;
+  createdByAdmin: Admin | null;
   createdByUser: User | null;
   attachments: Attachment[];
   subtasks: Subtask[];
-  tags: TaskTag[];
+  tags: Tag[];
 }

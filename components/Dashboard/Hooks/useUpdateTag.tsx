@@ -1,4 +1,3 @@
-// hooks/useUpdateTag.ts
 "use client";
 
 import axios from "axios";
@@ -41,12 +40,14 @@ const useUpdateTag = () => {
   const mutation = useMutation({
     mutationFn: updateTag,
     onSuccess: () => {
-      queryClient.invalidateQueries(["tags", cookieData?.id]);
+      queryClient.invalidateQueries({ queryKey: ["tags", cookieData?.id] });
       toast.success("Tag updated successfully");
       setOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to update tag");
+    onError: (error: import("axios").AxiosError) => {
+      toast.error(
+        (error.response?.data as { message?: string })?.message || "Failed to update tag"
+      );
     },
   });
 
@@ -61,7 +62,7 @@ const useUpdateTag = () => {
     handleSubmit,
     onSubmit: mutation.mutate,
     errors,
-    isSubmitting: isSubmitting || mutation.isLoading,
+    isSubmitting: isSubmitting || mutation.status === "pending",
     selectedColor,
     setSelectedColor,
     handleColorSelect,

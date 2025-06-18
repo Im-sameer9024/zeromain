@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useEffect, useTransition } from "react";
@@ -8,7 +7,6 @@ import assginBy from "../../public/images/assignlogo.png";
 import { X, Check, Circle } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { TableCell, TableRow } from "../ui/table";
-import { TaskProps } from "@/types/Task.types";
 import TableComponent from "../TableComponent";
 import { useAppContext } from "@/context/AppContext";
 import useGetTasks from "./Hooks/useGetTasks";
@@ -17,6 +15,7 @@ import useUpdateStatus from "./Hooks/useUpdateStatus";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import useAssignedTasks from "./Hooks/useAssignedTasks";
 import useColumns from "./useColumns";
+import { TaskDataProps } from "@/types/Task.types";
 
 
 const StatusIndicator = ({ status }: { status: string }) => {
@@ -40,7 +39,6 @@ const DashboardUsers = () => {
  
   const {
     assignedTasks,
-    isLoading: isAssignedLoading,
     refetchAssignedTasks,
   } = useAssignedTasks();
   const [isPending, startTransition] = useTransition();
@@ -110,7 +108,7 @@ const DashboardUsers = () => {
 
   
 
-  const CreateTaskRenderRow = (item: TaskProps) => {
+  const CreateTaskRenderRow = (item: TaskDataProps) => {
     if (!item) return null;
 
     return (
@@ -236,7 +234,7 @@ const DashboardUsers = () => {
     );
   };
 
-  const AssignedTaskRow = (item: any) => {
+  const AssignedTaskRow = (item: TaskDataProps) => {
     if (!item) return null;
 
     return (

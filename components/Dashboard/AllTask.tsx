@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
 
 import React, { useEffect, useTransition } from "react";
 import Image from "next/image";
@@ -8,7 +8,7 @@ import assginBy from "../../public/images/assignlogo.png";
 import { X, Check, Circle } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { TableCell, TableRow } from "../ui/table";
-import { TaskProps } from "@/types/Task.types";
+import { Tag, TaskDataProps, } from "@/types/Task.types";
 import TableComponent from "../TableComponent";
 import { useAppContext } from "@/context/AppContext";
 import useGetAllTasks from "./Hooks/useGetAllTasks";
@@ -124,7 +124,6 @@ const DashboardUsers = () => {
   ];
   const {
     assignedTasks,
-    isLoading: isAssignedLoading,
     refetchAssignedTasks,
   } = useAssignedTasks();
   const [isPending, startTransition] = useTransition();
@@ -192,7 +191,7 @@ const DashboardUsers = () => {
     }
   };
 
-  const CreateTaskRenderRow = (item: TaskProps) => {
+  const CreateTaskRenderRow = (item: TaskDataProps) => {
     if (!item) return null;
 
     return (
@@ -274,7 +273,7 @@ const DashboardUsers = () => {
         </TableCell>
         <TableCell>
           <div className=" items-center justify-center  flex-wrap flex gap-2">
-            {item.tags?.map((tag, i) => (
+            {item.tags?.map((tag:Tag, i:number) => (
               <span
                 className="odd:bg-[#f7e9ee] rounded odd:text-[#E8618CFF] p-1 w-fit px-2 even:text-[#636AE8FF] even:bg-[#F2F2FDFF] text-xs"
                 key={tag?.id || i}
@@ -299,7 +298,7 @@ const DashboardUsers = () => {
     );
   };
 
-  const AssignedTaskRow = (item: any) => {
+  const AssignedTaskRow = (item: TaskDataProps) => {
     if (!item) return null;
 
     return (

@@ -1,4 +1,3 @@
-// hooks/useDeleteTag.ts
 "use client";
 
 import axios from "axios";
@@ -20,11 +19,13 @@ const useDeleteTag = () => {
   const mutation = useMutation({
     mutationFn: deleteTag,
     onSuccess: () => {
-      queryClient.invalidateQueries(["tags", cookieData?.id]);
+      queryClient.invalidateQueries({ queryKey: ["tags", cookieData?.id] });
       toast.success("Tag deleted successfully");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to delete tag");
+    onError: (error: import("axios").AxiosError) => {
+      toast.error(
+        (error.response?.data as { message?: string })?.message || "Failed to delete tag"
+      );
     },
   });
 

@@ -7,7 +7,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { MessageSquare, Loader2 } from "lucide-react"; // Added Loader2 for the spinner
 
 interface FeedbackDropdownProps {
@@ -153,7 +152,6 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
             )}
             <DropdownMenuContent className="w-32">
                 {feedbackOptions.map((option) => {
-                    const optionColors = getFeedbackColors(option);
                     return (
                         <DropdownMenuItem
                             key={option}
