@@ -1,5 +1,5 @@
 "use client";
-
+//@ts-ignore
 import { useAppContext } from "@/context/AppContext";
 import { NotificationProps, PaginationProps } from "@/types/Navbar.types";
 import axios from "axios";

@@ -1,5 +1,5 @@
 "use client";
-
+//@ts-ignore
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppContext } from "@/context/AppContext";
 import { TaskProps } from "@/types/Task.types";

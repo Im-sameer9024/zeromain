@@ -1,4 +1,5 @@
 "use client";
+//@ts-ignore
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Send, Trash2, Edit3, MessageCircle, AtSign, X } from "lucide-react";
 

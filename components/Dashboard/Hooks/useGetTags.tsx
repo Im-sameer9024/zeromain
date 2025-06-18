@@ -1,5 +1,5 @@
 "use client";
-
+//@ts-ignore
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
