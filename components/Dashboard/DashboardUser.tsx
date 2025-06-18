@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
+//@ts-ignore
 import React, { useEffect, useTransition, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

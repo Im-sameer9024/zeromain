@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+//@ts-ignore
 import React, { useEffect, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -122,11 +123,7 @@ const DashboardUsers = () => {
         ]
       : []),
   ];
-  const {
-    assignedTasks,
-    isLoading: isAssignedLoading,
-    refetchAssignedTasks,
-  } = useAssignedTasks();
+  const { assignedTasks, refetchAssignedTasks } = useAssignedTasks();
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { allTasks, loading, error, refreshTasks } = useGetAllTasks();

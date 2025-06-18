@@ -1,6 +1,6 @@
 // hooks/useDeleteTag.ts
 "use client";
-
+//@ts-ignore
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";

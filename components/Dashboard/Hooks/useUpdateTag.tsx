@@ -1,6 +1,6 @@
 // hooks/useUpdateTag.ts
 "use client";
-
+//@ts-ignore
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
@@ -41,6 +41,7 @@ const useUpdateTag = () => {
   const mutation = useMutation({
     mutationFn: updateTag,
     onSuccess: () => {
+      
       queryClient.invalidateQueries(["tags", cookieData?.id]);
       toast.success("Tag updated successfully");
       setOpen(false);
