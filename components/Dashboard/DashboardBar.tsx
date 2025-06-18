@@ -8,13 +8,12 @@ import { useAppContext } from "@/context/AppContext";
 import Popup from "../Modal/Popup";
 import AddTaskForm from "./AllTaskComponents/AddTaskForm";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { useState } from "react";
 
 const DashboardBar = () => {
 
-    const{open,setOpen} = useAppContext()
+    const{open,setOpen,selectedTasksType, setSelectedTasksType} = useAppContext()
 
-    const [selectedValue, setSelectedValue] = useState("Created Task");
+
 
 
   return (
@@ -24,7 +23,7 @@ const DashboardBar = () => {
         <div className=" flex items-center gap-8">
           {/*--------------- dropdown-----------------  */}
           <div>
-            <Select value={selectedValue} onValueChange={setSelectedValue}>
+            <Select value={selectedTasksType} onValueChange={(value: "Created" | "Assigned") => setSelectedTasksType(value)}>
               <SelectTrigger className=" !text-2xl font-bold hover:cursor-pointer border-none outline-none shadow-none">
                 <SelectValue
                   className="text-black  "
@@ -33,8 +32,8 @@ const DashboardBar = () => {
               <SelectContent className=" hover:cursor-pointer ">
                 <SelectGroup>
                   
-                  <SelectItem value="Created Task">Created Task</SelectItem>
-                  <SelectItem value="Assigned Task">Assigned Task</SelectItem>
+                  <SelectItem value="Created">Created Task</SelectItem>
+                  <SelectItem value="Assigned">Assigned Task</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -54,7 +53,7 @@ const DashboardBar = () => {
         <div className=" flex items-center justify-between gap-4">
           {/*------------------ tickets ------------ */}
 
-          <Button className="  !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
+          <Button  className="  !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
             <User />
             <span>My tickets</span>
           </Button>

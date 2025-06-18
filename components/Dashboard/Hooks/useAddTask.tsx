@@ -79,10 +79,12 @@ const useAddTask = () => {
         formData
       );
 
-      setAllTasks((prevTasks: TaskProps[]) => [
-        response.data?.data as TaskProps,
-        ...prevTasks,
-      ]);
+      setAllTasks((prevTasks: any[]) => {
+        if (!response.data?.data) return prevTasks;
+        const newTasks: any[] = [...prevTasks]; // Create a copy
+        newTasks.unshift(response.data.data as any); // Add to beginning
+        return newTasks;
+      });
 
       console.log("task is created successfully ", response);
 

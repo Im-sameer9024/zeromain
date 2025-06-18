@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppContext } from "@/context/AppContext";
+import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -18,6 +19,8 @@ const useAddUser = () => {
   const { cookieData,open,setOpen } = useAppContext();
 
   const router = useRouter();
+
+  const queryClient = useQueryClient()
 
   const {
     register,
@@ -55,8 +58,11 @@ const useAddUser = () => {
 
       toast.success("User created successfully!", { id: toastId });
       setOpen(false);
-      // Optional: redirect or refresh data
-      router.refresh();
+       // Invalidate and refetch the users query
+      await queryClient.invalidateQueries({
+        queryKey: ["companyUsers", cookieData?.id],
+      });
+      
     } catch (error: any) {
       console.error("Registration error:", error);
       const errorMessage =

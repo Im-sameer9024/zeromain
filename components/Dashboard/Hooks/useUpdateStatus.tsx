@@ -20,7 +20,7 @@ const useUpdateStatus = () => {
 
     try {
       const response = await axios.put(
-        `https://task-management-backend-kohl-omega.vercel.app/update-task/${taskId}`,
+        `https://task-management-backend-kohl-omega.vercel.app/api/tasks/update-task/${taskId}`,
         { status }
       );
 

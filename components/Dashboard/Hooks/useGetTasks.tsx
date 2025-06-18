@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useAppContext } from "@/context/AppContext";
 import axios, { CancelTokenSource } from "axios";
 import { useEffect, useState, useCallback } from "react";
@@ -64,7 +65,7 @@ const useGetTasks = () => {
       setLoading(false);
       toast.dismiss(loadingId);
     }
-  }, [isCookieLoading, cookieData]);
+  }, [isCookieLoading,cookieData]);
 
   
   useEffect(() => {

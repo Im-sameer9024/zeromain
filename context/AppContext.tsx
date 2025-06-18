@@ -26,6 +26,9 @@ interface AppContextType {
   setAllTags: (tags: TagDataProps[]) => void;
   allTasks: TaskProps[];
   setAllTasks: (tasks: TaskProps[]) => void;
+  selectedTasksType: string;
+  setSelectedTasksType: (value: string) => void;
+ 
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -38,6 +41,9 @@ export const AppContext = createContext<AppContextType>({
   setAllTags: () => {},
   allTasks: [],
   setAllTasks: () => {},
+  selectedTasksType: '',
+  setSelectedTasksType: () => {},
+  
 });
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
@@ -46,6 +52,8 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState(false);
   const [allTags, setAllTags] = useState<TagDataProps[]>([]);
   const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
+    const [selectedTasksType, setSelectedTasksType] = useState("Created");
+
 
   useEffect(() => {
     const loadCookieData = () => {
@@ -92,6 +100,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         setAllTags,
         allTasks,
         setAllTasks,
+        selectedTasksType, setSelectedTasksType
       }}
     >
       {children}
