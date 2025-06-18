@@ -33,6 +33,7 @@ interface Comment {
     id: string;
     title: string;
   };
+  isOptimistic?: boolean; // For instant UI updates
 }
 
 interface CommentSystemProps {
@@ -82,7 +83,6 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
   const calculateMentionPosition = useCallback(
     (input: HTMLInputElement, atIndex: number) => {
       const inputRect = input.getBoundingClientRect();
-      // const containerRect = containerRef.current?.getBoundingClientRect();
 
       // Create a temporary span to measure text width up to @ symbol
       const tempSpan = document.createElement("span");
@@ -138,6 +138,9 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
     commentsEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Generate temporary ID for optimistic updates
+  const generateTempId = () => `temp_${Date.now()}_${Math.random()}`;
+
   // Fetch comments
   const fetchComments = useCallback(async () => {
     try {
@@ -151,7 +154,13 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
         (a: Comment, b: Comment) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-      setComments(sortedComments);
+
+      // Replace optimistic comments with real ones, keep optimistic ones that haven't been processed
+      setComments((prev) => {
+        const optimisticComments = prev.filter((c) => c.isOptimistic);
+        return [...sortedComments, ...optimisticComments];
+      });
+
       onCommentChange?.(sortedComments.length);
       setError(null);
 
@@ -204,8 +213,44 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
     [fetchMentionableUsers]
   );
 
-  // Create comment
+  // Create comment with optimistic update
   const createComment = async (content: string) => {
+    if (!content.trim()) return;
+
+    const tempId = generateTempId();
+    const optimisticComment: Comment = {
+      id: tempId,
+      content,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      taskId,
+      isOptimistic: true,
+      task: { id: taskId, title: "" },
+      ...(currentUser.role === "admin"
+        ? {
+            createdByAdmin: {
+              id: currentUser.id,
+              name: currentUser.name,
+              email: currentUser.email,
+            },
+          }
+        : {
+            createdByUser: {
+              id: currentUser.id,
+              name: currentUser.name,
+              email: currentUser.email,
+            },
+          }),
+    };
+
+    // Add optimistic comment immediately
+    setComments((prev) => [...prev, optimisticComment]);
+    setNewComment("");
+    onCommentChange?.(comments.length + 1);
+
+    // Scroll to bottom immediately
+    setTimeout(scrollToBottom, 50);
+
     try {
       setSubmitting(true);
       const roleParam = currentUser.role === "admin" ? "adminId" : "userId";
@@ -222,14 +267,37 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to create comment");
+      const responseData = await response.json();
 
+      if (!response.ok) {
+        // Handle different error types
+        if (response.status === 403) {
+          // Permission denied - show specific error message
+          setError(
+            responseData.message ||
+              "You don't have permission to comment on this task."
+          );
+        } else {
+          setError(responseData.message || "Failed to post comment");
+        }
+        throw new Error(responseData.message || "Failed to create comment");
+      }
+
+      // Remove optimistic comment and refresh to get real data
+      setComments((prev) => prev.filter((c) => c.id !== tempId));
       await fetchComments();
-      setNewComment("");
       setError(null);
     } catch (err) {
       console.error("Error creating comment:", err);
-      setError("Failed to post comment");
+
+      // Remove optimistic comment on error
+      setComments((prev) => prev.filter((c) => c.id !== tempId));
+      onCommentChange?.(comments.length);
+
+      // Error message should already be set above for 403 errors
+      if (!error) {
+        setError("Failed to post comment");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -452,6 +520,15 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
     }
   };
 
+  // Check if comment is from current user
+  const isCurrentUserComment = (comment: Comment) => {
+    if (currentUser.role === "admin") {
+      return comment.createdByAdmin?.id === currentUser.id;
+    } else {
+      return comment.createdByUser?.id === currentUser.id;
+    }
+  };
+
   useEffect(() => {
     fetchComments();
   }, [fetchComments]);
@@ -509,30 +586,69 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
   return (
     <div
       ref={containerRef}
-      className="bg-white border rounded-lg p-4 max-w-4xl mx-auto"
+      className="bg-white  rounded-lg flex flex-col max-w-4xl mx-auto h-screen max-h-[600px]"
     >
-      <div className="flex items-center gap-2 mb-4">
-        <MessageCircle className="w-5 h-5 text-gray-600" />
-        <h3 className="text-lg font-semibold text-gray-800">
-          Comments ({comments.length})
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 ">
+        {/* <MessageCircle className="w-5 h-5 text-gray-600" /> */}
+        <h3 className="text-xl font-bold text-gray-800">
+          Comments ({comments.filter((c) => !c.isOptimistic).length})
         </h3>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+        <div
+          className={`border px-4 py-3 mx-4 mt-4 rounded flex items-start gap-2 ${
+            error.includes("permission") || error.includes("priority")
+              ? "bg-amber-50 border-amber-200 text-amber-800"
+              : "bg-red-50 border-red-200 text-red-700"
+          }`}
+        >
+          {error.includes("permission") || error.includes("priority") ? (
+            <svg
+              className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+          ) : (
+            <svg
+              className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+          <div className="flex-1">
+            <p className="font-medium text-sm">
+              {error.includes("permission") || error.includes("priority")
+                ? "Access Restricted"
+                : "Error"}
+            </p>
+            <p className="text-sm mt-1">{error}</p>
+          </div>
           <button
             onClick={() => setError(null)}
-            className="float-right text-red-500 hover:text-red-700"
+            className="text-current hover:opacity-70"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      {/* Comments List */}
-      <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
-        {loading ? (
+      {/* Comments List - Full Height with Scroll */}
+      <div className="flex-1 overflow-y-auto py-4 space-y-4">
+        {loading && comments.length === 0 ? (
           <div className="flex justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
@@ -544,95 +660,161 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
         ) : (
           comments.map((comment) => {
             const author = comment.createdByUser || comment.createdByAdmin;
-            const isCurrentUserComment = canDeleteComment(comment);
+            const isMyComment = isCurrentUserComment(comment);
+            const canDelete = canDeleteComment(comment);
 
             return (
-              <div key={comment.id} className="flex gap-3 group">
-                <div className="h-8 w-8 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-blue-600">
-                    {author?.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-gray-900">
-                      {author?.name}
-                      {comment.createdByAdmin && (
-                        <span className="ml-1 text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded">
-                          Admin
+              <div
+                key={comment.id}
+                className={`w-full ${comment.isOptimistic ? "opacity-70" : ""}`}
+              >
+                {/* My Comments - Right to Left Layout */}
+                {isMyComment ? (
+                  /* My Comments - Right to Left Layout */
+                  <div className="w-full bg-white rounded-lg p-4 group relative">
+                    <div className="flex items-start gap-4 flex-row-reverse">
+                      {/* Avatar */}
+                      <div className="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-medium text-sm">
+                          {author?.name.charAt(0).toUpperCase()}
                         </span>
-                      )}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {formatTime(comment.createdAt)}
-                    </span>
-                    {comment.updatedAt !== comment.createdAt && (
-                      <span className="text-xs text-gray-400">(edited)</span>
-                    )}
-                  </div>
+                      </div>
 
-                  {editingCommentId === comment.id ? (
-                    <div className="relative">
-                      <input
-                        ref={editInputRef}
-                        value={editContent}
-                        onChange={(e) =>
-                          handleInputChange(e.target.value, true)
-                        }
-                        onKeyDown={(e) => handleKeyDown(e, true)}
-                        onFocus={() => handleInputFocus(true)}
-                        onSelect={() => handleInputFocus(true)}
-                        className="w-full text-sm mb-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Edit your comment..."
-                        disabled={submitting}
-                      />
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => updateComment(comment.id, editContent)}
-                          disabled={submitting || !editContent.trim()}
-                          className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50"
-                        >
-                          {submitting ? "Saving..." : "Save"}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setEditingCommentId(null);
-                            setEditContent("");
-                            setShowMentions(false);
-                          }}
-                          className="px-3 py-1 border border-gray-300 text-gray-700 text-sm rounded hover:bg-gray-50"
-                        >
-                          Cancel
-                        </button>
+                      {/* Message Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2 flex-row-reverse justify-start">
+                          <span className="text-xs text-gray-500">You</span>
+                          {comment.createdByAdmin && (
+                            <span className="bg-purple-500 text-white px-2 py-0.5 rounded text-xs">
+                              Admin
+                            </span>
+                          )}
+                          <span className="font-medium text-gray-900">
+                            {author?.name}
+                          </span>
+                        </div>
+
+                        {editingCommentId === comment.id ? (
+                          <div className="space-y-3">
+                            <input
+                              ref={editInputRef}
+                              value={editContent}
+                              onChange={(e) =>
+                                handleInputChange(e.target.value, true)
+                              }
+                              onKeyDown={(e) => handleKeyDown(e, true)}
+                              onFocus={() => handleInputFocus(true)}
+                              onSelect={() => handleInputFocus(true)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="Edit your comment..."
+                              disabled={submitting}
+                            />
+                            <div className="flex gap-2 flex-row-reverse">
+                              <button
+                                onClick={() => {
+                                  setEditingCommentId(null);
+                                  setEditContent("");
+                                  setShowMentions(false);
+                                }}
+                                className="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded hover:bg-gray-50"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={() =>
+                                  updateComment(comment.id, editContent)
+                                }
+                                disabled={submitting || !editContent.trim()}
+                                className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50"
+                              >
+                                {submitting ? "Saving..." : "Save"}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="whitespace-pre-wrap break-words text-gray-800 text-right">
+                            {renderCommentContent(comment.content)}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Time */}
+                      <div className="flex flex-col items-start text-xs text-gray-500 flex-shrink-0">
+                        <span>{formatTime(comment.createdAt)}</span>
+                        {comment.updatedAt !== comment.createdAt && (
+                          <span className="mt-1">(edited)</span>
+                        )}
+                        {comment.isOptimistic && (
+                          <span className="mt-1">⏳</span>
+                        )}
                       </div>
                     </div>
-                  ) : (
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                      {renderCommentContent(comment.content)}
-                    </p>
-                  )}
-                </div>
 
-                {isCurrentUserComment && editingCommentId !== comment.id && (
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => {
-                        setEditingCommentId(comment.id);
-                        setEditContent(comment.content);
-                      }}
-                      className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-blue-600"
-                      title="Edit comment"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => deleteComment(comment.id)}
-                      className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-red-600"
-                      title="Delete comment"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {/* Action buttons */}
+                    {canDelete &&
+                      editingCommentId !== comment.id &&
+                      !comment.isOptimistic && (
+                        <div className="absolute top-2 left-2 bg-white border rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity flex">
+                          <button
+                            onClick={() => {
+                              setEditingCommentId(comment.id);
+                              setEditContent(comment.content);
+                            }}
+                            className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500 hover:text-blue-600"
+                            title="Edit comment"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => deleteComment(comment.id)}
+                            className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500 hover:text-red-600"
+                            title="Delete comment"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                  </div>
+                ) : (
+                  /* Others' Comments - Left to Right Layout */
+                  <div className="w-full bg-gray-100  p-4">
+                    <div className="flex items-start gap-4">
+                      {/* Avatar */}
+                      <div className="h-10 w-10 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-medium text-sm">
+                          {author?.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+
+                      {/* Message Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="font-medium text-gray-900">
+                            {author?.name}
+                          </span>
+                          {comment.createdByAdmin && (
+                            <span className="bg-purple-500 text-white px-2 py-0.5 rounded text-xs">
+                              Admin
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="whitespace-pre-wrap break-words text-gray-800">
+                          {renderCommentContent(comment.content)}
+                        </div>
+                      </div>
+
+                      {/* Time */}
+                      <div className="flex flex-col items-end text-xs text-gray-500 flex-shrink-0">
+                        <span>{formatTime(comment.createdAt)}</span>
+                        {comment.updatedAt !== comment.createdAt && (
+                          <span className="mt-1">(edited)</span>
+                        )}
+                        {comment.isOptimistic && (
+                          <span className="mt-1">⏳</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -642,15 +824,9 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
         <div ref={commentsEndRef} />
       </div>
 
-      {/* New Comment Form */}
-      <div className="relative">
-        <div className="flex gap-3">
-          <div className="h-8 w-8 flex-shrink-0 bg-green-100 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium text-green-600">
-              {currentUser.name.charAt(0).toUpperCase()}
-            </span>
-          </div>
-
+      {/* New Comment Form - Fixed at Bottom */}
+      <div className="py-3 border-t border-gray-100">
+        <div className="flex gap-2 items-end">
           <div className="flex-1 relative">
             <input
               ref={inputRef}
@@ -660,10 +836,10 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
               onFocus={() => handleInputFocus()}
               onSelect={() => handleInputFocus()}
               placeholder="Type your comment... Use @ to mention someone"
-              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-3 py-2 pr-10 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-500 bg-white"
               disabled={submitting}
             />
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
               <AtSign className="w-4 h-4" />
             </div>
           </div>
@@ -671,7 +847,7 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
           <button
             onClick={() => createComment(newComment)}
             disabled={submitting || !newComment.trim()}
-            className="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+            className="p-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {submitting ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

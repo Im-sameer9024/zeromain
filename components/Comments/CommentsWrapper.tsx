@@ -39,7 +39,7 @@ const CommentsWrapper: React.FC<CommentsWrapperProps> = ({ taskId }) => {
   };
 
   return (
-    <div className="mt-6">
+    <div className="">
       <CommentsBox
         taskId={taskId}
         currentUser={currentUser}

@@ -1,11 +1,19 @@
-import React from 'react'
+import AllTask from "@/components/Dashboard/AllTask";
+import AllTaskBar from "@/components/Dashboard/AllTaskBar";
+import React from "react";
 
-const TasksPage = () => {
+const AdminDashboardPage = () => {
   return (
-    <div>
-      
-    </div>
-  )
-}
+    <div className=" px-4 overflow-y-scroll h-[500px] relative">
+      {/*----------------------- dashboard bar ----------------------------- */}
 
-export default TasksPage
+      <AllTaskBar />
+
+      {/*-------------------- user's information table ----------------------------- */}
+
+      <AllTask />
+    </div>
+  );
+};
+
+export default AdminDashboardPage;
