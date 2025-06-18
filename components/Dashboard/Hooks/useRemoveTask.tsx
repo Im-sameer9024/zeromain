@@ -7,6 +7,7 @@ const useRemoveTask = () => {
     const toastId = toast.loading("Removing Task...");
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const response = await axios.delete(
         `https://task-management-backend-kohl-omega.vercel.app/api/tasks/delete-task/${id}`
       );
