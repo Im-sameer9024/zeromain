@@ -2,7 +2,6 @@
 import { useAppContext } from "@/context/AppContext";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -16,9 +15,8 @@ interface FormValues {
 
 const useAddUser = () => {
 
-  const { cookieData,open,setOpen } = useAppContext();
+  const { cookieData,openAddModal,setOpenAddModal } = useAppContext();
 
-  const router = useRouter();
 
   const queryClient = useQueryClient()
 
@@ -57,7 +55,7 @@ const useAddUser = () => {
       console.log("response is here", response);
 
       toast.success("User created successfully!", { id: toastId });
-      setOpen(false);
+      setOpenAddModal(false);
        // Invalidate and refetch the users query
       await queryClient.invalidateQueries({
         queryKey: ["companyUsers", cookieData?.id],
@@ -75,8 +73,9 @@ const useAddUser = () => {
     register,
     onSubmit,
     open,
-    setOpen,
+    openAddModal,
     handleSubmit,
+    setOpenAddModal,
     setValue,
     errors,
     isSubmitting,

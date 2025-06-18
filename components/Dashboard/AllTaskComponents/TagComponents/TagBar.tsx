@@ -10,7 +10,8 @@ import AddTagForm from "./AddTagForm";
 
 const TagBar = () => {
 
-    const{open,setOpen} = useAppContext()
+    const{openAddModal,setOpenAddModal} = useAppContext()
+
 
   return (
     <>
@@ -21,7 +22,7 @@ const TagBar = () => {
 
           {/* -------------- Add task btn ------------------  */}
           <Button
-            onClick={() => setOpen(true)}
+            onClick={() => setOpenAddModal(true)}
             className=" bg-lightBtn hover:bg-darkBlueBtn hover:scale-95 hover:cursor-pointer"
           >
             <Plus />
@@ -42,7 +43,9 @@ const TagBar = () => {
 
       {/*------------------Add task Pop up -------------------  */}
 
-      <Popup openModal={open} content={<AddTagForm />} />
+      <Popup openModal={openAddModal} content={<AddTagForm />} />
+
+    
     </>
   );
 };

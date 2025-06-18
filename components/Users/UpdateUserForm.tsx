@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// components/UpdateUserForm.tsx
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -13,27 +12,45 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAppContext } from "@/context/AppContext";
 import { X } from "lucide-react";
-import useAddUser from "./Hooks/useAddUser";
+import { useEffect } from "react";
+import useGetUsers from "../Dashboard/Hooks/useGetUsers";
+import useUpdateUser from "./Hooks/useUpdateUser";
 
+const UpdateUserForm = () => {
+  const { setOpen, userId } = useAppContext();
+  const { companyUsers } = useGetUsers();
 
-const AddUserForm = () => {
+  const userToEdit = companyUsers.find((user:any) => user.id === userId);
+
   const {
     register,
-    onSubmit,
-    setOpenAddModal,
     handleSubmit,
+    onSubmit,
     setValue,
     errors,
     isSubmitting,
-  } = useAddUser();
+    reset,
+  } = useUpdateUser();
+
+  // Initialize form with user data
+  useEffect(() => {
+    if (userToEdit) {
+      reset({
+        name: userToEdit.name,
+        email: userToEdit.email,
+        priority: userToEdit.priority.toString(),
+      });
+    }
+  }, [userToEdit, reset]);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-Inter font-bold text-xl">Add New User</h2>
+        <h2 className="font-Inter font-bold text-xl">Update User</h2>
         <Button
-          onClick={() => setOpenAddModal(false)}
+          onClick={() => setOpen(false)}
           variant="ghost"
           className="text-text hover:cursor-pointer hover:bg-transparent"
         >
@@ -41,11 +58,9 @@ const AddUserForm = () => {
         </Button>
       </div>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="mt-3 text-[#494A4BFF] space-y-6"
-      >
-        {/* Full Name */}
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-3 text-[#494A4BFF] space-y-6">
+        {/* Form fields same as AddUserForm */}
+        {/* Name Field */}
         <div className="flex flex-col gap-2">
           <label className="font-Inter font-semibold" htmlFor="name">
             Name
@@ -69,7 +84,7 @@ const AddUserForm = () => {
           )}
         </div>
 
-        {/* Email */}
+        {/* Email Field */}
         <div className="flex flex-col gap-2">
           <label className="font-Inter font-semibold" htmlFor="email">
             Email
@@ -93,44 +108,21 @@ const AddUserForm = () => {
           )}
         </div>
 
-        {/* Password */}
-        <div className="flex flex-col gap-2">
-          <label className="font-Inter font-semibold" htmlFor="password">
-            Password
-          </label>
-          <Input
-            type="password"
-            {...register("password", {
-              required: "Password is required",
-              minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters",
-              },
-            })}
-            placeholder="Password"
-            className={`border-2 rounded ${
-              errors.password ? "border-red-500" : "border-gray-300"
-            }`}
-          />
-          {errors.password && (
-            <span className="text-red-500 text-sm">
-              {errors.password.message}
-            </span>
-          )}
-        </div>
-
-        {/* Priority */}
+        {/* Priority Field */}
         <div className="flex flex-col gap-2">
           <label className="font-Inter font-semibold" htmlFor="priority">
             Priority
           </label>
-          <Select onValueChange={(value) => setValue("priority", value)}>
+          <Select
+            onValueChange={(value) => setValue("priority", value)}
+            defaultValue={userToEdit?.priority.toString()}
+          >
             <SelectTrigger
               className={`w-full rounded border-2 ${
                 errors.priority ? "border-red-500" : "border-gray-300"
               }`}
             >
-              <SelectValue placeholder="Select priority (0-5)" />
+              <SelectValue placeholder="Select priority (1-5)" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -150,7 +142,7 @@ const AddUserForm = () => {
         <div className="flex justify-end gap-4 mt-8">
           <Button
             type="button"
-            onClick={() => setOpenAddModal(false)}
+            onClick={() => setOpen(false)}
             className="hover:cursor-pointer bg-[#F8F9FAFF] text-text hover:bg-[#dfecfa]"
           >
             Cancel
@@ -160,7 +152,7 @@ const AddUserForm = () => {
             disabled={isSubmitting}
             className="hover:cursor-pointer bg-lightBtn hover:bg-darkBlueBtn"
           >
-            {isSubmitting ? "Creating..." : "Create User"}
+            {isSubmitting ? "Updating..." : "Update User"}
           </Button>
         </div>
       </form>
@@ -168,4 +160,4 @@ const AddUserForm = () => {
   );
 };
 
-export default AddUserForm;
+export default UpdateUserForm;

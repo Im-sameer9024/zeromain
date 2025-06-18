@@ -1,4 +1,5 @@
-"use client"
+// components/UpdateTagForm.tsx
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,13 +8,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAppContext } from "@/context/AppContext";
 import { X } from "lucide-react";
 import { HexColorPicker } from "react-colorful";
+import useUpdateTag from "../../Hooks/useUpdateTag";
+import { useEffect } from "react";
+import useGetTags from "../../Hooks/useGetTags";
 
-import useAddTag from "../../Hooks/useAddTag";
+const UpdateTagForm = () => {
+  const { setOpen, tagId } = useAppContext();
+  const { allTags } = useGetTags();
+  const tagToEdit = allTags.find(tag => tag.id === tagId);
 
-
-const AddTagForm = () => {
   const {
     register,
     handleSubmit,
@@ -25,16 +31,27 @@ const AddTagForm = () => {
     handleColorSelect,
     showPicker,
     setShowPicker,
-    setOpenAddModal
-    
-  } = useAddTag();
+    setValue,
+    reset
+  } = useUpdateTag();
+
+  // Initialize form with tag data
+  useEffect(() => {
+    if (tagToEdit) {
+      reset({
+        name: tagToEdit.name,
+        color: tagToEdit.color
+      });
+      setSelectedColor(tagToEdit.color);
+    }
+  }, [tagToEdit, reset, setSelectedColor]);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-Inter font-bold text-xl">Add New Tag</h2>
+        <h2 className="font-Inter font-bold text-xl">Update Tag</h2>
         <Button
-          onClick={() => setOpenAddModal(false)}
+          onClick={() => setOpen(false)}
           variant="ghost"
           className="text-text hover:cursor-pointer hover:bg-transparent"
         >
@@ -42,10 +59,7 @@ const AddTagForm = () => {
         </Button>
       </div>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="mt-3 text-[#494A4BFF] space-y-6"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-3 text-[#494A4BFF] space-y-6">
         {/* Name Field */}
         <div className="flex flex-col gap-2">
           <label className="font-Inter font-semibold" htmlFor="name">
@@ -72,15 +86,11 @@ const AddTagForm = () => {
         {/* Color Selection */}
         <div className="space-y-4">
           <label className="font-Inter font-semibold">Color</label>
-
           <div className="flex items-center gap-4">
-            {/* Selected Color Preview */}
             <div
               className="w-16 h-16 rounded-md border"
               style={{ backgroundColor: selectedColor }}
             />
-
-            {/* Color Picker Popover */}
             <Popover open={showPicker} onOpenChange={setShowPicker}>
               <PopoverTrigger asChild>
                 <Button variant="outline" type="button">
@@ -102,7 +112,10 @@ const AddTagForm = () => {
                   </div>
                   <Button
                     type="button"
-                    onClick={() => handleColorSelect(selectedColor)}
+                    onClick={() => {
+                      handleColorSelect(selectedColor);
+                      setValue("color", selectedColor);
+                    }}
                   >
                     Confirm Color
                   </Button>
@@ -110,7 +123,6 @@ const AddTagForm = () => {
               </PopoverContent>
             </Popover>
           </div>
-
           <input type="hidden" {...register("color")} />
           {errors.color && (
             <span className="text-red-500 text-sm">{errors.color.message}</span>
@@ -120,7 +132,7 @@ const AddTagForm = () => {
         <div className="flex justify-end gap-4 mt-8">
           <Button
             type="button"
-            onClick={() => setOpenAddModal(false)}
+            onClick={() => setOpen(false)}
             className="hover:cursor-pointer bg-[#F8F9FAFF] text-text hover:bg-[#dfecfa]"
           >
             Cancel
@@ -130,7 +142,7 @@ const AddTagForm = () => {
             disabled={isSubmitting}
             className="hover:cursor-pointer bg-lightBtn hover:bg-darkBlueBtn"
           >
-            {isSubmitting ? "Creating..." : "Create Tag"}
+            {isSubmitting ? "Updating..." : "Update Tag"}
           </Button>
         </div>
       </form>
@@ -138,4 +150,4 @@ const AddTagForm = () => {
   );
 };
 
-export default AddTagForm;
+export default UpdateTagForm;

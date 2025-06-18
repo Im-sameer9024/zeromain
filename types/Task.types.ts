@@ -77,6 +77,7 @@ export interface TaskProps {
   createdAt: string;
   updatedAt: string;
   completedAt: string | null;
+  totalTimeInSeconds:number;
   createdByAdmin: User | null;
   createdByUser: User | null;
   attachments: Attachment[];

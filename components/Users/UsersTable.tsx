@@ -9,6 +9,10 @@ import { Check } from "lucide-react";
 import React, { useEffect, useState, useTransition } from "react";
 import { CiEdit } from "react-icons/ci";
 import useGetUsers from "../Dashboard/Hooks/useGetUsers";
+import useDeleteUser from "./Hooks/useDeleteUser";
+import { useAppContext } from "@/context/AppContext";
+import Popup from "../Modal/Popup";
+import UpdateUserForm from "./UpdateUserForm";
 
 interface columnsProps {
   header: string;
@@ -56,6 +60,20 @@ const UsersTable = () => {
   const { companyUsers, isLoading, isError, error, refetchCompanyUsers } =
     useGetUsers();
 
+  const { setOpen ,open, setUserId, } = useAppContext();
+  const { mutate: deleteUser } = useDeleteUser();
+
+  const handleEditUser = (userId: string) => {
+    setUserId(userId);
+    setOpen(true);
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    if (confirm("Are you sure you want to delete this user?")) {
+      deleteUser(userId);
+    }
+  };
+
   useEffect(() => {
     startTransition(() => {
       refetchCompanyUsers();
@@ -87,13 +105,10 @@ const UsersTable = () => {
       <TableCell className=" text-center">
         <div>
           <div className=" flex gap-4 items-center justify-center">
-            <button className=" bg-green-500 text-white text-xs rounded p-1">
-              {"btnState"}
-            </button>
-            <button className=" bg-transparent border border-[#513600FF] hover:bg-red-500 hover:text-white hover:cursor-pointer font-medium  text-[#513600FF] text-xs rounded p-1">
+            <button onClick={() => handleDeleteUser(item.id)} className=" bg-transparent border border-[#513600FF] hover:bg-red-500 hover:text-white hover:cursor-pointer font-medium  text-[#513600FF] text-xs rounded p-1">
               Delete
             </button>
-            <button className=" text-text text-2xl hover:font-bold hover:cursor-pointer">
+            <button  onClick={() => handleEditUser(item.id)} className=" text-text text-2xl hover:font-bold hover:cursor-pointer">
               <CiEdit />
             </button>
           </div>
@@ -104,7 +119,7 @@ const UsersTable = () => {
 
   if(isPending){
      <div className="bg-[#fafafbe9] p-1 rounded-md mt-10 h-64 flex items-center justify-center">
-        <div className="text-center text-gray-500">Loading Assigned tasks...</div>
+        <div className="text-center text-gray-500">Loading User...</div>
       </div>
   }
 
@@ -112,7 +127,7 @@ const UsersTable = () => {
   if (isLoading) {
     return (
       <div className="bg-[#fafafbe9] p-1 rounded-md mt-10 h-64 flex items-center justify-center">
-        <div className="text-center text-gray-500">Loading tasks...</div>
+        <div className="text-center text-gray-500">Loading Users...</div>
       </div>
     );
   }
@@ -130,11 +145,14 @@ const UsersTable = () => {
       {userTableData.length <= 0 ? (
         <div className="text-center text-gray-500 h-64">No Users Found</div>
       ) : (
-        <TableComponent
+       <div>
+         <TableComponent
           columns={columns}
           data={companyUsers}
           renderRow={renderRow}
         />
+        <Popup openModal={open} content={<UpdateUserForm/>}  />
+       </div>
       )}
     </div>
   );

@@ -28,6 +28,12 @@ interface AppContextType {
   setAllTasks: (tasks: TaskProps[]) => void;
   selectedTasksType: string;
   setSelectedTasksType: (value: string) => void;
+  tagId:string|null;
+  setTagId:(value:string|null)=>void;
+  userId:string|null;
+  setUserId:(value:string|null)=>void;
+  openAddModal:boolean;
+  setOpenAddModal:(value:boolean)=>void;
  
 }
 
@@ -43,6 +49,12 @@ export const AppContext = createContext<AppContextType>({
   setAllTasks: () => {},
   selectedTasksType: '',
   setSelectedTasksType: () => {},
+  tagId: " ",
+  setTagId: () => {},
+  userId: '',
+  setUserId: () => {},
+  openAddModal:false,
+  setOpenAddModal:() =>{}
   
 });
 
@@ -53,6 +65,11 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [allTags, setAllTags] = useState<TagDataProps[]>([]);
   const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
     const [selectedTasksType, setSelectedTasksType] = useState("Created");
+    const[tagId,setTagId] = useState<string | null>(null);
+    const[userId,setUserId] = useState<string | null>(null);
+    const[openAddModal,setOpenAddModal] = useState(false)
+
+
 
 
   useEffect(() => {
@@ -100,7 +117,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         setAllTags,
         allTasks,
         setAllTasks,
-        selectedTasksType, setSelectedTasksType
+        selectedTasksType, setSelectedTasksType,tagId,setTagId,userId,setUserId,openAddModal,setOpenAddModal
       }}
     >
       {children}

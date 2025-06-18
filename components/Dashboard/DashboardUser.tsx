@@ -16,12 +16,8 @@ import useRemoveTask from "./Hooks/useRemoveTask";
 import useUpdateStatus from "./Hooks/useUpdateStatus";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import useAssignedTasks from "./Hooks/useAssignedTasks";
+import useColumns from "./useColumns";
 
-interface columnsProps {
-  header: string;
-  accessor: string;
-  classes?: string;
-}
 
 const StatusIndicator = ({ status }: { status: string }) => {
   switch (status) {
@@ -39,90 +35,14 @@ const StatusIndicator = ({ status }: { status: string }) => {
 const DashboardUsers = () => {
   const { cookieData, selectedTasksType } = useAppContext();
 
-  const CreatedColumns: columnsProps[] = [
-    {
-      header: "",
-      accessor: "status",
-      classes: "hidden md:table-cell text-center",
-    },
-    {
-      header: "Name",
-      accessor: "name",
-      classes: "font-bold text-md text-text",
-    },
-    {
-      header: "Assign by",
-      accessor: "assignBy",
-      classes: "hidden md:table-cell font-bold text-md text-text text-center",
-    },
-    {
-      header: "Action",
-      accessor: "action",
-      classes: "hidden lg:table-cell font-bold text-md text-text text-center",
-    },
-    {
-      header: "Due Date",
-      accessor: "dueDate",
-      classes: "font-bold text-md text-text text-center",
-    },
-    {
-      header: "Tags",
-      accessor: "tags",
-      classes: "font-bold text-md text-text text-center",
-    },
-    ...(cookieData?.role === "Admin"
-      ? [
-          {
-            header: "Actions",
-            accessor: "actions",
-            classes: "font-bold text-md text-text text-center",
-          },
-        ]
-      : []),
-  ];
+  const{CreatedColumns,AssignedColumns} = useColumns()
 
-   const AssignedColumns: columnsProps[] = [
-    {
-      header: "",
-      accessor: "status",
-      classes: "hidden md:table-cell text-center",
-    },
-    {
-      header: "Name",
-      accessor: "name",
-      classes: "font-bold text-md text-text",
-    },
-    {
-      header: "Assign To",
-      accessor: "assignBy",
-      classes: "hidden md:table-cell font-bold text-md text-text text-center",
-    },
-    {
-      header: "Action",
-      accessor: "action",
-      classes: "hidden lg:table-cell font-bold text-md text-text text-center",
-    },
-    {
-      header: "Due Date",
-      accessor: "dueDate",
-      classes: "font-bold text-md text-text text-center",
-    },
-    {
-      header: "Tags",
-      accessor: "tags",
-      classes: "font-bold text-md text-text text-center",
-    },
-    ...(cookieData?.role === "Admin"
-      ? [
-          {
-            header: "Actions",
-            accessor: "actions",
-            classes: "font-bold text-md text-text text-center",
-          },
-        ]
-      : []),
-  ];
-const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = useAssignedTasks();
+ 
+  const {
+    assignedTasks,
+    isLoading: isAssignedLoading,
+    refetchAssignedTasks,
+  } = useAssignedTasks();
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { allTasks, loading, error, refreshTasks } = useGetTasks();
@@ -188,6 +108,8 @@ const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = us
     }
   };
 
+  
+
   const CreateTaskRenderRow = (item: TaskProps) => {
     if (!item) return null;
 
@@ -196,9 +118,15 @@ const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = us
         key={item.id}
         className="border-b hover:cursor-pointer hover:bg-gray-100 border-gray-200 even:bg-slate-50 text-sm font-Inter"
       >
+{/* -------status --------- */}
+
         <TableCell className="text-center">
           <StatusIndicator status={item.status} />
         </TableCell>
+
+
+{/*------ title and description --- */}
+
         <TableCell
           onClick={() => router.push(`/${role}/tasks/${item.id}`)}
           className=" hover:underline"
@@ -208,6 +136,8 @@ const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = us
             {item.description}
           </p>
         </TableCell>
+
+        {/* assign  */}
         <TableCell className="hidden md:table-cell">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -226,6 +156,7 @@ const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = us
             </TooltipContent>
           </Tooltip>
         </TableCell>
+        
         <TableCell className="hidden md:table-cell">
           <div className="flex gap-2 items-center justify-center">
             {item.status === "PENDING" && (
@@ -263,6 +194,16 @@ const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = us
             )}
           </div>
         </TableCell>
+
+        {/* Time Tracking */}
+        <TableCell className="text-center">
+          <div className="flex items-center justify-center">
+            <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded">
+              ksfs
+            </span>
+          </div>
+        </TableCell>
+
         <TableCell>
           <p className="text-center text-lightRedText">
             {formatDueDate(item.dueDate)}
@@ -295,7 +236,7 @@ const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = us
     );
   };
 
-   const AssignedTaskRow = (item: any) => {
+  const AssignedTaskRow = (item: any) => {
     if (!item) return null;
 
     return (
@@ -329,7 +270,10 @@ const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = us
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{item.subtasks[0]?.assignedToUser?.name || item.subtasks[0]?.assignedToAdmin?.name }</p>
+              <p>
+                {item.subtasks[0]?.assignedToUser?.name ||
+                  item.subtasks[0]?.assignedToAdmin?.name}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TableCell>
@@ -402,13 +346,11 @@ const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = us
     );
   };
 
-
-  if(isPending){
-     <div className="bg-[#fafafbe9] p-1 rounded-md mt-10 h-64 flex items-center justify-center">
-        <div className="text-center text-gray-500">Loading Assigned tasks...</div>
-      </div>
+  if (isPending) {
+    <div className="bg-[#fafafbe9] p-1 rounded-md mt-10 h-64 flex items-center justify-center">
+      <div className="text-center text-gray-500">Loading Assigned tasks...</div>
+    </div>;
   }
-
 
   if (loading) {
     return (
@@ -427,7 +369,7 @@ const { assignedTasks, isLoading: isAssignedLoading, refetchAssignedTasks } = us
   }
 
   return (
-     <div className="bg-[#fafafbe9] p-1 rounded-md mt-10">
+    <div className="bg-[#fafafbe9] p-1 rounded-md mt-10">
       {selectedTasksType === "Created" && allTasks.length === 0 ? (
         <div className="text-center text-gray-500 h-64 flex items-center justify-center">
           No created tasks found.

@@ -1,38 +1,50 @@
 "use client";
 
-import { useEffect } from "react";
-import axios from "axios";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
+import axios from "axios";
+import { useEffect } from "react";
 
 const useGetTags = () => {
-  const { cookieData, allTags, setAllTags } = useAppContext();
+  const { cookieData } = useAppContext();
+  const queryClient = useQueryClient();
 
-//   console.log("cookieData in allTAgs", cookieData)
+  const fetchTags = async () => {
+    if (!cookieData?.id) return []; // Return empty array if no cookieData.id
 
-  useEffect(() => {
-    const fetchTags = async () => {
+    const response = await axios.get(
+      `https://task-management-backend-kohl-omega.vercel.app/api/tags/get-tags/${cookieData.id}`
+    );
+    return response.data?.data || [];
+  };
 
+  const {
+    data: allTags = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["tags", cookieData?.id],
+    queryFn: fetchTags,
+    enabled: !!cookieData?.id, // Only enable when cookieData.id exists
+  });
 
-      if (!cookieData?.id) return; // Wait until we have cookieData.id
+  // Function to invalidate and refetch tags
+  const invalidateTags = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["tags", cookieData?.id],
+    });
+  };
 
-      try {
-        const response = await axios.get(
-          `https://task-management-backend-kohl-omega.vercel.app/api/tags/get-tags/${cookieData.id}`
-        );
-
-        if (response.status === 200) {
-          setAllTags(response.data?.data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching tags:", error);
-        setAllTags([]); // Reset on error
-      }
-    };
-
-    fetchTags();
-  }, [cookieData?.id, setAllTags]); // Proper dependencies
-
-  return { allTags };
+  return {
+    allTags,
+    isLoading,
+    isError,
+    error,
+    refetchTags: refetch,
+    invalidateTags,
+  };
 };
 
 export default useGetTags;

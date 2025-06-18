@@ -6,12 +6,12 @@ import { Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import AddUserForm from "./AddUserForm";
 import Popup from "@/components/Modal/Popup";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+// import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useAppContext } from "@/context/AppContext";
 // import Popup from '@/components/Modal/Popup';
 
 const UserBar = () => {
-  const { open, setOpen } = useAppContext();
+  const { openAddModal, setOpenAddModal } = useAppContext();
 
   return (
     <>
@@ -19,7 +19,7 @@ const UserBar = () => {
         {/*------------------- left side section ------------------  */}
         <div className=" flex items-center gap-2">
           {/*--------------- dropdown-----------------  */}
-          <div>
+          {/* <div>
             <Select>
               <SelectTrigger className="w-[180px] hover:cursor-pointer">
                 <SelectValue
@@ -33,11 +33,11 @@ const UserBar = () => {
                 </SelectGroup>
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
 
           {/* -------------- Add task btn ------------------  */}
           <Button
-            onClick={() => setOpen(true)}
+            onClick={() => setOpenAddModal(true)}
             className=" bg-lightBtn hover:bg-darkBlueBtn hover:scale-95 hover:cursor-pointer"
           >
             <Plus />
@@ -58,7 +58,7 @@ const UserBar = () => {
 
       {/*------------------Add task Pop up -------------------  */}
 
-      <Popup openModal={open} content={<AddUserForm />} />
+      <Popup openModal={openAddModal} content={<AddUserForm />} />
     </>
   );
 };

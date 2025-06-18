@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// hooks/useAddTag.ts
+// hooks/useUpdateTag.ts
 "use client";
 
 import axios from "axios";
@@ -14,8 +13,8 @@ interface TagForm {
   color: string;
 }
 
-const useAddTag = () => {
-  const { cookieData, setOpenAddModal,openAddModal } = useAppContext();
+const useUpdateTag = () => {
+  const { cookieData, setOpen, tagId } = useAppContext();
   const queryClient = useQueryClient();
   const [showPicker, setShowPicker] = useState(false);
   const [selectedColor, setSelectedColor] = useState("#E89623");
@@ -26,39 +25,28 @@ const useAddTag = () => {
     setValue,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<TagForm>({
-    defaultValues: {
-      name: "",
-      color: "#E89623",
-    },
-  });
+  } = useForm<TagForm>();
 
-  const addTag = async (data: TagForm) => {
-    const response = await axios.post(
-      "https://task-management-backend-kohl-omega.vercel.app/api/tags/create-tag",
+  const updateTag = async (data: TagForm) => {
+    const response = await axios.put(
+      `https://task-management-backend-kohl-omega.vercel.app/api/tags/update-tag/${tagId}`,
       {
         name: data.name,
         color: data.color,
-        createdBy: cookieData?.id,
       },
     );
-    console.log("response of addTAg",response)
-    debugger;
-
-
-    return response.data?.data;
+    return response.data;
   };
 
   const mutation = useMutation({
-    mutationFn: addTag,
+    mutationFn: updateTag,
     onSuccess: () => {
       queryClient.invalidateQueries(["tags", cookieData?.id]);
-      toast.success("Tag created successfully");
-      setOpenAddModal(false);
-      reset();
+      toast.success("Tag updated successfully");
+      setOpen(false);
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to create tag");
+      toast.error(error.response?.data?.message || "Failed to update tag");
     },
   });
 
@@ -80,8 +68,8 @@ const useAddTag = () => {
     showPicker,
     setShowPicker,
     setValue,
-    setOpenAddModal,openAddModal
+    reset,
   };
 };
 
-export default useAddTag;
+export default useUpdateTag;
