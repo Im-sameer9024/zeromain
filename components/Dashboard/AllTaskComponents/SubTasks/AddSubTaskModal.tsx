@@ -92,7 +92,7 @@ const AddSubTaskModal = ({
       try {
         setLoadingUsers(true);
         const response = await fetch(
-          `https://task-management-backend-kohl-omega.vercel.app/api/auth/company-users/${cookieData.id}?search=${term}`
+          `https://task-management-backend-kohl-omega.vercel.app/api/auth/company-users/${cookieData.companyAdminId}?search=${term}`
         );
 
         if (!response.ok) {

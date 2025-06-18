@@ -74,7 +74,7 @@ const UpdateStatusModal = ({
   const [selectedStatus, setSelectedStatus] = useState(subTask.status);
   const [feedback, setFeedback] = useState(subTask.feedback || "");
 
-  const statusOptions = ["PENDING", "IN_PROGRESS", "COMPLETED", "ON_HOLD", "CANCELLED"];
+  const statusOptions = ["PENDING", "IN_PROGRESS", "COMPLETED",];
 
   useEffect(() => {
     setSelectedStatus(subTask.status);
