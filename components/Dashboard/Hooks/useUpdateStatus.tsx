@@ -42,8 +42,6 @@ const useUpdateStatus = () => {
         }
       );
 
-      console.log("Update response:", response.data);
-
       // Show success message based on status
       const successMessage =
         status === "IN_PROGRESS"

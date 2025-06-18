@@ -17,7 +17,6 @@ const useGetTasks = () => {
 
   const fetchTasks = useCallback(
     async (cancelToken: CancelTokenSource) => {
-      console.log("test 1 => ", cookieData, isCookieLoading);
 
       if (!cookieData) {
         setLoading(false);

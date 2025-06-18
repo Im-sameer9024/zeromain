@@ -12,7 +12,6 @@ const useRemoveTask = () => {
       );
 
       toast.success("Task Removed Successfully", { id: toastId });
-      console.log("response of remove task", response);
     } catch (error) {
       console.log("error occur in fetching tags", error);
     }finally{

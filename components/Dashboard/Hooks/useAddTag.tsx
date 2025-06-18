@@ -42,7 +42,6 @@ const useAddTag = () => {
         createdBy: cookieData?.id,
       },
     );
-    console.log("response of addTag", response);
     debugger;
 
     return response.data?.data;

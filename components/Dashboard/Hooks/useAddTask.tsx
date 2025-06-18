@@ -15,8 +15,6 @@ const useAddTask = () => {
   const { cookieData, open, setOpen, setAllTasks } = useAppContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  console.log("cookies dAta", cookieData);
-
   const { refreshTasks } = useGetTasks();
 
   const {
@@ -68,7 +66,6 @@ const useAddTask = () => {
         ],
       };
 
-      console.log("formDAta of task is single Task ", formData);
       debugger;
       // Submit to API
       const response = await axios.post<{data: TaskProps}>(

@@ -138,8 +138,6 @@ const DashboardUsers = () => {
     }
   }, [selectedTasksType, refetchAssignedTasks]);
 
-  console.log("allTasks", allTasks);
-
   const { removeTask } = useRemoveTask();
 
   const formatDueDate = (dateString: string) => {

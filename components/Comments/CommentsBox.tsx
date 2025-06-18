@@ -72,7 +72,6 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
   const commentsEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  console.log("CurrentUser", currentUser);
   const baseURL =
     "https://task-management-backend-kohl-omega.vercel.app/api/comments";
 
@@ -185,7 +184,7 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
         if (!response.ok) throw new Error("Failed to fetch users");
 
         const data = await response.json();
-        console.log("DATA", data);
+
         setMentionUsers(data.data || []);
         setSelectedMentionIndex(0); // Reset selection
       } catch (err) {

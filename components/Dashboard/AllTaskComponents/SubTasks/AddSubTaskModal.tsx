@@ -66,7 +66,6 @@ const AddSubTaskModal = ({
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  console.log("cookieData", cookieData);
   const createSubTaskMutation = useMutation({
     mutationFn: createSubTask,
     onSuccess: () => {

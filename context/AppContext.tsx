@@ -76,7 +76,6 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
       const cookie = Cookies.get("cookieData");
 
       if (cookie) {
-        console.log("context");
         try {
           const parsedData = JSON.parse(cookie) as UserData;
           if (parsedData.id && parsedData.role) {
@@ -89,7 +88,6 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
           console.error("Error parsing cookie data", error);
           Cookies.remove("cookieData");
         }
-        console.log("context");
       }
       setIsCookieLoading(false);
     };

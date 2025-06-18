@@ -22,9 +22,6 @@ const useGetUsers = () => {
       
     );
 
-    console.log("response of getUsers",response)
-
-
     return response.data?.data?.users || [];
   };
 
