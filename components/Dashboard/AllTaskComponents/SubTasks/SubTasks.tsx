@@ -31,6 +31,7 @@ interface SubTask {
   feedback: string | null;
   createdAt: string;
   updatedAt: string;
+  totalTimeInSeconds: number; // Added new field
   assignedToUser: {
     id: string;
     name: string;
@@ -177,8 +178,8 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
                 <TableRow>
                   <TableCell className="text-text font-medium">Name</TableCell>
                   <TableCell className="text-text font-medium">Assigned To</TableCell>
-                  <TableCell className="text-text font-medium">Time</TableCell>
-                  <TableCell className="text-text font-medium">Status</TableCell>
+                  <TableCell className="text-text font-medium">Expected Time</TableCell>
+                  <TableCell className="text-text font-medium">Elapsed Time</TableCell>
                   <TableCell className="text-text font-medium">Feedback</TableCell>
                 </TableRow>
               </TableHeader>
@@ -213,6 +214,7 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
                         subtaskId={task.id}
                         taskId={task.taskId}
                         currentStatus={task.status}
+                        totalTimeInSeconds={task.totalTimeInSeconds}
                         onStatusUpdated={handleStatusUpdated}
                       />
                     </TableCell>
@@ -225,7 +227,7 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
                           onFeedbackUpdated={handleFeedbackUpdated}
                         />
                       ) : (
-                        <span className="text-sm text-gray-600">
+                        <span className="text-xs text-gray-600">
                           {task.feedback || "No feedback"}
                         </span>
                       )}
