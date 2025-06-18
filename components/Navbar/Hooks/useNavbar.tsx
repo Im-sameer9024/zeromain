@@ -1,5 +1,5 @@
 "use client";
-//@ts-ignore
+//@ts-error-ignore
 import { useAppContext } from "@/context/AppContext";
 import { NotificationProps, PaginationProps } from "@/types/Navbar.types";
 import axios from "axios";
@@ -235,8 +235,10 @@ const useNavbar = () => {
           clockLoading: false,
         }));
       }
-    } catch (error: any) {
-      if (error.response?.status === 404) {
+    } catch (err) {
+      // @ts-error-ignore
+      const error = err as unknown as { response?: { data?: { message?: string }, status?: number } };
+      if (error?.response?.status === 404) {
         setClockState((prev) => ({
           ...prev,
           isClocked: false,
@@ -275,11 +277,12 @@ const useNavbar = () => {
       }));
 
       toast.success("Clocked in successfully!", { id: toastId });
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as unknown as { response?: { data?: { message?: string } } };
       console.error("Error clocking in:", error);
       let errorMessage = "Failed to clock in";
 
-      if (error.response?.data?.message) {
+      if (error?.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
 
@@ -325,11 +328,12 @@ const useNavbar = () => {
           duration: 5000,
         }
       );
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as unknown as { response?: { data?: { message?: string } } };
       console.error("Error clocking out:", error);
       let errorMessage = "Failed to clock out";
 
-      if (error.response?.data?.message) {
+      if (error?.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
 

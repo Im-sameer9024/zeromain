@@ -1,7 +1,8 @@
 "use client";
-//@ts-ignore
+//@ts-except-ignore
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Send, Trash2, Edit3, MessageCircle, AtSign, X } from "lucide-react";
+import {UserData} from "@/context/AppContext";
 
 // Types
 interface User {
@@ -39,12 +40,7 @@ interface Comment {
 
 interface CommentSystemProps {
   taskId: string;
-  currentUser: {
-    id: string;
-    name: string;
-    email: string;
-    role: "user" | "admin";
-  };
+  currentUser: UserData;
   onCommentChange?: (count: number) => void;
 }
 
@@ -203,6 +199,7 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
   );
 
   // Debounced mention fetch
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchMentions = useCallback(
     (() => {
       let timeoutId: NodeJS.Timeout;

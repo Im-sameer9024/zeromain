@@ -1,7 +1,6 @@
 "use client";
-//@ts-ignore
-
-import { Funnel, Plus, SortDescIcon, Table, User } from "lucide-react";
+//@ts-except-ignore
+import { Funnel, SortDescIcon, Table, User } from "lucide-react";
 import { FaEllipsisH } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-//@ts-ignore
+//@ts-except-ignore
 import React, { useEffect, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -381,7 +381,7 @@ const DashboardUsers = () => {
         </TableCell>
         <TableCell>
           <div className=" items-center justify-center  flex-wrap flex gap-2">
-            {item.tags?.map((tag, i) => (
+            {item.tags?.map((tag: any, i: number) => (
               <span
                 className="odd:bg-[#f7e9ee] rounded odd:text-[#E8618CFF] p-1 w-fit px-2 even:text-[#636AE8FF] even:bg-[#F2F2FDFF] text-xs"
                 key={tag?.id || i}

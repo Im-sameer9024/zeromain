@@ -1,6 +1,6 @@
 "use client";
 
-import {
+import React, {
   createContext,
   ReactNode,
   useContext,
@@ -10,10 +10,12 @@ import {
 import Cookies from "js-cookie";
 import { TagDataProps, TaskProps } from "@/types/Task.types";
 
-interface UserData {
+export interface UserData {
   id: string;
   role: string;
   companyAdminId?: string;
+  name: string;
+  email: string;
   // Add other user properties as needed
 }
 
@@ -24,9 +26,9 @@ interface AppContextType {
   setOpen: (value: boolean) => void;
   setCookieData: (data: UserData | null) => void;
   allTags: TagDataProps[];
-  setAllTags: (tags: TagDataProps[]) => void;
+  setAllTags: React.Dispatch<React.SetStateAction<TagDataProps[]>>;
   allTasks: TaskProps[];
-  setAllTasks: (tasks: TaskProps[]) => void;
+  setAllTasks: React.Dispatch<React.SetStateAction<TaskProps[]>>;
   selectedTasksType: string;
   setSelectedTasksType: (value: string) => void;
   tagId: string | null;
@@ -49,9 +51,9 @@ export const AppContext = createContext<AppContextType>({
   setAllTasks: () => {},
   selectedTasksType: "",
   setSelectedTasksType: () => {},
-  tagId: " ",
+  tagId: null,
   setTagId: () => {},
-  userId: "",
+  userId: null,
   setUserId: () => {},
   openAddModal: false,
   setOpenAddModal: () => {},

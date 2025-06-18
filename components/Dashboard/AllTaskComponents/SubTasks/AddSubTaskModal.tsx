@@ -86,8 +86,9 @@ const AddSubTaskModal = ({
       console.error("Error creating subtask:", error);
       toast.error("Failed to create subtask");
     },
-  });
+});
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchUsers = useCallback(
     debounce(async (term: string) => {
       try {

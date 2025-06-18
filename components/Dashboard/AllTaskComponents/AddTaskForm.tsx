@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import type { Tag } from "@/types/other"
+
 import Image from "next/image";
 import { Button } from "../../ui/button";
 import { CalendarIcon, Tags, X } from "lucide-react";
@@ -44,8 +46,9 @@ const AddTaskForm = () => {
     setOpen,
   } = useAddTask();
 
-  const { allTags } = useGetTags();
+  const { allTags } : { allTags: Tag[] } = useGetTags();
 
+  // @ts-except-ignore
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
       <div className="flex items-center justify-between">
@@ -75,7 +78,7 @@ const AddTaskForm = () => {
             {...register("title", { required: "Title is required" })}
             placeholder="title"
           />
-          {errors.title && (
+          {typeof errors?.title?.message === "string" && (
             <span className="text-red-500 text-sm">{errors.title.message}</span>
           )}
         </div>
@@ -87,7 +90,7 @@ const AddTaskForm = () => {
             return tag ? (
               <div key={tag.id} className="relative inline-block m-1 group ">
                 <span
-                  style={{ backgroundColor: tag.color }}
+                  style={{ backgroundColor: tag.color ?? undefined }}
                   className={`px-3 py-1 rounded-full text-white text-xs ${tag.color} relative`}
                 >
                   {tag.name}
@@ -164,7 +167,7 @@ const AddTaskForm = () => {
               />
             </PopoverContent>
           </Popover>
-          {errors.dueDate && (
+          {typeof errors?.dueDate?.message === "string" && (
             <span className="text-red-500 text-sm">
               {errors.dueDate.message}
             </span>
@@ -181,7 +184,7 @@ const AddTaskForm = () => {
             placeholder="Task description goes here..."
             className="min-h-[100px]"
           />
-          {errors.description && (
+          {errors.description && typeof errors.description.message === "string" && (
             <span className="text-red-500 text-sm">
               {errors.description.message}
             </span>
