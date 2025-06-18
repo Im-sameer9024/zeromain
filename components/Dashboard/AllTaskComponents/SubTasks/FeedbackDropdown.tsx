@@ -1,4 +1,3 @@
-//@ts-ignore
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useAppContext } from "@/context/AppContext";
@@ -8,8 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MessageSquare, Loader2 } from "lucide-react"; // Added Loader2 for the spinner
+import { MessageSquare, Loader2 } from "lucide-react";
 
 interface FeedbackDropdownProps {
   subtaskId: string;
@@ -160,7 +158,7 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
       )}
       <DropdownMenuContent className="w-32">
         {feedbackOptions.map((option) => {
-          const optionColors = getFeedbackColors(option);
+          // const optionColors = getFeedbackColors(option);
           return (
             <DropdownMenuItem
               key={option}
