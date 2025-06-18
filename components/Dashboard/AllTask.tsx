@@ -55,11 +55,11 @@ const DashboardUsers = () => {
       accessor: "assignBy",
       classes: "hidden md:table-cell font-bold text-md text-text text-center",
     },
-    {
-      header: "Action",
-      accessor: "action",
-      classes: "hidden lg:table-cell font-bold text-md text-text text-center",
-    },
+    // {
+    //   header: "Action",
+    //   accessor: "action",
+    //   classes: "hidden lg:table-cell font-bold text-md text-text text-center",
+    // },
     {
       header: "Due Date",
       accessor: "dueDate",
@@ -97,11 +97,11 @@ const DashboardUsers = () => {
       accessor: "assignBy",
       classes: "hidden md:table-cell font-bold text-md text-text text-center",
     },
-    {
-      header: "Action",
-      accessor: "action",
-      classes: "hidden lg:table-cell font-bold text-md text-text text-center",
-    },
+    // {
+    //   header: "Action",
+    //   accessor: "action",
+    //   classes: "hidden lg:table-cell font-bold text-md text-text text-center",
+    // },
     {
       header: "Due Date",
       accessor: "dueDate",
@@ -230,7 +230,7 @@ const DashboardUsers = () => {
             </TooltipContent>
           </Tooltip>
         </TableCell>
-        <TableCell className="hidden md:table-cell">
+        {/* <TableCell className="hidden md:table-cell">
           <div className="flex gap-2 items-center justify-center">
             {item.status === "PENDING" && (
               <button
@@ -266,7 +266,7 @@ const DashboardUsers = () => {
               </button>
             )}
           </div>
-        </TableCell>
+        </TableCell> */}
         <TableCell>
           <p className="text-center text-lightRedText">
             {formatDueDate(item.dueDate)}
@@ -285,7 +285,7 @@ const DashboardUsers = () => {
           </div>
         </TableCell>
         {cookieData?.role === "Admin" && (
-          <TableCell>
+          <TableCell className="text-center">
             <button
               onClick={(e) => handleDeleteTask(e, item.id)}
               className="hover:bg-gray-100 p-1 rounded-full hover:cursor-pointer"
