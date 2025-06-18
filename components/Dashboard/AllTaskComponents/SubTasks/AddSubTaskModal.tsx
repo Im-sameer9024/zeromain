@@ -66,6 +66,7 @@ const AddSubTaskModal = ({
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  console.log("cookieData", cookieData);
   const createSubTaskMutation = useMutation({
     mutationFn: createSubTask,
     onSuccess: () => {
@@ -92,7 +93,11 @@ const AddSubTaskModal = ({
       try {
         setLoadingUsers(true);
         const response = await fetch(
-          `https://task-management-backend-kohl-omega.vercel.app/api/auth/company-users/${cookieData.companyAdminId}?search=${term}`
+          `https://task-management-backend-kohl-omega.vercel.app/api/auth/company-users/${
+            cookieData?.role === "Admin"
+              ? cookieData?.id
+              : cookieData?.companyAdminId
+          }?search=${term}`
         );
 
         if (!response.ok) {
@@ -192,7 +197,10 @@ const AddSubTaskModal = ({
         </div>
 
         <div className="mb-4">
-          <label htmlFor="expectedTime" className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="expectedTime"
+            className="block text-sm font-medium mb-1"
+          >
             Expected Time (hours)*
           </label>
           <select
@@ -213,7 +221,9 @@ const AddSubTaskModal = ({
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium mb-1">Assign to User*</label>
+          <label className="block text-sm font-medium mb-1">
+            Assign to User*
+          </label>
           <Input
             placeholder="Search users..."
             value={searchTerm}
@@ -232,9 +242,15 @@ const AddSubTaskModal = ({
               users.map((user) => (
                 <div
                   key={user.id}
-                  onClick={() => !createSubTaskMutation.isPending && handleUserSelect(user.id)}
-                  className={`p-3 cursor-pointer hover:bg-gray-100 ${taskData.userId === user.id ? "bg-blue-50 border-l-2 border-blue-500" : ""
-                    }`}
+                  onClick={() =>
+                    !createSubTaskMutation.isPending &&
+                    handleUserSelect(user.id)
+                  }
+                  className={`p-3 cursor-pointer hover:bg-gray-100 ${
+                    taskData.userId === user.id
+                      ? "bg-blue-50 border-l-2 border-blue-500"
+                      : ""
+                  }`}
                 >
                   <div className="font-medium">{user.name}</div>
                   <div className="text-sm text-gray-500">{user.email}</div>
