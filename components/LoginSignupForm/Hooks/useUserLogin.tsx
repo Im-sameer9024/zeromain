@@ -45,9 +45,7 @@ const useUserLogin = () => {
         router.push("/user/dashboard");
       }
 
-      const responseData = structuredClone(response.data?.data);
-
-      console.log("test-----------in user Login------------- >",responseData)
+      const responseData = structuredClone(response.data?.data);    
 
       setCookieData(responseData);
 

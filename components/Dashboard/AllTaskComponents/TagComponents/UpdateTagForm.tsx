@@ -1,6 +1,9 @@
 // components/UpdateTagForm.tsx
 "use client";
 
+import type { Tag, TagForm } from "@/types/other"
+import { SubmitHandler } from "react-hook-form";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,8 +21,8 @@ import { Tag } from "@/types/Task.types";
 
 const UpdateTagForm = () => {
   const { setOpen, tagId } = useAppContext();
-  const { allTags } = useGetTags();
-  const tagToEdit = allTags.find((tag:Tag) => tag.id === tagId);
+  const { allTags } : { allTags: Tag[] } = useGetTags();
+  const tagToEdit = allTags.find(tag => tag.id === tagId);
 
   const {
     register,
@@ -40,12 +43,16 @@ const UpdateTagForm = () => {
   useEffect(() => {
     if (tagToEdit) {
       reset({
-        name: tagToEdit.name,
-        color: tagToEdit.color
+        name: tagToEdit?.name,
+        color: tagToEdit?.color ?? undefined
       });
-      setSelectedColor(tagToEdit.color);
+      setSelectedColor(tagToEdit?.color ?? "");
     }
   }, [tagToEdit, reset, setSelectedColor]);
+
+  const handleFormSubmit: SubmitHandler<TagForm> = (data) => {
+    onSubmit(data);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
@@ -60,7 +67,7 @@ const UpdateTagForm = () => {
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit((data) => onSubmit(data))} className="mt-3 text-[#494A4BFF] space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="mt-3 text-[#494A4BFF] space-y-6">
         {/* Name Field */}
         <div className="flex flex-col gap-2">
           <label className="font-Inter font-semibold" htmlFor="name">

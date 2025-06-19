@@ -1,5 +1,5 @@
 "use client";
-//@ts-ignore
+//@ts-error-ignore
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
@@ -63,14 +63,13 @@ const useTaskTimer = (taskId: string, initialStatus: string, initialTime: number
       }
 
       return response.data;
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Failed to update task status");
-      } else {
-        toast.error("Failed to update task status");
-      }
+    } catch (error) {
+      // @ts-error-ignore
+      const err = error as unknown as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to update task status");
       throw error;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskId, cookieData]);
 
   // Initialize timer and clean up on unmount

@@ -16,7 +16,6 @@ const CommentsWrapper: React.FC<CommentsWrapperProps> = ({ taskId }) => {
   // Handle comment count changes
   const handleCommentChange = (count: number) => {
     setCommentCount(count);
-    console.log(`Comment count updated: ${count}`);
   };
 
   // If no user data is available, show loading or login prompt

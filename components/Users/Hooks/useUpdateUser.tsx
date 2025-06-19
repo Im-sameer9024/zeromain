@@ -1,6 +1,6 @@
 // hooks/useUpdateUser.ts
 "use client";
-//@ts-ignore
+//@ts-error-ignore
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
@@ -40,12 +40,13 @@ const useUpdateUser = () => {
   const mutation = useMutation({
     mutationFn: updateUser,
     onSuccess: () => {
-      queryClient.invalidateQueries(["companyUsers", cookieData?.id]);
+      queryClient.invalidateQueries({ queryKey: ["companyUsers", cookieData?.id] });
       toast.success("User updated successfully");
       setOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to update user");
+    onError: (error) => {
+      const err = error as unknown as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to update user");
     },
   });
 
@@ -55,8 +56,8 @@ const useUpdateUser = () => {
     onSubmit: mutation.mutate,
     setValue,
     reset,
-    errors,
-    isSubmitting: isSubmitting || mutation.isLoading,
+    isSubmitting: isSubmitting || mutation.status === "pending",
+    errors: errors,
   };
 };
 

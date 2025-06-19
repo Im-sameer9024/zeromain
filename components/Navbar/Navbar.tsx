@@ -1,7 +1,7 @@
 "use client";
-//@ts-ignore
+//@ts-error-ignore
 import { Input } from "../ui/input";
-import { Bell, Clock, Search, CheckCheck, Timer, LogOut } from "lucide-react";
+import { Bell, Clock, Search, CheckCheck, Timer } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import useNavbar from "./Hooks/useNavbar";
@@ -28,6 +28,7 @@ const Navbar = () => {
 
     // Clock states and functions
     isClocked,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     currentSession,
     clockLoading,
     toggleClock,

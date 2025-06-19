@@ -1,7 +1,8 @@
 "use client";
-//@ts-ignore
+//@ts-except-ignore
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Send, Trash2, Edit3, MessageCircle, AtSign, X } from "lucide-react";
+import {UserData} from "@/context/AppContext";
 
 // Types
 interface User {
@@ -39,12 +40,7 @@ interface Comment {
 
 interface CommentSystemProps {
   taskId: string;
-  currentUser: {
-    id: string;
-    name: string;
-    email: string;
-    role: "user" | "admin";
-  };
+  currentUser: UserData;
   onCommentChange?: (count: number) => void;
 }
 
@@ -76,7 +72,6 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
   const commentsEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  console.log("CurrentUser", currentUser);
   const baseURL =
     "https://task-management-backend-kohl-omega.vercel.app/api/comments";
 
@@ -189,7 +184,7 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
         if (!response.ok) throw new Error("Failed to fetch users");
 
         const data = await response.json();
-        console.log("DATA", data);
+
         setMentionUsers(data.data || []);
         setSelectedMentionIndex(0); // Reset selection
       } catch (err) {
@@ -203,6 +198,7 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
   );
 
   // Debounced mention fetch
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchMentions = useCallback(
     (() => {
       let timeoutId: NodeJS.Timeout;

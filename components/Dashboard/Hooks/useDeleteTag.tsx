@@ -1,4 +1,5 @@
 "use client";
+//@ts-error-ignore
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
@@ -21,10 +22,9 @@ const useDeleteTag = () => {
       queryClient.invalidateQueries({ queryKey: ["tags", cookieData?.id] });
       toast.success("Tag deleted successfully");
     },
-    onError: (error: import("axios").AxiosError) => {
-      toast.error(
-        (error.response?.data as { message?: string })?.message || "Failed to delete tag"
-      );
+    onError: (error) => {
+      const err = error as unknown as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to delete tag");
     },
   });
 

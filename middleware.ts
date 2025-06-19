@@ -8,9 +8,6 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   const userData = request.cookies.get("cookieData")?.value
 
-  console.log("token",token)
-  console.log("userData",userData)
-
   let user = null
   if (userData) {
     try {

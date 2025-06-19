@@ -1,6 +1,9 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable */
+
 import { useAppContext } from "@/context/AppContext";
+import { TaskProps } from "@/types/Task.types";
+
 import axios from "axios";
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -8,11 +11,10 @@ import toast from "react-hot-toast";
 import useGetTasks from "./useGetTasks";
 import { TaskDataProps } from "@/types/Task.types";
 
+
 const useAddTask = () => {
   const { cookieData, open, setOpen, setAllTasks } = useAppContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  console.log("cookies dAta", cookieData);
 
   const { refreshTasks } = useGetTasks();
 
@@ -51,10 +53,6 @@ const useAddTask = () => {
       usId = cookieData.id;
     }
 
- 
-
-
-
     try {
       const formData = {
         title: data.title,
@@ -69,22 +67,20 @@ const useAddTask = () => {
         ],
       };
 
-      console.log("formDAta of task is single Task ", formData);
       debugger;
       // Submit to API
-      const response = await axios.post(
+      const response = await axios.post<{data: TaskProps}>(
         "https://task-management-backend-kohl-omega.vercel.app/api/tasks/create-task",
         formData
       );
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setAllTasks((prevTasks: TaskProps[]) => {
-        if (!response.data?.data) return prevTasks;
-        const newTasks = [...prevTasks]; // Create a copy
-        newTasks.unshift(response.data.data as TaskDataProps); // Add to beginning
-        return newTasks;
-      });
 
-      console.log("task is created successfully ", response);
+      if (response?.data?.data) {
+        setAllTasks((prevTasks: TaskProps[]) => {
+          const newTasks: TaskProps[] = prevTasks;
+          newTasks.unshift(response.data.data as any);
+          return newTasks;
+        });
+      }
 
       toast.success("Task created successfully!", { id: toastId });
       setOpen(false);

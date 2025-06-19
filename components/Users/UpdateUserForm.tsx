@@ -2,6 +2,8 @@
 // components/UpdateUserForm.tsx
 "use client";
 
+import { SubmitHandler } from "react-hook-form";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,6 +19,12 @@ import { X } from "lucide-react";
 import { useEffect } from "react";
 import useGetUsers from "../Dashboard/Hooks/useGetUsers";
 import useUpdateUser from "./Hooks/useUpdateUser";
+
+type FormValues = {
+  name: string;
+  email: string;
+  priority: string;
+};
 
 const UpdateUserForm = () => {
   const { setOpen, userId } = useAppContext();
@@ -45,6 +53,11 @@ const UpdateUserForm = () => {
     }
   }, [userToEdit, reset]);
 
+  const handleFormSubmit: SubmitHandler<FormValues> = (data) => {
+    onSubmit(data);
+  };
+  
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
       <div className="flex items-center justify-between">
@@ -58,7 +71,7 @@ const UpdateUserForm = () => {
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-3 text-[#494A4BFF] space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="mt-3 text-[#494A4BFF] space-y-6">
         {/* Form fields same as AddUserForm */}
         {/* Name Field */}
         <div className="flex flex-col gap-2">
@@ -76,11 +89,11 @@ const UpdateUserForm = () => {
             })}
             placeholder="Full Name"
             className={`border-2 rounded ${
-              errors.name ? "border-red-500" : "border-gray-300"
+              errors?.name ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {errors.name && (
-            <span className="text-red-500 text-sm">{errors.name.message}</span>
+          {errors?.name && (
+            <span className="text-red-500 text-sm">{errors?.name?.message}</span>
           )}
         </div>
 
@@ -100,11 +113,11 @@ const UpdateUserForm = () => {
             })}
             placeholder="Email address"
             className={`border-2 rounded ${
-              errors.email ? "border-red-500" : "border-gray-300"
+              errors?.email ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {errors.email && (
-            <span className="text-red-500 text-sm">{errors.email.message}</span>
+          {errors?.email && (
+            <span className="text-red-500 text-sm">{errors?.email.message}</span>
           )}
         </div>
 
@@ -119,7 +132,7 @@ const UpdateUserForm = () => {
           >
             <SelectTrigger
               className={`w-full rounded border-2 ${
-                errors.priority ? "border-red-500" : "border-gray-300"
+                errors?.priority ? "border-red-500" : "border-gray-300"
               }`}
             >
               <SelectValue placeholder="Select priority (1-5)" />
