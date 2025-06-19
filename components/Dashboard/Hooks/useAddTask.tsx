@@ -2,7 +2,6 @@
 /* eslint-disable */
 
 import { useAppContext } from "@/context/AppContext";
-import { TaskProps } from "@/types/Task.types";
 
 import axios from "axios";
 import React, { useRef } from "react";
@@ -69,14 +68,14 @@ const useAddTask = () => {
 
       debugger;
       // Submit to API
-      const response = await axios.post<{data: TaskProps}>(
+      const response = await axios.post<{data: TaskDataProps}>(
         "https://task-management-backend-kohl-omega.vercel.app/api/tasks/create-task",
         formData
       );
 
       if (response?.data?.data) {
-        setAllTasks((prevTasks: TaskProps[]) => {
-          const newTasks: TaskProps[] = prevTasks;
+        setAllTasks((prevTasks: TaskDataProps[]) => {
+          const newTasks: TaskDataProps[] = prevTasks;
           newTasks.unshift(response.data.data as any);
           return newTasks;
         });
