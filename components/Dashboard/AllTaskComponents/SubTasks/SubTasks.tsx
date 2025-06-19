@@ -77,7 +77,7 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
   const handleFeedbackUpdated = () => {
     refetch();
   };
- 
+
   if (isLoading) {
     return <div>Loading subtasks...</div>;
   }
@@ -147,6 +147,7 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
                         currentStatus={task.status}
                         totalTimeInSeconds={task.totalTimeInSeconds}
                         onStatusUpdated={handleStatusUpdated}
+                        assignedToUser={task.assignedToUser}
                       />
                     </TableCell>
                     <TableCell className="flex-1">
@@ -156,6 +157,7 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
                           taskId={task.taskId}
                           currentFeedback={task.feedback}
                           onFeedbackUpdated={handleFeedbackUpdated}
+                          assignedToUser={task.assignedToUser}
                         />
                       ) : (
                         <span className="text-xs text-gray-600">

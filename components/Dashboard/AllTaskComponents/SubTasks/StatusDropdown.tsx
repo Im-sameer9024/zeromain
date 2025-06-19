@@ -20,6 +20,7 @@ interface StatusDropdownProps {
     currentStatus: string;
     totalTimeInSeconds: number;
     onStatusUpdated: () => void;
+    assignedToUser: { id: string; name: string; email: string } | null; // Add assignedToUser prop
 }
 
 const updateSubTaskStatus = async (subtaskId: string, payload: UpdateStatusPayload) => {
@@ -54,6 +55,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
     currentStatus,
     totalTimeInSeconds,
     onStatusUpdated,
+    assignedToUser, // Destructure the new prop
 }) => {
     const [time, setTime] = useState(totalTimeInSeconds || 0);
     const [isRunning, setIsRunning] = useState(currentStatus === "IN_PROGRESS");
@@ -61,6 +63,9 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
     const queryClient = useQueryClient();
     const { cookieData } = useAppContext();
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Check if the current user is the assigned user or an admin
+    const isAssignedUser = cookieData?.id === assignedToUser?.id || cookieData?.role === "Admin";
 
     // Status color mapping for timer text (no bg or border)
     const getStatusColors = (status: string) => {
@@ -114,7 +119,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
     }, [totalTimeInSeconds, currentStatus]);
 
     useEffect(() => {
-        if (isRunning) {
+        if (isRunning && isAssignedUser) { // Only run timer if user is assigned
             timerRef.current = setInterval(() => {
                 setTime((prev) => prev + 1);
             }, 1000);
@@ -127,9 +132,14 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
                 clearInterval(timerRef.current);
             }
         };
-    }, [isRunning]);
+    }, [isRunning, isAssignedUser]);
 
     const updateStatus = (status: string) => {
+        if (!isAssignedUser) {
+            toast.error("Only the assigned user or an admin can update the status.");
+            return;
+        }
+
         const payload: UpdateStatusPayload = {
             taskId,
             status,
@@ -180,7 +190,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
                     <Button
                         onClick={handleCancelComplete}
                         variant="destructive"
-                        disabled={statusMutation.isPending}
+                        disabled={statusMutation.isPending || !isAssignedUser}
                         className="flex items-center gap-2"
                     >
                         <X className="w-4 h-4" />
@@ -190,7 +200,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
                         onClick={handleConfirmComplete}
                         variant="default"
                         className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-                        disabled={statusMutation.isPending}
+                        disabled={statusMutation.isPending || !isAssignedUser}
                     >
                         <Check className="w-4 h-4" />
                         {statusMutation.isPending ? "Completing..." : "Complete"}
@@ -209,24 +219,24 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
                             {!isRunning ? (
                                 <button
                                     onClick={handleStart}
-                                    disabled={statusMutation.isPending}
-                                    className="border-red-500 text-red-500 border bg-transparent hover:bg-red-50 text-xs py-1 px-2 rounded-sm"
+                                    disabled={statusMutation.isPending || !isAssignedUser}
+                                    className={`border-red-500 text-red-500 border bg-transparent hover:bg-red-50 text-xs py-1 px-2 rounded-sm ${!isAssignedUser ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
                                     Start
                                 </button>
                             ) : (
                                 <button
                                     onClick={handleStop}
-                                    disabled={statusMutation.isPending}
-                                    className="border-red-500 bg-red-500 text-white hover:bg-red-600 text-xs py-1 px-2 rounded-sm border"
+                                    disabled={statusMutation.isPending || !isAssignedUser}
+                                    className={`border-red-500 bg-red-500 text-white hover:bg-red-600 text-xs py-1 px-2 rounded-sm border ${!isAssignedUser ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
                                     Stop
                                 </button>
                             )}
                             <button
                                 onClick={handleFinish}
-                                disabled={statusMutation.isPending}
-                                className="border-black text-black border bg-transparent hover:bg-gray-50 text-xs py-1 px-2 rounded-sm "
+                                disabled={statusMutation.isPending || !isAssignedUser}
+                                className={`border-black text-black border bg-transparent hover:bg-gray-50 text-xs py-1 px-2 rounded-sm ${!isAssignedUser ? "opacity-50 cursor-not-allowed" : ""}`}
                             >
                                 Finish
                             </button>
@@ -250,7 +260,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
                 )}
             </div>
 
-            <Popup openModal={showConfirmModal} content={confirmationContent} />
+            <Popup openModal={showConfirmModal && isAssignedUser} content={confirmationContent} />
         </>
     );
 };
