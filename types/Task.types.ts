@@ -8,6 +8,12 @@ export interface User {
   updatedAt: string;
 }
 
+export interface TagDataProps {
+  id: string;
+  name: string;
+  color: string;
+}
+
 export interface Admin {
   id: string;
   name: string;

@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import Cookies from "js-cookie";
-import { TagDataProps, TaskProps } from "@/types/Task.types";
+import { TagDataProps, TaskDataProps } from "@/types/Task.types";
 
 export interface UserData {
   id: string;
@@ -27,8 +27,8 @@ interface AppContextType {
   setCookieData: (data: UserData | null) => void;
   allTags: TagDataProps[];
   setAllTags: React.Dispatch<React.SetStateAction<TagDataProps[]>>;
-  allTasks: TaskProps[];
-  setAllTasks: React.Dispatch<React.SetStateAction<TaskProps[]>>;
+  allTasks: TaskDataProps[];
+  setAllTasks: React.Dispatch<React.SetStateAction<TaskDataProps[]>>;
   selectedTasksType: string;
   setSelectedTasksType: (value: string) => void;
   tagId: string | null;
@@ -64,7 +64,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [isCookieLoading, setIsCookieLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [allTags, setAllTags] = useState<TagDataProps[]>([]);
-  const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
+  const [allTasks, setAllTasks] = useState<TaskDataProps[]>([]);
   const [selectedTasksType, setSelectedTasksType] = useState("Created");
   const [tagId, setTagId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);

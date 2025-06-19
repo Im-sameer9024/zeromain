@@ -3,13 +3,13 @@
 import TableComponent from "@/components/TableComponent";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { CiEdit } from "react-icons/ci";
-import { TagDataProps } from "@/types/Task.types";
 import useGetTags from "../../Hooks/useGetTags";
 import { useAppContext } from "@/context/AppContext";
 import useDeleteTag from "../../Hooks/useDeleteTag";
 import Popup from "@/components/Modal/Popup";
 import UpdateTagForm from "./UpdateTagForm";
 import { useEffect, useTransition } from "react";
+import { TagDataProps } from "@/types/Task.types";
 
 interface ColumnProps {
   header: string;

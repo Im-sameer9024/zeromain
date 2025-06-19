@@ -1,7 +1,7 @@
 // components/UpdateTagForm.tsx
 "use client";
 
-import type { Tag, TagForm } from "@/types/other"
+import type {  TagForm } from "@/types/other"
 import { SubmitHandler } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";

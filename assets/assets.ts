@@ -1,4 +1,3 @@
-import { TagDataProps } from "@/types/Task.types";
 export interface userTableDataProps {
   id: number;
   name: string;
@@ -7,8 +6,16 @@ export interface userTableDataProps {
   teamMembers: string;
 }
 
+interface TagTypeDataProps {
+  id: string;
+  name: string;
+  color: string;
+}
 
-export const tagsTableData:TagDataProps[] = [
+
+
+
+export const tagsTableData:TagTypeDataProps[] = [
   {
     id: "1",
     name: "#tag1",

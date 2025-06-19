@@ -15,7 +15,6 @@ import useUpdateStatus from "./Hooks/useUpdateStatus";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import useAssignedTasks from "./Hooks/useAssignedTasks";
 import useColumns from "./useColumns";
-import { Tag } from "@/types/other";
 import { TaskDataProps } from "@/types/Task.types";
 
 // Time tracking hook
@@ -455,7 +454,7 @@ const DashboardUsers = () => {
 
         <TableCell>
           <div className="items-center justify-center flex-wrap flex gap-2">
-            {item.tags?.map((tag: Tag, i: number) => (
+            {item.tags?.map((tag, i) => (
               <span
                 className="odd:bg-[#f7e9ee] rounded odd:text-[#E8618CFF] p-1 w-fit px-2 even:text-[#636AE8FF] even:bg-[#F2F2FDFF] text-xs"
                 key={tag?.id || i}
