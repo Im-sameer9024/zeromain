@@ -43,7 +43,7 @@ const columns: columnsProps[] = [
     classes: "hidden lg:table-cell font-bold text-md text-text text-center ",
   },
   {
-    header: "Team Members",
+    header: "SubTasks Assigned",
     accessor: "teamMembers",
     classes: "hidden lg:table-cell font-bold text-md text-text text-center ",
   },

@@ -1,5 +1,5 @@
 "use client";
-
+//@ts-ignore
 import { Input } from "../ui/input";
 import { Bell, Clock, Search, CheckCheck, Timer, LogOut } from "lucide-react";
 import { Button } from "../ui/button";

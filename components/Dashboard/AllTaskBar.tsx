@@ -1,4 +1,5 @@
 "use client";
+//@ts-ignore
 
 import { Funnel, SortDescIcon, Table, User } from "lucide-react";
 import { FaEllipsisH } from "react-icons/fa";

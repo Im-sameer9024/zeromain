@@ -13,6 +13,7 @@ import { TagDataProps, TaskProps } from "@/types/Task.types";
 interface UserData {
   id: string;
   role: string;
+  companyAdminId?: string;
   // Add other user properties as needed
 }
 
@@ -28,13 +29,12 @@ interface AppContextType {
   setAllTasks: (tasks: TaskProps[]) => void;
   selectedTasksType: string;
   setSelectedTasksType: (value: string) => void;
-  tagId:string|null;
-  setTagId:(value:string|null)=>void;
-  userId:string|null;
-  setUserId:(value:string|null)=>void;
-  openAddModal:boolean;
-  setOpenAddModal:(value:boolean)=>void;
- 
+  tagId: string | null;
+  setTagId: (value: string | null) => void;
+  userId: string | null;
+  setUserId: (value: string | null) => void;
+  openAddModal: boolean;
+  setOpenAddModal: (value: boolean) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -47,15 +47,14 @@ export const AppContext = createContext<AppContextType>({
   setAllTags: () => {},
   allTasks: [],
   setAllTasks: () => {},
-  selectedTasksType: '',
+  selectedTasksType: "",
   setSelectedTasksType: () => {},
   tagId: " ",
   setTagId: () => {},
-  userId: '',
+  userId: "",
   setUserId: () => {},
-  openAddModal:false,
-  setOpenAddModal:() =>{}
-  
+  openAddModal: false,
+  setOpenAddModal: () => {},
 });
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
@@ -64,21 +63,18 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState(false);
   const [allTags, setAllTags] = useState<TagDataProps[]>([]);
   const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
-    const [selectedTasksType, setSelectedTasksType] = useState("Created");
-    const[tagId,setTagId] = useState<string | null>(null);
-    const[userId,setUserId] = useState<string | null>(null);
-    const[openAddModal,setOpenAddModal] = useState(false)
-
-
-
+  const [selectedTasksType, setSelectedTasksType] = useState("Created");
+  const [tagId, setTagId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [openAddModal, setOpenAddModal] = useState(false);
 
   useEffect(() => {
     const loadCookieData = () => {
       setIsCookieLoading(true);
       const cookie = Cookies.get("cookieData");
-      
+
       if (cookie) {
-        console.log("context")
+        console.log("context");
         try {
           const parsedData = JSON.parse(cookie) as UserData;
           if (parsedData.id && parsedData.role) {
@@ -91,7 +87,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
           console.error("Error parsing cookie data", error);
           Cookies.remove("cookieData");
         }
-        console.log("context")
+        console.log("context");
       }
       setIsCookieLoading(false);
     };
@@ -101,9 +97,9 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (cookieData) {
-      setIsCookieLoading(false)
+      setIsCookieLoading(false);
     }
-  }, [cookieData])
+  }, [cookieData]);
 
   return (
     <AppContext.Provider
@@ -117,7 +113,14 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         setAllTags,
         allTasks,
         setAllTasks,
-        selectedTasksType, setSelectedTasksType,tagId,setTagId,userId,setUserId,openAddModal,setOpenAddModal
+        selectedTasksType,
+        setSelectedTasksType,
+        tagId,
+        setTagId,
+        userId,
+        setUserId,
+        openAddModal,
+        setOpenAddModal,
       }}
     >
       {children}

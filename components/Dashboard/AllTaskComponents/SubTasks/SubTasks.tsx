@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -8,15 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, MessageSquare } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import AddSubTaskModal from "./AddSubTaskModal";
 import FeedbackDropdown from "./FeedbackDropdown";
 import StatusDropdown from "./StatusDropdown";
-import { Checkbox } from "@/components/ui/checkbox";
-import toast from "react-hot-toast";
-import { useAppContext } from "@/context/AppContext";
 
 interface SubTask {
   id: string;
@@ -31,7 +27,7 @@ interface SubTask {
   feedback: string | null;
   createdAt: string;
   updatedAt: string;
-  totalTimeInSeconds: number; // Added new field
+  totalTimeInSeconds: number;
   assignedToUser: {
     id: string;
     name: string;
@@ -68,7 +64,6 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { cookieData } = useAppContext();
 
   const handleSubTaskCreated = () => {
     refetch();
@@ -82,71 +77,7 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
   const handleFeedbackUpdated = () => {
     refetch();
   };
-
-  const handleDeleteSubTask = async (subtaskId: string) => {
-    try {
-      const response = await fetch(
-        `https://task-management-backend-kohl-omega.vercel.app/api/subtasks/delete-subtask/${subtaskId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete subtask");
-      }
-
-      await refetch();
-      toast.success("Subtask deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting subtask:", error);
-      toast.error("Failed to delete subtask");
-    }
-  };
-
-  const handleToggleCompletion = async (
-    subtaskId: string,
-    currentStatus: string,
-    subTask: SubTask
-  ) => {
-    const newStatus = currentStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
-
-    const payload: any = {
-      taskId: subTask.taskId,
-      status: newStatus,
-      feedback: subTask.feedback || null,
-    };
-
-    if (cookieData?.role === "Admin") {
-      payload.adminId = cookieData.id;
-    } else {
-      payload.userId = cookieData?.id;
-    }
-
-    try {
-      const response = await fetch(
-        `https://task-management-backend-kohl-omega.vercel.app/api/subtasks/update-subtask/${subtaskId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update subtask");
-      }
-
-      await refetch();
-      toast.success("Subtask status updated!");
-    } catch (error) {
-      console.error("Error updating subtask:", error);
-      toast.error("Failed to update subtask status");
-    }
-  };
-
+ 
   if (isLoading) {
     return <div>Loading subtasks...</div>;
   }

@@ -1,5 +1,5 @@
 "use client";
-
+//@ts-ignore
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";

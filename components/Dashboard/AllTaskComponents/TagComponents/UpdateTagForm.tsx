@@ -14,11 +14,12 @@ import { HexColorPicker } from "react-colorful";
 import useUpdateTag from "../../Hooks/useUpdateTag";
 import { useEffect } from "react";
 import useGetTags from "../../Hooks/useGetTags";
+import { Tag } from "@/types/Task.types";
 
 const UpdateTagForm = () => {
   const { setOpen, tagId } = useAppContext();
   const { allTags } = useGetTags();
-  const tagToEdit = allTags.find(tag => tag.id === tagId);
+  const tagToEdit = allTags.find((tag:Tag) => tag.id === tagId);
 
   const {
     register,
@@ -59,7 +60,7 @@ const UpdateTagForm = () => {
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-3 text-[#494A4BFF] space-y-6">
+      <form onSubmit={handleSubmit((data) => onSubmit(data))} className="mt-3 text-[#494A4BFF] space-y-6">
         {/* Name Field */}
         <div className="flex flex-col gap-2">
           <label className="font-Inter font-semibold" htmlFor="name">

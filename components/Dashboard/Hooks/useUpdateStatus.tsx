@@ -1,3 +1,4 @@
+//@ts-ignore
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -11,27 +12,62 @@ const useUpdateStatus = () => {
     status: string
   ) => {
     e.stopPropagation();
+
     // Check if we have the required data
     if (!cookieData?.id || !cookieData?.role) {
+      toast.error("Authentication required");
       return;
     }
 
-    const loadingId = toast.loading("Update task Status...");
+    const loadingId = toast.loading(
+      status === "IN_PROGRESS"
+        ? "Starting task..."
+        : status === "PENDING"
+        ? "Stopping task..."
+        : status === "COMPLETED"
+        ? "Completing task..."
+        : "Updating task status..."
+    );
 
     try {
       const response = await axios.put(
         `https://task-management-backend-kohl-omega.vercel.app/api/tasks/update-task/${taskId}`,
-        { status }
+        { status },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            // Add authorization headers if needed
+            // 'Authorization': `Bearer ${cookieData.token}`,
+          },
+        }
       );
 
-      console.log("response is here", response);
+      console.log("Update response:", response.data);
 
-      // Adjust based on your actual API response structure
-      toast.success("Tasks Updated Successfully", { id: loadingId });
-    } catch (err) {
-      console.error("Error fetching tasks:", err);
-      toast.error("Failed to fetch tasks", { id: loadingId });
-    }finally{
+      // Show success message based on status
+      const successMessage =
+        status === "IN_PROGRESS"
+          ? "Task started successfully!"
+          : status === "PENDING"
+          ? "Task stopped successfully!"
+          : status === "COMPLETED"
+          ? "Task completed successfully!"
+          : "Task updated successfully!";
+
+      toast.success(successMessage, { id: loadingId });
+
+      return response.data;
+    } catch (err: any) {
+      console.error("Error updating task status:", err);
+
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to update task status";
+
+      toast.error(errorMessage, { id: loadingId });
+      throw err;
+    } finally {
       toast.dismiss(loadingId);
     }
   };

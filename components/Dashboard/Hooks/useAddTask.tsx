@@ -1,5 +1,4 @@
 "use client";
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
@@ -77,8 +76,8 @@ const useAddTask = () => {
         "https://task-management-backend-kohl-omega.vercel.app/api/tasks/create-task",
         formData
       );
-
-      setAllTasks((prevTasks: TaskDataProps[]) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setAllTasks((prevTasks: TaskProps[]) => {
         if (!response.data?.data) return prevTasks;
         const newTasks = [...prevTasks]; // Create a copy
         newTasks.unshift(response.data.data as TaskDataProps); // Add to beginning
