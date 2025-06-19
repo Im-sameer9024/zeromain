@@ -1,5 +1,7 @@
 "use client"
 
+import { SubmitHandler } from "react-hook-form";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -7,7 +9,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { X } from "lucide-react";
+
+import type { TagForm } from "@/types/other"
 import { HexColorPicker } from "react-colorful";
 
 import useAddTag from "../../Hooks/useAddTag";
@@ -26,8 +29,11 @@ const AddTagForm = () => {
     showPicker,
     setShowPicker,
     setOpenAddModal
-    
   } = useAddTag();
+
+  const handleFormSubmit: SubmitHandler<TagForm> = (data) => {
+    onSubmit(data);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
@@ -38,15 +44,14 @@ const AddTagForm = () => {
           variant="ghost"
           className="text-text hover:cursor-pointer hover:bg-transparent"
         >
-          <X />
+          ✕
         </Button>
       </div>
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(handleFormSubmit)}
         className="mt-3 text-[#494A4BFF] space-y-6"
       >
-        {/* Name Field */}
         <div className="flex flex-col gap-2">
           <label className="font-Inter font-semibold" htmlFor="name">
             Name
@@ -69,18 +74,16 @@ const AddTagForm = () => {
           )}
         </div>
 
-        {/* Color Selection */}
+
         <div className="space-y-4">
           <label className="font-Inter font-semibold">Color</label>
 
           <div className="flex items-center gap-4">
-            {/* Selected Color Preview */}
             <div
               className="w-16 h-16 rounded-md border"
               style={{ backgroundColor: selectedColor }}
             />
 
-            {/* Color Picker Popover */}
             <Popover open={showPicker} onOpenChange={setShowPicker}>
               <PopoverTrigger asChild>
                 <Button variant="outline" type="button">

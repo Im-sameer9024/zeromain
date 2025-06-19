@@ -20,11 +20,17 @@ const useDeleteUser = () => {
   const mutation = useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
-      queryClient.invalidateQueries(["companyUsers", cookieData?.id]);
+      if (cookieData?.id) {
+        queryClient.invalidateQueries({ queryKey: ["companyUsers", cookieData.id] });
+      }
       toast.success("User deleted successfully");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to delete user");
+    onError: (error) => {
+      // If using AxiosError type, you can import and use it for better type safety:
+      // import type { AxiosError } from "axios";
+      // onError: (error: AxiosError) => { ... }
+      const err = error as unknown as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to delete user");
     },
   });
 

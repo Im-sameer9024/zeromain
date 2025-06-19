@@ -1,4 +1,4 @@
-//@ts-ignore
+//@ts-error-ignore
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -42,8 +42,6 @@ const useUpdateStatus = () => {
         }
       );
 
-      console.log("Update response:", response.data);
-
       // Show success message based on status
       const successMessage =
         status === "IN_PROGRESS"
@@ -57,8 +55,9 @@ const useUpdateStatus = () => {
       toast.success(successMessage, { id: loadingId });
 
       return response.data;
-    } catch (err: any) {
-      console.error("Error updating task status:", err);
+    } catch (error) {
+      console.error("Error updating task status:", error);
+      const err = error as unknown as { response?: { data?: { message?: string } }, message?: string };
 
       const errorMessage =
         err.response?.data?.message ||

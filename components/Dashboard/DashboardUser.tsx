@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-//@ts-ignore
+//@ts-error-ignore
 import React, { useEffect, useTransition, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,7 @@ import useUpdateStatus from "./Hooks/useUpdateStatus";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import useAssignedTasks from "./Hooks/useAssignedTasks";
 import useColumns from "./useColumns";
+import { Tag } from "@/types/other";
 
 // Time tracking hook
 const useTimeTracking = (
@@ -95,7 +96,7 @@ const TimeTracker = ({
   totalTimeInSeconds?: number;
   updatedAt?: string; // Add this prop
 }) => {
-  const { currentTime, formattedTime, isRunning } = useTimeTracking(
+  const { formattedTime, isRunning } = useTimeTracking(
     taskId,
     status,
     totalTimeInSeconds || 0,
@@ -139,6 +140,7 @@ const DashboardUsers = () => {
 
   const {
     assignedTasks,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isLoading: isAssignedLoading,
     refetchAssignedTasks,
   } = useAssignedTasks();
@@ -454,7 +456,7 @@ const DashboardUsers = () => {
 
         <TableCell>
           <div className="items-center justify-center flex-wrap flex gap-2">
-            {item.tags?.map((tag, i) => (
+            {item.tags?.map((tag: Tag, i: number) => (
               <span
                 className="odd:bg-[#f7e9ee] rounded odd:text-[#E8618CFF] p-1 w-fit px-2 even:text-[#636AE8FF] even:bg-[#F2F2FDFF] text-xs"
                 key={tag?.id || i}

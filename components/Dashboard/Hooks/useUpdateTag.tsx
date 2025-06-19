@@ -1,6 +1,6 @@
 // hooks/useUpdateTag.ts
 "use client";
-//@ts-ignore
+//@ts-error-ignore
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
@@ -42,12 +42,13 @@ const useUpdateTag = () => {
     mutationFn: updateTag,
     onSuccess: () => {
       
-      queryClient.invalidateQueries(["tags", cookieData?.id]);
+      queryClient.invalidateQueries({ queryKey: ["tags", cookieData?.id] });
       toast.success("Tag updated successfully");
       setOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to update tag");
+    onError: (error) => {
+       const err = error as unknown as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to update tag");
     },
   });
 
@@ -62,7 +63,7 @@ const useUpdateTag = () => {
     handleSubmit,
     onSubmit: mutation.mutate,
     errors,
-    isSubmitting: isSubmitting || mutation.isLoading,
+    isSubmitting: isSubmitting || mutation.status === "pending",
     selectedColor,
     setSelectedColor,
     handleColorSelect,

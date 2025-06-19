@@ -1,9 +1,10 @@
 "use client";
-//@ts-ignore
+
+import type { Tag } from "@/types/other"
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
-import { useEffect } from "react";
 
 const useGetTags = () => {
   const { cookieData } = useAppContext();
@@ -19,7 +20,7 @@ const useGetTags = () => {
   };
 
   const {
-    data: allTags = [],
+    data: allTags = [] as Tag[],
     isLoading,
     isError,
     error,

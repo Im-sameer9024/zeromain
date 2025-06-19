@@ -43,16 +43,13 @@ const useAddUser = () => {
       companyAdminId: cookieData?.id,
     };
 
-    console.log("actualdaa ", actualData);
-
     const toastId = toast.loading("Creating user...");
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const response = await axios.post(
         "https://task-management-backend-kohl-omega.vercel.app/api/auth/register-user",
         actualData
       );
-
-      console.log("response is here", response);
 
       toast.success("User created successfully!", { id: toastId });
       setOpenAddModal(false);

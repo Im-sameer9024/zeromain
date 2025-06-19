@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// hooks/useAddTag.ts
 "use client";
 
-import axios from "axios";
+import type { TagForm } from "@/types/other"
+
+import axios, { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 
-interface TagForm {
-  name: string;
-  color: string;
+interface TagResponse {
+  data?: any;
 }
 
 const useAddTag = () => {
-  const { cookieData, setOpenAddModal,openAddModal } = useAppContext();
+  const { cookieData, setOpenAddModal, openAddModal } = useAppContext();
   const queryClient = useQueryClient();
-  const [showPicker, setShowPicker] = useState(false);
-  const [selectedColor, setSelectedColor] = useState("#E89623");
+  const [showPicker, setShowPicker] = useState<boolean>(false);
+  const [selectedColor, setSelectedColor] = useState<string>("#E89623");
 
   const {
     register,
@@ -33,8 +33,8 @@ const useAddTag = () => {
     },
   });
 
-  const addTag = async (data: TagForm) => {
-    const response = await axios.post(
+  const addTag = async (data: TagForm): Promise<any> => {
+    const response = await axios.post<TagResponse>(
       "https://task-management-backend-kohl-omega.vercel.app/api/tags/create-tag",
       {
         name: data.name,
@@ -42,9 +42,7 @@ const useAddTag = () => {
         createdBy: cookieData?.id,
       },
     );
-    console.log("response of addTAg",response)
     debugger;
-
 
     return response.data?.data;
   };
@@ -52,17 +50,17 @@ const useAddTag = () => {
   const mutation = useMutation({
     mutationFn: addTag,
     onSuccess: () => {
-      queryClient.invalidateQueries(["tags", cookieData?.id]);
+      queryClient.invalidateQueries({ queryKey: ["tags", cookieData?.id] });
       toast.success("Tag created successfully");
       setOpenAddModal(false);
       reset();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<any>) => {
       toast.error(error.response?.data?.message || "Failed to create tag");
     },
   });
 
-  const handleColorSelect = (color: string) => {
+  const handleColorSelect = (color: string): void => {
     setSelectedColor(color);
     setValue("color", color);
     setShowPicker(false);
@@ -73,14 +71,15 @@ const useAddTag = () => {
     handleSubmit,
     onSubmit: mutation.mutate,
     errors,
-    isSubmitting: isSubmitting || mutation.isLoading,
+    isSubmitting: isSubmitting || mutation.status === "pending",
     selectedColor,
-    setSelectedColor,
+    setSelectedColor: setSelectedColor as Dispatch<SetStateAction<string>>,
     handleColorSelect,
     showPicker,
-    setShowPicker,
+    setShowPicker: setShowPicker as Dispatch<SetStateAction<boolean>>,
     setValue,
-    setOpenAddModal,openAddModal
+    setOpenAddModal,
+    openAddModal
   };
 };
 
