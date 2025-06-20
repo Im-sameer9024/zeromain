@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 import useGetTasks from "./useGetTasks";
 import { TaskDataProps } from "@/types/Task.types";
 
-
 const useAddTask = () => {
   const { cookieData, open, setOpen, setAllTasks } = useAppContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -34,7 +33,7 @@ const useAddTask = () => {
 
   const onSubmit = async (data: any) => {
     const toastId = toast.loading("Creating task...");
-
+    console.log("Form data:", data);
     if (!cookieData) {
       toast.loading("Please login to create a task", {
         id: toastId,
@@ -60,16 +59,13 @@ const useAddTask = () => {
         adminId: adId,
         userId: usId,
         tagIds: data.tags,
-        attachments: [
-          "https://cdn.example.com/doc1.pdf",
-          "https://cdn.example.com/image1.png",
-        ],
+        attachments: data.attachments,
       };
 
       debugger;
       // Submit to API
-      const response = await axios.post<{data: TaskDataProps}>(
-        "https://task-management-backend-kohl-omega.vercel.app/api/tasks/create-task",
+      const response = await axios.post<{ data: TaskDataProps }>(
+        "https://task-management-backend-seven-tan.vercel.app/api/tasks/create-task",
         formData
       );
 
@@ -93,10 +89,35 @@ const useAddTask = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      setValue("attachments", [...watch("attachments"), ...newFiles]);
+
+      const formData = new FormData();
+      for (const file of newFiles) {
+        formData.append("attachments", file);
+      }
+
+      try {
+        const res = await fetch(
+          "https://task-management-backend-seven-tan.vercel.app/api/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const result = await res.json();
+        console.log("Instant upload result:", result);
+
+        setValue("attachments", [
+          ...watch("attachments"),
+
+          ...result.files, // ✅ Use the uploaded file metadata from response
+        ]);
+      } catch (error) {
+        console.error("Instant upload failed:", error);
+      }
     }
   };
 

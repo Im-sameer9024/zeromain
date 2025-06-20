@@ -29,7 +29,7 @@ const updateSubTaskFeedback = async (
   payload: UpdateFeedbackPayload
 ) => {
   const response = await fetch(
-    `https://task-management-backend-kohl-omega.vercel.app/api/subtasks/update-subtask/${subtaskId}`,
+    `https://task-management-backend-seven-tan.vercel.app/api/subtasks/update-subtask/${subtaskId}`,
     {
       method: "PUT",
       headers: {
@@ -139,7 +139,9 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
         className={`flex items-center gap-2 ${currentFeedbackColors.bg} ${currentFeedbackColors.text} ${currentFeedbackColors.border} text-xs px-2 rounded-xs py-0.5 border opacity-50 cursor-not-allowed`}
         title="You cannot provide feedback for your own subtask"
       >
-        {currentFeedback || <MessageSquare className={`w-4 h-4 ${currentFeedbackColors.icon}`} />}
+        {currentFeedback || (
+          <MessageSquare className={`w-4 h-4 ${currentFeedbackColors.icon}`} />
+        )}
       </span>
     );
   }
@@ -172,7 +174,9 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
             {feedbackMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" /> // Show spinner
             ) : (
-              <MessageSquare className={`w-4 h-4 ${currentFeedbackColors.icon}`} />
+              <MessageSquare
+                className={`w-4 h-4 ${currentFeedbackColors.icon}`}
+              />
             )}
           </button>
         </DropdownMenuTrigger>
@@ -183,7 +187,9 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
             <DropdownMenuItem
               key={option}
               onClick={() => handleFeedbackSelect(option)}
-              disabled={feedbackMutation.isPending || currentFeedback === option}
+              disabled={
+                feedbackMutation.isPending || currentFeedback === option
+              }
               className={currentFeedback === option ? "bg-gray-200" : ""}
             >
               {option}

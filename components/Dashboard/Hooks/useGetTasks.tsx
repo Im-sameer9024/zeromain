@@ -12,60 +12,63 @@ interface TaskFetchOptions {
 const useGetTasks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { cookieData, isCookieLoading, allTasks, setAllTasks } = useAppContext();
+  const { cookieData, isCookieLoading, allTasks, setAllTasks } =
+    useAppContext();
 
-  const fetchTasks = useCallback(async (cancelToken: CancelTokenSource) => {
-
-    if (!cookieData) {
-      setLoading(false);
-      return;
-    }
-
-    const loadingId = toast.loading("Fetching tasks...");
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const params: TaskFetchOptions = {};
-      if (cookieData.role === "Admin") {
-        params.adminId = cookieData.id;
-      } else {
-        params.userId = cookieData.id;
+  const fetchTasks = useCallback(
+    async (cancelToken: CancelTokenSource) => {
+      if (!cookieData) {
+        setLoading(false);
+        return;
       }
 
-      const response = await axios.get(
-        "https://task-management-backend-kohl-omega.vercel.app/api/tasks/get-tasks",
-        {
-          params,
-          cancelToken: cancelToken.token,
-          timeout: 10000,
+      const loadingId = toast.loading("Fetching tasks...");
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const params: TaskFetchOptions = {};
+        if (cookieData.role === "Admin") {
+          params.adminId = cookieData.id;
+        } else {
+          params.userId = cookieData.id;
         }
-      );
 
+        const response = await axios.get(
+          "https://task-management-backend-seven-tan.vercel.app/api/tasks/get-tasks",
+          {
+            params,
+            cancelToken: cancelToken.token,
+            timeout: 10000,
+          }
+        );
 
+        if (!response.data?.data || !Array.isArray(response.data.data)) {
+          throw new Error("Invalid tasks data structure");
+        }
 
-      if (!response.data?.data || !Array.isArray(response.data.data)) {
-        throw new Error("Invalid tasks data structure");
+        setAllTasks(response.data.data);
+        toast.success("Tasks loaded successfully", {
+          id: loadingId,
+          duration: 2000,
+        });
+      } catch (err) {
+        if (!axios.isCancel(err)) {
+          const errorMessage = axios.isAxiosError(err)
+            ? err.response?.data?.message || err.message
+            : "Failed to fetch tasks";
+          setError(errorMessage);
+          toast.error(`Error: ${errorMessage}`, { id: loadingId });
+        }
+      } finally {
+        setLoading(false);
+        toast.dismiss(loadingId);
       }
+    },
+    [isCookieLoading, cookieData]
+  );
 
-      setAllTasks(response.data.data);
-      toast.success("Tasks loaded successfully", { id: loadingId,duration:2000 });
-    } catch (err) {
-      if (!axios.isCancel(err)) {
-        const errorMessage = axios.isAxiosError(err)
-          ? err.response?.data?.message || err.message
-          : "Failed to fetch tasks";
-        setError(errorMessage);
-        toast.error(`Error: ${errorMessage}`, { id: loadingId });
-      }
-    } finally {
-      setLoading(false);
-      toast.dismiss(loadingId);
-    }
-  }, [isCookieLoading,cookieData]);
-
-  
   useEffect(() => {
     if (isCookieLoading) return;
 

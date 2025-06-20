@@ -14,11 +14,9 @@ interface FormValues {
 }
 
 const useAddUser = () => {
+  const { cookieData, openAddModal, setOpenAddModal } = useAppContext();
 
-  const { cookieData,openAddModal,setOpenAddModal } = useAppContext();
-
-
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -47,17 +45,16 @@ const useAddUser = () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const response = await axios.post(
-        "https://task-management-backend-kohl-omega.vercel.app/api/auth/register-user",
+        "https://task-management-backend-seven-tan.vercel.app/api/auth/register-user",
         actualData
       );
 
       toast.success("User created successfully!", { id: toastId });
       setOpenAddModal(false);
-       // Invalidate and refetch the users query
+      // Invalidate and refetch the users query
       await queryClient.invalidateQueries({
         queryKey: ["companyUsers", cookieData?.id],
       });
-      
     } catch (error: any) {
       console.error("Registration error:", error);
       const errorMessage =

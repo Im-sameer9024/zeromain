@@ -51,9 +51,9 @@ const useNavbar = () => {
   const { cookieData } = useAppContext();
 
   const notificationBaseURL =
-    "https://task-management-backend-kohl-omega.vercel.app/api/notifications";
+    "https://task-management-backend-seven-tan.vercel.app/api/notifications";
   const clockBaseURL =
-    "https://task-management-backend-kohl-omega.vercel.app/api/worksession";
+    "https://task-management-backend-seven-tan.vercel.app/api/worksession";
 
   // Modal click outside handler
   useEffect(() => {
@@ -237,7 +237,9 @@ const useNavbar = () => {
       }
     } catch (err) {
       // @ts-error-ignore
-      const error = err as unknown as { response?: { data?: { message?: string }, status?: number } };
+      const error = err as unknown as {
+        response?: { data?: { message?: string }; status?: number };
+      };
       if (error?.response?.status === 404) {
         setClockState((prev) => ({
           ...prev,
@@ -278,7 +280,9 @@ const useNavbar = () => {
 
       toast.success("Clocked in successfully!", { id: toastId });
     } catch (err) {
-      const error = err as unknown as { response?: { data?: { message?: string } } };
+      const error = err as unknown as {
+        response?: { data?: { message?: string } };
+      };
       console.error("Error clocking in:", error);
       let errorMessage = "Failed to clock in";
 
@@ -329,7 +333,9 @@ const useNavbar = () => {
         }
       );
     } catch (err) {
-      const error = err as unknown as { response?: { data?: { message?: string } } };
+      const error = err as unknown as {
+        response?: { data?: { message?: string } };
+      };
       console.error("Error clocking out:", error);
       let errorMessage = "Failed to clock out";
 

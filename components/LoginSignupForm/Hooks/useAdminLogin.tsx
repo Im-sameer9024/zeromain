@@ -35,7 +35,7 @@ const useAdminLogin = () => {
     const toastId = toast.loading("Logging in...");
     try {
       const response = await axios.post(
-        "https://task-management-backend-kohl-omega.vercel.app/api/auth/login-company-admin",
+        "https://task-management-backend-seven-tan.vercel.app/api/auth/login-company-admin",
         data
       );
 
@@ -44,7 +44,6 @@ const useAdminLogin = () => {
       }
 
       const responseData = structuredClone(response.data?.data);
-
 
       setCookieData(responseData);
 

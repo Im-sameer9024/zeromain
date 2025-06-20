@@ -31,7 +31,7 @@ interface CreateSubTaskPayload {
 
 const createSubTask = async (payload: CreateSubTaskPayload) => {
   const response = await fetch(
-    "https://task-management-backend-kohl-omega.vercel.app/api/subtasks/create-subtask",
+    "https://task-management-backend-seven-tan.vercel.app/api/subtasks/create-subtask",
     {
       method: "POST",
       headers: {
@@ -85,7 +85,7 @@ const AddSubTaskModal = ({
       console.error("Error creating subtask:", error);
       toast.error("Failed to create subtask");
     },
-});
+  });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchUsers = useCallback(
@@ -93,28 +93,26 @@ const AddSubTaskModal = ({
       try {
         setLoadingUsers(true);
         const response = await fetch(
-          `https://task-management-backend-kohl-omega.vercel.app/api/auth/company-users/${
+          `https://task-management-backend-seven-tan.vercel.app/api/auth/company-users/${
             cookieData?.role === "Admin"
               ? cookieData?.id
               : cookieData?.companyAdminId
           }?search=${term}`
         );
 
-          if (!response.ok) {
-            throw new Error("Failed to fetch users");
-          }
-
-          const data = await response.json();
-          setUsers(data.data.users || []);
-        } catch (error) {
-          console.error("Error fetching users:", error);
-          toast.error("Failed to load users");
-        } finally {
-          setLoadingUsers(false);
+        if (!response.ok) {
+          throw new Error("Failed to fetch users");
         }
-      },
-      300
-    ),
+
+        const data = await response.json();
+        setUsers(data.data.users || []);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        toast.error("Failed to load users");
+      } finally {
+        setLoadingUsers(false);
+      }
+    }, 300),
     [cookieData?.id]
   );
 

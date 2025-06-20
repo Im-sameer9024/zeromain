@@ -42,7 +42,7 @@ interface SubTasksProps {
 
 const fetchSubTasks = async (taskId: string): Promise<SubTask[]> => {
   const response = await fetch(
-    `https://task-management-backend-kohl-omega.vercel.app/api/tasks/get-task/${taskId}`
+    `https://task-management-backend-seven-tan.vercel.app/api/tasks/get-task/${taskId}`
   );
   if (!response.ok) {
     throw new Error("Failed to fetch subtasks");
@@ -108,10 +108,18 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
               <TableHeader className="sticky top-0 bg-white z-10 border-b">
                 <TableRow>
                   <TableCell className="text-text font-medium">Name</TableCell>
-                  <TableCell className="text-text font-medium">Assigned To</TableCell>
-                  <TableCell className="text-text font-medium">Expected Time</TableCell>
-                  <TableCell className="text-text font-medium">Elapsed Time</TableCell>
-                  <TableCell className="text-text font-medium">Feedback</TableCell>
+                  <TableCell className="text-text font-medium">
+                    Assigned To
+                  </TableCell>
+                  <TableCell className="text-text font-medium">
+                    Expected Time
+                  </TableCell>
+                  <TableCell className="text-text font-medium">
+                    Elapsed Time
+                  </TableCell>
+                  <TableCell className="text-text font-medium">
+                    Feedback
+                  </TableCell>
                 </TableRow>
               </TableHeader>
               <TableBody>
