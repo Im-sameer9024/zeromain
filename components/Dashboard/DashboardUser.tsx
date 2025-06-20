@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import useAssignedTasks from "./Hooks/useAssignedTasks";
 import useColumns from "./useColumns";
 import { TaskDataProps } from "@/types/Task.types";
+import BoardView from "./BoardView";
 
 // Time tracking hook
 const useTimeTracking = (
@@ -133,7 +134,7 @@ const StatusIndicator = ({ status }: { status: string }) => {
 };
 
 const DashboardUsers = () => {
-  const { cookieData, selectedTasksType } = useAppContext();
+  const { cookieData, selectedTasksType,viewOfData  } = useAppContext();
   const { CreatedColumns, AssignedColumns } = useColumns();
 
   const {
@@ -160,7 +161,7 @@ const DashboardUsers = () => {
 
   const formatDueDate = (dateString: string) => {
     try {
-      return format(parseISO(dateString), "MMM dd, yyyy h:mm a");
+      return format(parseISO(dateString), "MMM dd, yyyy ");
     } catch {
       return "Invalid date";
     }
@@ -235,6 +236,8 @@ const DashboardUsers = () => {
     }
   };
 
+  
+
   const CreateTaskRenderRow = (item: TaskDataProps) => {
     if (!item) return null;
 
@@ -251,29 +254,23 @@ const DashboardUsers = () => {
           onClick={() => router.push(`/${role}/tasks/${item.id}`)}
           className="hover:underline"
         >
-          <h3 className="font-semibold font-Inter">{item.title}</h3>
+          <h3 className="font-semibold font-Inter">{item.title.length > 12 ? item.title.slice(0, 12) + "..." : item.title}</h3>
           <p className="text-xs text-gray-500 truncate max-w-[200px]">
             {item.description}
           </p>
         </TableCell>
 
         <TableCell className="hidden md:table-cell">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex justify-center">
-                <Image
-                  src={assginBy}
-                  alt="assignee"
-                  width={40}
-                  height={40}
-                  className="size-10 rounded-full"
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{item.createdByAdmin?.name || item.createdByUser?.name}</p>
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex justify-center">
+            <img
+              src={`https://api.dicebear.com/5.x/initials/svg?seed=${
+                item?.createdByAdmin?.name || item?.createdByUser?.name
+              }`}
+              alt="assignee"
+              loading="lazy"
+              className="size-10 rounded-full"
+            />
+          </div>
         </TableCell>
 
         <TableCell className="hidden md:table-cell">
@@ -506,29 +503,49 @@ const DashboardUsers = () => {
     );
   }
 
-  return (
-    <div className="bg-[#fafafbe9] p-1 rounded-md mt-10">
-      {selectedTasksType === "Created" && allTasks.length === 0 ? (
-        <div className="text-center text-gray-500 h-64 flex items-center justify-center">
-          No created tasks found.
-        </div>
-      ) : selectedTasksType === "Assigned" && assignedTasks.length === 0 ? (
-        <div className="text-center text-gray-500 h-64 flex items-center justify-center">
-          No assigned tasks found.
-        </div>
-      ) : selectedTasksType === "Created" ? (
+  const EmptyState = ({ message }: { message: string }) => (
+    <div className="text-center text-gray-500 h-64 flex items-center justify-center">
+      {message}
+    </div>
+  );
+
+  const getTableContent = () => {
+    if (selectedTasksType === "Created" && viewOfData === "Table") {
+      return allTasks.length === 0 ? (
+        <EmptyState message="No created tasks found." />
+      ) : (
         <TableComponent
           columns={CreatedColumns}
           data={allTasks}
           renderRow={CreateTaskRenderRow}
         />
+      );
+    }
+
+    if (selectedTasksType === "Assigned" && viewOfData === "Table") {
+      return assignedTasks.length === 0 ? (
+        <EmptyState message="No assigned tasks found." />
       ) : (
         <TableComponent
           columns={AssignedColumns}
           data={assignedTasks}
           renderRow={AssignedTaskRow}
         />
-      )}
+      );
+    }
+
+    if (selectedTasksType === "Created" && viewOfData === "Board") {
+      return <BoardView data={allTasks} />;
+    }
+     if (selectedTasksType === "Assigned" && viewOfData === "Board") {
+      return <BoardView data={assignedTasks} />;
+    }
+
+  };
+
+  return (
+    <div className="bg-[#fafafbe9] p-1 rounded-md mt-10">
+      {getTableContent()}
     </div>
   );
 };

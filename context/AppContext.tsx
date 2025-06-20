@@ -37,6 +37,10 @@ interface AppContextType {
   setUserId: (value: string | null) => void;
   openAddModal: boolean;
   setOpenAddModal: (value: boolean) => void;
+  viewOfData: string;
+  setViewOfData: (value: string) => void;
+  filterPriority: string;
+   setFilterPriority: (value: string) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -57,6 +61,10 @@ export const AppContext = createContext<AppContextType>({
   setUserId: () => {},
   openAddModal: false,
   setOpenAddModal: () => {},
+  viewOfData: "",
+  setViewOfData: () => {},
+  filterPriority:"",
+   setFilterPriority:() => {}
 });
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
@@ -69,6 +77,8 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [tagId, setTagId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [viewOfData, setViewOfData] = useState("Table");
+  const[filterPriority, setFilterPriority] = useState('Low-High')
 
   useEffect(() => {
     const loadCookieData = () => {
@@ -121,6 +131,10 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         setUserId,
         openAddModal,
         setOpenAddModal,
+        viewOfData,
+        setViewOfData,
+        filterPriority,
+        setFilterPriority
       }}
     >
       {children}
