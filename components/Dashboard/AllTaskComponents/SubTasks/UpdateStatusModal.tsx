@@ -45,9 +45,12 @@ interface UpdateStatusModalProps {
   onStatusUpdated?: () => void;
 }
 
-const updateSubTaskStatus = async (subtaskId: string, payload: UpdateStatusPayload) => {
+const updateSubTaskStatus = async (
+  subtaskId: string,
+  payload: UpdateStatusPayload
+) => {
   const response = await fetch(
-    `https://task-management-backend-kohl-omega.vercel.app/api/subtasks/update-subtask/${subtaskId}`,
+    `https://task-management-backend-seven-tan.vercel.app/api/subtasks/update-subtask/${subtaskId}`,
     {
       method: "PATCH",
       headers: {
@@ -74,7 +77,7 @@ const UpdateStatusModal = ({
   const [selectedStatus, setSelectedStatus] = useState(subTask.status);
   const [feedback, setFeedback] = useState(subTask.feedback || "");
 
-  const statusOptions = ["PENDING", "IN_PROGRESS", "COMPLETED",];
+  const statusOptions = ["PENDING", "IN_PROGRESS", "COMPLETED"];
 
   useEffect(() => {
     setSelectedStatus(subTask.status);
@@ -82,7 +85,8 @@ const UpdateStatusModal = ({
   }, [subTask]);
 
   const updateStatusMutation = useMutation({
-    mutationFn: (payload: UpdateStatusPayload) => updateSubTaskStatus(subTask.id, payload),
+    mutationFn: (payload: UpdateStatusPayload) =>
+      updateSubTaskStatus(subTask.id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["subtasks", subTask.taskId],
@@ -125,7 +129,8 @@ const UpdateStatusModal = ({
     onOpenChange(false);
   };
 
-  const hasChanges = selectedStatus !== subTask.status || feedback !== (subTask.feedback || "");
+  const hasChanges =
+    selectedStatus !== subTask.status || feedback !== (subTask.feedback || "");
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -136,7 +141,9 @@ const UpdateStatusModal = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Subtask Title</label>
+            <label className="block text-sm font-medium mb-2">
+              Subtask Title
+            </label>
             <Input value={subTask.title} readOnly className="bg-gray-50" />
           </div>
 
@@ -161,7 +168,10 @@ const UpdateStatusModal = ({
           </div>
 
           <div>
-            <label htmlFor="feedback" className="block text-sm font-medium mb-2">
+            <label
+              htmlFor="feedback"
+              className="block text-sm font-medium mb-2"
+            >
               Feedback *
             </label>
             <textarea

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import type { TagForm } from "@/types/other"
+import type { TagForm } from "@/types/other";
 
 import axios, { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -35,12 +35,12 @@ const useAddTag = () => {
 
   const addTag = async (data: TagForm): Promise<any> => {
     const response = await axios.post<TagResponse>(
-      "https://task-management-backend-kohl-omega.vercel.app/api/tags/create-tag",
+      "https://task-management-backend-seven-tan.vercel.app/api/tags/create-tag",
       {
         name: data.name,
         color: data.color,
         createdBy: cookieData?.id,
-      },
+      }
     );
     debugger;
 
@@ -79,7 +79,7 @@ const useAddTag = () => {
     setShowPicker: setShowPicker as Dispatch<SetStateAction<boolean>>,
     setValue,
     setOpenAddModal,
-    openAddModal
+    openAddModal,
   };
 };
 

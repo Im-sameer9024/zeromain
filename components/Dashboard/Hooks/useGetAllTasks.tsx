@@ -17,7 +17,6 @@ const useGetTasks = () => {
 
   const fetchTasks = useCallback(
     async (cancelToken: CancelTokenSource) => {
-
       if (!cookieData) {
         setLoading(false);
         return;
@@ -37,7 +36,7 @@ const useGetTasks = () => {
         }
 
         const response = await axios.get(
-          "https://task-management-backend-kohl-omega.vercel.app/api/tasks/get-all-tasks",
+          "https://task-management-backend-seven-tan.vercel.app/api/tasks/get-all-tasks",
           {
             params,
             cancelToken: cancelToken.token,

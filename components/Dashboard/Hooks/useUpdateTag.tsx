@@ -28,11 +28,11 @@ const useUpdateTag = () => {
 
   const updateTag = async (data: TagForm) => {
     const response = await axios.put(
-      `https://task-management-backend-kohl-omega.vercel.app/api/tags/update-tag/${tagId}`,
+      `https://task-management-backend-seven-tan.vercel.app/api/tags/update-tag/${tagId}`,
       {
         name: data.name,
         color: data.color,
-      },
+      }
     );
     return response.data;
   };
@@ -40,13 +40,14 @@ const useUpdateTag = () => {
   const mutation = useMutation({
     mutationFn: updateTag,
     onSuccess: () => {
-      
       queryClient.invalidateQueries({ queryKey: ["tags", cookieData?.id] });
       toast.success("Tag updated successfully");
       setOpen(false);
     },
     onError: (error) => {
-       const err = error as unknown as { response?: { data?: { message?: string } } };
+      const err = error as unknown as {
+        response?: { data?: { message?: string } };
+      };
       toast.error(err?.response?.data?.message || "Failed to update tag");
     },
   });

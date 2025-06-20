@@ -31,7 +31,7 @@ const useUpdateStatus = () => {
 
     try {
       const response = await axios.put(
-        `https://task-management-backend-kohl-omega.vercel.app/api/tasks/update-task/${taskId}`,
+        `https://task-management-backend-seven-tan.vercel.app/api/tasks/update-task/${taskId}`,
         { status },
         {
           headers: {
@@ -57,7 +57,10 @@ const useUpdateStatus = () => {
       return response.data;
     } catch (error) {
       console.error("Error updating task status:", error);
-      const err = error as unknown as { response?: { data?: { message?: string } }, message?: string };
+      const err = error as unknown as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
 
       const errorMessage =
         err.response?.data?.message ||

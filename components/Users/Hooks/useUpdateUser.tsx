@@ -27,12 +27,12 @@ const useUpdateUser = () => {
 
   const updateUser = async (data: FormValues) => {
     const response = await axios.put(
-      `https://task-management-backend-kohl-omega.vercel.app/api/auth/update-user/${userId}`,
+      `https://task-management-backend-seven-tan.vercel.app/api/auth/update-user/${userId}`,
       {
         name: data.name,
         email: data.email,
         priority: parseInt(data.priority),
-      },
+      }
     );
     return response.data;
   };
@@ -40,12 +40,16 @@ const useUpdateUser = () => {
   const mutation = useMutation({
     mutationFn: updateUser,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["companyUsers", cookieData?.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["companyUsers", cookieData?.id],
+      });
       toast.success("User updated successfully");
       setOpen(false);
     },
     onError: (error) => {
-      const err = error as unknown as { response?: { data?: { message?: string } } };
+      const err = error as unknown as {
+        response?: { data?: { message?: string } };
+      };
       toast.error(err?.response?.data?.message || "Failed to update user");
     },
   });

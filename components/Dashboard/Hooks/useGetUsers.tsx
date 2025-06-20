@@ -5,10 +5,9 @@ import { useAppContext } from "@/context/AppContext";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-
 const useGetUsers = () => {
   const { cookieData } = useAppContext();
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const fetchUsers = async () => {
     if (!cookieData) {
@@ -16,10 +15,8 @@ const useGetUsers = () => {
       return [];
     }
 
-
     const response = await axios.get(
-      `https://task-management-backend-kohl-omega.vercel.app/api/auth/company-users/${cookieData?.id}`,
-      
+      `https://task-management-backend-seven-tan.vercel.app/api/auth/company-users/${cookieData?.id}`
     );
 
     return response.data?.data?.users || [];
@@ -37,7 +34,7 @@ const useGetUsers = () => {
     enabled: !!cookieData?.id, // We'll manually trigger this
   });
 
-   const invalidateUsers = () => {
+  const invalidateUsers = () => {
     queryClient.invalidateQueries({
       queryKey: ["companyUsers", cookieData?.id],
     });

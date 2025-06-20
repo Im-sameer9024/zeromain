@@ -1,6 +1,6 @@
 "use client";
 
-import type { Tag } from "@/types/other"
+import type { Tag } from "@/types/other";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
@@ -14,7 +14,7 @@ const useGetTags = () => {
     if (!cookieData?.id) return []; // Return empty array if no cookieData.id
 
     const response = await axios.get(
-      `https://task-management-backend-kohl-omega.vercel.app/api/tags/get-tags/${cookieData.id}`
+      `https://task-management-backend-seven-tan.vercel.app/api/tags/get-tags/${cookieData.id}`
     );
     return response.data?.data || [];
   };
