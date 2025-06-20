@@ -1,11 +1,15 @@
-"use client"
-import React from 'react'
-import { useQuery } from '@tanstack/react-query'
-import assignTo from '../../../public/images/assignlogo.png'
-import Image from 'next/image'
-import { CalendarIcon } from 'lucide-react';
-import SubTasks from './SubTasks/SubTasks'
-import CommentsWrapper from '@/components/Comments/CommentsWrapper'
+"use client";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import assignTo from "../../../public/images/assignlogo.png";
+import Image from "next/image";
+import {
+  CalendarIcon,
+  PaperclipIcon,
+  FileIcon,
+} from "lucide-react";
+import SubTasks from "./SubTasks/SubTasks";
+import CommentsWrapper from "@/components/Comments/CommentsWrapper";
 
 interface User {
   id: string;
@@ -41,7 +45,7 @@ interface Tag {
 enum TaskStatus {
   PENDING = "PENDING",
   IN_PROGRESS = "IN_PROGRESS",
-  COMPLETED = "COMPLETED"
+  COMPLETED = "COMPLETED",
 }
 
 interface Task {
@@ -81,14 +85,41 @@ const fetchTask = async (taskId: string): Promise<Task> => {
   return result.data;
 };
 
+// Helper function to get file name from URL
+const getFileName = (url: string): string => {
+  try {
+    const urlParts = url.split("/");
+    const fileName = urlParts[urlParts.length - 1];
+    // Decode URI component to handle encoded file names
+    return decodeURIComponent(fileName) || "Unknown file";
+  } catch {
+    return "Unknown file";
+  }
+};
+
+// Helper function to get file extension
+const getFileExtension = (url: string): string => {
+  try {
+    const fileName = getFileName(url);
+    const extension = fileName.split(".").pop()?.toLowerCase();
+    return extension || "";
+  } catch {
+    return "";
+  }
+};
+
+// Helper function to format file size (if available)
+// const formatFileSize = (bytes: number): string => {
+//   if (bytes === 0) return "0 Bytes";
+//   const k = 1024;
+//   const sizes = ["Bytes", "KB", "MB", "GB"];
+//   const i = Math.floor(Math.log(bytes) / Math.log(k));
+//   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+// };
+
 const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
-  const {
-    data,
-    isLoading,
-    error,
-    isError
-  } = useQuery({
-    queryKey: ['task', taskId],
+  const { data, isLoading, error, isError } = useQuery({
+    queryKey: ["task", taskId],
     queryFn: () => fetchTask(taskId),
     enabled: !!taskId, // Only run query if taskId exists
     staleTime: 5 * 60 * 1000, // Data is fresh for 5 minutes
@@ -107,7 +138,7 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
     return (
       <div className="flex items-center justify-center w-full h-screen">
         <div className="text-red-500">
-          Error: {error instanceof Error ? error.message : 'An error occurred'}
+          Error: {error instanceof Error ? error.message : "An error occurred"}
         </div>
       </div>
     );
@@ -155,7 +186,7 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
         </div>
 
         {/* date */}
-        <div className='text-[#6F6F6FFF] flex items-center gap-2 mt-3'>
+        <div className="text-[#6F6F6FFF] flex items-center gap-2 mt-3">
           <CalendarIcon size={16} />
           {new Date(data.createdAt).toLocaleDateString()}
         </div>
@@ -165,30 +196,84 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
 
         {/*------------- description ----------- */}
         <div className="my-4">
-          <h3 className="text-base font-medium mb-1 text-[#A2A19FFF]">Description</h3>
+          <h3 className="text-base font-medium mb-1 text-[#A2A19FFF]">
+            Description
+          </h3>
           <p className="text-[#9095A0FF] text-sm">{data.description}</p>
         </div>
 
         {/*------------- attachments ----------- */}
         {data.attachments && data.attachments.length > 0 && (
-          <div className="mb-4">
-            <h3 className="text-lg font-medium mb-2 text-[#525456FF]">Attachments</h3>
-            <div className="space-y-2 grid grid-cols-3">
-              {data.attachments.map((attachment) => (
-                <div key={attachment.id} className="flex items-center gap-2">
-                  <a
-                    href={attachment.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 underline"
+          <div className="mb-6">
+            {/* Attachments Header with Clip Icon */}
+            <div className="flex items-center gap-2 mb-4">
+              <PaperclipIcon size={18} className="text-[#525456FF]" />
+              <h3 className="text-base font-medium text-[#525456FF]">
+                Attachments
+              </h3>
+              <span className="text-sm text-[#9095A0FF]">
+                ({data.attachments.length})
+              </span>
+            </div>
+
+            {/* Attachments Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {data.attachments.map((attachment) => {
+                const fileName = getFileName(attachment.fileUrl);
+                const fileExtension = getFileExtension(attachment.fileUrl);
+
+                return (
+                  <div
+                    key={attachment.id}
+                    className="group relative  hover:bg-gray-50  rounded-lg p-3 transition-all duration-200  cursor-pointer"
                   >
-                    View Attachment
-                  </a>
-                  <span className="text-sm text-gray-500">
-                    (Uploaded: {new Date(attachment.uploadedAt).toLocaleDateString()})
-                  </span>
-                </div>
-              ))}
+                    {/* File Preview/Icon */}
+                    <div className="flex flex-col items-center mb-3">
+                      <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center mb-2 group-hover:bg-gray-300 transition-colors">
+                        {fileExtension === "pdf" ? (
+                          <div className="text-red-500 font-bold text-xs">
+                            PDF
+                          </div>
+                        ) : fileExtension === "jpg" ||
+                          fileExtension === "jpeg" ||
+                          fileExtension === "png" ||
+                          fileExtension === "gif" ? (
+                          <div className="text-blue-500 font-bold text-xs">
+                            IMG
+                          </div>
+                        ) : fileExtension === "doc" ||
+                          fileExtension === "docx" ? (
+                          <div className="text-blue-600 font-bold text-xs">
+                            DOC
+                          </div>
+                        ) : (
+                          <FileIcon size={24} className="text-gray-500" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* File Info */}
+                    <div className="text-center mb-3 border-2">
+                      <p
+                        className="text-sm font-medium text-gray-900 truncate px-1"
+                        title={fileName}
+                      >
+                        {fileName.length > 15
+                          ? fileName.substring(0, 15) + "..."
+                          : fileName}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(attachment.uploadedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    
+
+                    {/* Hover overlay effect */}
+                    <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-20 rounded-lg transition-opacity duration-200 pointer-events-none"></div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

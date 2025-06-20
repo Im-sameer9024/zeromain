@@ -14,6 +14,7 @@ interface FeedbackDropdownProps {
   taskId: string;
   currentFeedback: string | null;
   onFeedbackUpdated: () => void;
+  assignedToUser: { id: string; name: string; email: string } | null; // Add assignedToUser prop
 }
 
 interface UpdateFeedbackPayload {
@@ -50,10 +51,15 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
   taskId,
   currentFeedback,
   onFeedbackUpdated,
+  assignedToUser, // Destructure the new prop
 }) => {
   const queryClient = useQueryClient();
   const { cookieData } = useAppContext();
   const feedbackOptions = ["GOOD", "AVERAGE", "BAD"];
+
+  // Check if the current user is allowed to give feedback
+  const canGiveFeedback =
+    cookieData?.id !== assignedToUser?.id || cookieData?.role === "Admin";
 
   // Feedback color mapping
   const getFeedbackColors = (feedback: string | null) => {
@@ -105,6 +111,11 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
   });
 
   const handleFeedbackSelect = (feedback: string) => {
+    if (!canGiveFeedback) {
+      toast.error("You cannot provide feedback for your own subtask.");
+      return;
+    }
+
     const payload: UpdateFeedbackPayload = {
       taskId,
       feedback,
@@ -120,6 +131,18 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
   };
 
   const currentFeedbackColors = getFeedbackColors(currentFeedback);
+
+  // If the user is the assigned user and not an admin, show a disabled button or feedback text
+  if (!canGiveFeedback) {
+    return (
+      <span
+        className={`flex items-center gap-2 ${currentFeedbackColors.bg} ${currentFeedbackColors.text} ${currentFeedbackColors.border} text-xs px-2 rounded-xs py-0.5 border opacity-50 cursor-not-allowed`}
+        title="You cannot provide feedback for your own subtask"
+      >
+        {currentFeedback || <MessageSquare className={`w-4 h-4 ${currentFeedbackColors.icon}`} />}
+      </span>
+    );
+  }
 
   return (
     <DropdownMenu>
@@ -149,23 +172,18 @@ const FeedbackDropdown: React.FC<FeedbackDropdownProps> = ({
             {feedbackMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" /> // Show spinner
             ) : (
-              <MessageSquare
-                className={`w-4 h-4 ${currentFeedbackColors.icon}`}
-              />
+              <MessageSquare className={`w-4 h-4 ${currentFeedbackColors.icon}`} />
             )}
           </button>
         </DropdownMenuTrigger>
       )}
       <DropdownMenuContent className="w-32">
         {feedbackOptions.map((option) => {
-          // const optionColors = getFeedbackColors(option);
           return (
             <DropdownMenuItem
               key={option}
               onClick={() => handleFeedbackSelect(option)}
-              disabled={
-                feedbackMutation.isPending || currentFeedback === option
-              }
+              disabled={feedbackMutation.isPending || currentFeedback === option}
               className={currentFeedback === option ? "bg-gray-200" : ""}
             >
               {option}
