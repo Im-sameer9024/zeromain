@@ -7,8 +7,6 @@ import {
   CalendarIcon,
   PaperclipIcon,
   FileIcon,
-  DownloadIcon,
-  ExternalLinkIcon,
 } from "lucide-react";
 import SubTasks from "./SubTasks/SubTasks";
 import CommentsWrapper from "@/components/Comments/CommentsWrapper";
@@ -111,13 +109,13 @@ const getFileExtension = (url: string): string => {
 };
 
 // Helper function to format file size (if available)
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-};
+// const formatFileSize = (bytes: number): string => {
+//   if (bytes === 0) return "0 Bytes";
+//   const k = 1024;
+//   const sizes = ["Bytes", "KB", "MB", "GB"];
+//   const i = Math.floor(Math.log(bytes) / Math.log(k));
+//   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+// };
 
 const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
   const { data, isLoading, error, isError } = useQuery({
