@@ -37,10 +37,14 @@ const columns: ColumnProps[] = [
 
 const TagsTable = () => {
  const { allTags, isLoading, isError, error,refetchTags } = useGetTags();
-  const { setOpen, setTagId,open } = useAppContext();
+  const { setOpen, setTagId,open ,tagSearchQuery } = useAppContext();
   const { mutate: deleteTag } = useDeleteTag();
 
   const[isPending,startTransition] = useTransition()
+
+  const filteredTags = allTags?.filter((tag: TagDataProps) =>
+    tag.name.toLowerCase().includes(tagSearchQuery.toLowerCase())
+  );
 
   const handleEditTag = (id: string) => {
     setTagId(id);
@@ -138,7 +142,7 @@ const TagsTable = () => {
         <div>
           <TableComponent
           columns={columns}
-          data={allTags}
+          data={filteredTags || []}
           renderRow={renderRow}
         />
         <Popup 

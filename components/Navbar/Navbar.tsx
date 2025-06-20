@@ -7,9 +7,13 @@ import Image from "next/image";
 import useNavbar from "./Hooks/useNavbar";
 import { useAppContext } from "@/context/AppContext";
 import useLogout from "../LoginSignupForm/Hooks/useLogout";
+import { usePathname } from "next/navigation";
+import { useDebounce } from "../Users/Hooks/useDebounce";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
-  const { cookieData } = useAppContext();
+  const { cookieData,setTaskSearchQuery } = useAppContext();
+   const [inputValue, setInputValue] = useState("");
   const {
     // Notification states
     notifications,
@@ -36,6 +40,8 @@ const Navbar = () => {
     canUseClock,
   } = useNavbar();
 
+  const pathname = usePathname()
+
   const { LogOut } = useLogout();
 
   const getClockButtonText = () => {
@@ -49,19 +55,37 @@ const Navbar = () => {
     return <Clock />;
   };
 
+  const isDashboardPage = pathname === "/admin/dashboard" || pathname === "/user/dashboard";
+  
+  // Using debounce to optimize search (500ms delay)
+  const debouncedSearchTerm = useDebounce(inputValue, 500);
+
+  useEffect(() => {
+    if (isDashboardPage) {
+      setTaskSearchQuery(debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm, setTaskSearchQuery, isDashboardPage]);
+
+
   return (
     <>
       <div className="bg-white py-4 px-4 flex justify-between items-center border-b">
-        <div className="w-3/12 relative ml-12">
-          <Search
-            size={18}
-            className="absolute top-1/2 -translate-y-1/2 left-4 text-black"
-          />
-          <Input
-            type="text"
-            placeholder="Search..."
-            className="bg-[#F3F4F6FF] pl-10 text-black"
-          />
+        <div className="w-3/12 relative ">
+         {isDashboardPage && (
+          <div className="w-full relative ">
+            <Search
+              size={18}
+              className="absolute top-1/2 -translate-y-1/2 left-4 text-black"
+            />
+            <Input
+              type="text"
+              placeholder="Search tasks..."
+              className="bg-[#F3F4F6FF] w-full pl-10 text-black"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+          </div>
+        )}
         </div>
 
         <div className="flex items-center gap-8">

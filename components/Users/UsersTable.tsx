@@ -60,8 +60,12 @@ const UsersTable = () => {
   const { companyUsers, isLoading, isError, error, refetchCompanyUsers } =
     useGetUsers();
 
-  const { setOpen ,open, setUserId, } = useAppContext();
+  const { setOpen ,open, setUserId,searchQuery  } = useAppContext();
   const { mutate: deleteUser } = useDeleteUser();
+
+  const filteredUsers = companyUsers?.filter((user: any) =>
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleEditUser = (userId: string) => {
     setUserId(userId);
@@ -148,7 +152,7 @@ const UsersTable = () => {
        <div>
          <TableComponent
           columns={columns}
-          data={companyUsers}
+          data={filteredUsers || []}
           renderRow={renderRow}
         />
         <Popup openModal={open} content={<UpdateUserForm/>}  />

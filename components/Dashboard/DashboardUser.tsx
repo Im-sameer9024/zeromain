@@ -134,8 +134,17 @@ const StatusIndicator = ({ status }: { status: string }) => {
 };
 
 const DashboardUsers = () => {
-  const { cookieData, selectedTasksType,viewOfData  } = useAppContext();
+  const { cookieData, selectedTasksType,viewOfData,taskSearchQuery   } = useAppContext();
   const { CreatedColumns, AssignedColumns } = useColumns();
+
+
+  const filterTasks = (tasks: TaskDataProps[]) => {
+    if (!taskSearchQuery) return tasks;
+    
+    return tasks.filter(task => 
+      task.title.toLowerCase().includes(taskSearchQuery.toLowerCase())
+    );
+  };
 
   const {
     assignedTasks,
@@ -511,36 +520,38 @@ const DashboardUsers = () => {
 
   const getTableContent = () => {
     if (selectedTasksType === "Created" && viewOfData === "Table") {
-      return allTasks.length === 0 ? (
-        <EmptyState message="No created tasks found." />
+      const filteredTasks = filterTasks(allTasks);
+      return filteredTasks.length === 0 ? (
+        <EmptyState message={taskSearchQuery ? "No matching tasks found" : "No created tasks found."} />
       ) : (
         <TableComponent
           columns={CreatedColumns}
-          data={allTasks}
+          data={filteredTasks}
           renderRow={CreateTaskRenderRow}
         />
       );
     }
 
     if (selectedTasksType === "Assigned" && viewOfData === "Table") {
-      return assignedTasks.length === 0 ? (
-        <EmptyState message="No assigned tasks found." />
+      const filteredTasks = filterTasks(assignedTasks);
+      return filteredTasks.length === 0 ? (
+        <EmptyState message={taskSearchQuery ? "No matching tasks found" : "No assigned tasks found."} />
       ) : (
         <TableComponent
           columns={AssignedColumns}
-          data={assignedTasks}
+          data={filteredTasks}
           renderRow={AssignedTaskRow}
         />
       );
     }
 
     if (selectedTasksType === "Created" && viewOfData === "Board") {
-      return <BoardView data={allTasks} />;
+      return <BoardView data={filterTasks(allTasks)} />;
     }
-     if (selectedTasksType === "Assigned" && viewOfData === "Board") {
-      return <BoardView data={assignedTasks} />;
+    
+    if (selectedTasksType === "Assigned" && viewOfData === "Board") {
+      return <BoardView data={filterTasks(assignedTasks)} />;
     }
-
   };
 
   return (

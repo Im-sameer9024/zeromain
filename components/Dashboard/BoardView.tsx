@@ -5,6 +5,7 @@ import { CgAttachment } from "react-icons/cg";
 import { format, parseISO } from "date-fns";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Subtask, TagDataProps, TaskDataProps } from "@/types/Task.types";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface BoardViewProps {
   data: TaskDataProps[]; // Using any[] since we don't have the exact TaskDataProps
@@ -154,10 +155,7 @@ const BoardView = ({ data }: BoardViewProps) => {
                   <h3 className="font-medium">Attachments</h3>
                   <div className="flex flex-wrap gap-2">
                     {task.attachments.map(
-                      (
-                        attachment: { fileUrl: string }, 
-                        i: number
-                      ) => (
+                      (attachment: { fileUrl: string }, i: number) => (
                         <a
                           key={i}
                           href={attachment.fileUrl}
@@ -175,22 +173,51 @@ const BoardView = ({ data }: BoardViewProps) => {
               )}
 
               {/* subtasks  */}
-              {task.subtasks &&
-                task.subtasks.length > 0 &&
-                task.subtasks.map((subtask: Subtask) => (
-                  <div key={subtask.id}>
-                    <div>
-                      <h2>{subtask.title}</h2>
-                      <p>{subtask.id}</p>
+              <div>
+                 <ScrollArea className="h-40 w-full p-2 rounded-md border">
+                {task.subtasks && task.subtasks.length > 0 ? (
+                  task.subtasks.map((subtask: Subtask) => (
+                    <div key={subtask.id}>
+                      <div>
+                        <h3 className="font-bold text-lg">Subtasks Details</h3>
+                      </div>
+                      <div>
+                        <h2 className="font-semibold text-md text-gray-700">
+                          {subtask.title}
+                        </h2>
+                        <p className="text-sm text-gray-500">{subtask.id}</p>
+                      </div>
+                      <div className=" flex justify-between mt-2">
+                        <div>
+                          <p>Feedback</p>
+                          <p
+                            className={`px-2 py-1 text-xs rounded w-fit ${getStatusColor(
+                              task.status
+                            )}`}
+                          >
+                            {subtask.feedback}
+                          </p>
+                        </div>
+                        <div>
+                          <p>Status</p>
+                          <p
+                            className={`px-2 py-1 text-xs rounded w-fit ${getStatusColor(
+                              task.status
+                            )}`}
+                          >
+                            {subtask.status}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <p>{subtask.feedback}</p>
-                    </div>
-                    <div>
-                      <p>{subtask.status}</p>
-                    </div>
+                  ))
+                ) : (
+                  <div>
+                    <p className="text-center">No Subtasks</p>
                   </div>
-                ))}
+                )}
+                </ScrollArea>
+              </div>
 
               {/* Description */}
               <div className="space-y-2">

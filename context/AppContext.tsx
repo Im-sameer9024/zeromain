@@ -40,7 +40,13 @@ interface AppContextType {
   viewOfData: string;
   setViewOfData: (value: string) => void;
   filterPriority: string;
-   setFilterPriority: (value: string) => void;
+  setFilterPriority: (value: string) => void;
+  searchQuery:string,
+   setSearchQuery:(value:string) => void,
+   tagSearchQuery:string,
+    setTagSearchQuery:(value:string) => void,
+    taskSearchQuery:string,
+     setTaskSearchQuery:(value:string) => void,
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -63,8 +69,14 @@ export const AppContext = createContext<AppContextType>({
   setOpenAddModal: () => {},
   viewOfData: "",
   setViewOfData: () => {},
-  filterPriority:"",
-   setFilterPriority:() => {}
+  filterPriority: "",
+  setFilterPriority: () => {},
+  searchQuery: "",
+  setSearchQuery: () => {},
+  tagSearchQuery:"",
+   setTagSearchQuery:() =>{},
+   taskSearchQuery:"",
+    setTaskSearchQuery:() =>{}
 });
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
@@ -78,7 +90,11 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [viewOfData, setViewOfData] = useState("Table");
-  const[filterPriority, setFilterPriority] = useState('Low-High')
+  const [filterPriority, setFilterPriority] = useState("Low-High");
+  const [searchQuery, setSearchQuery] = useState("");
+   const [tagSearchQuery, setTagSearchQuery] = useState("");
+const [taskSearchQuery, setTaskSearchQuery] = useState("");
+
 
   useEffect(() => {
     const loadCookieData = () => {
@@ -134,7 +150,12 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         viewOfData,
         setViewOfData,
         filterPriority,
-        setFilterPriority
+        setFilterPriority,
+        searchQuery,
+        setSearchQuery,
+        tagSearchQuery, 
+        setTagSearchQuery,
+        taskSearchQuery, setTaskSearchQuery
       }}
     >
       {children}
