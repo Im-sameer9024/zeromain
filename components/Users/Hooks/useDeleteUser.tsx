@@ -12,7 +12,7 @@ const useDeleteUser = () => {
 
   const deleteUser = async (userId: string) => {
     const response = await axios.delete(
-      `https://task-management-backend-kohl-omega.vercel.app/api/auth/delete-user/${userId}`,
+      `https://task-management-backend-seven-tan.vercel.app/api/auth/delete-user/${userId}`
     );
     return response.data;
   };
@@ -21,7 +21,9 @@ const useDeleteUser = () => {
     mutationFn: deleteUser,
     onSuccess: () => {
       if (cookieData?.id) {
-        queryClient.invalidateQueries({ queryKey: ["companyUsers", cookieData.id] });
+        queryClient.invalidateQueries({
+          queryKey: ["companyUsers", cookieData.id],
+        });
       }
       toast.success("User deleted successfully");
     },
@@ -29,7 +31,9 @@ const useDeleteUser = () => {
       // If using AxiosError type, you can import and use it for better type safety:
       // import type { AxiosError } from "axios";
       // onError: (error: AxiosError) => { ... }
-      const err = error as unknown as { response?: { data?: { message?: string } } };
+      const err = error as unknown as {
+        response?: { data?: { message?: string } };
+      };
       toast.error(err?.response?.data?.message || "Failed to delete user");
     },
   });

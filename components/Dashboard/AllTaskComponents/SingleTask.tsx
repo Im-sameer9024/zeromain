@@ -1,11 +1,7 @@
 "use client";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  CalendarIcon,
-  PaperclipIcon,
-  FileIcon,
-} from "lucide-react";
+import { CalendarIcon, PaperclipIcon, FileIcon } from "lucide-react";
 import SubTasks from "./SubTasks/SubTasks";
 import CommentsWrapper from "@/components/Comments/CommentsWrapper";
 import { Tooltip } from "@radix-ui/react-tooltip";
@@ -74,7 +70,7 @@ interface SingleTaskProps {
 // API function to fetch task data
 const fetchTask = async (taskId: string): Promise<Task> => {
   const response = await fetch(
-    `https://task-management-backend-kohl-omega.vercel.app/api/tasks/get-task/${taskId}`
+    `https://task-management-backend-seven-tan.vercel.app/api/tasks/get-task/${taskId}`
   );
 
   if (!response.ok) {
@@ -274,8 +270,6 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
                         {new Date(attachment.uploadedAt).toLocaleDateString()}
                       </p>
                     </div>
-
-                    
 
                     {/* Hover overlay effect */}
                     <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-20 rounded-lg transition-opacity duration-200 pointer-events-none"></div>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import type { Tag } from "@/types/other"
+import type { Tag } from "@/types/other";
 
 import Image from "next/image";
 import { Button } from "../../ui/button";
@@ -46,7 +46,7 @@ const AddTaskForm = () => {
     setOpen,
   } = useAddTask();
 
-  const { allTags } : { allTags: Tag[] } = useGetTags();
+  const { allTags }: { allTags: Tag[] } = useGetTags();
 
   // @ts-except-ignore
   return (
@@ -108,7 +108,7 @@ const AddTaskForm = () => {
           <Popover>
             <PopoverTrigger asChild>
               <Button
-              disabled={selectedTags.length >= 2}
+                disabled={selectedTags.length >= 2}
                 variant="outline"
                 className="bg-gray-200 text-text hover:bg-gray-300 flex gap-2"
               >
@@ -132,7 +132,10 @@ const AddTaskForm = () => {
                       key={tag.id}
                       variant="outline"
                       className="hover:cursor-pointer bg-blue-200 disabled:cursor-not-allowed"
-                      disabled={selectedTags.length >= 2 && !selectedTags.includes(tag.id)}
+                      disabled={
+                        selectedTags.length >= 2 &&
+                        !selectedTags.includes(tag.id)
+                      }
                       onClick={(e) => {
                         e.preventDefault();
                         handleTagSelect(tag);
@@ -145,8 +148,6 @@ const AddTaskForm = () => {
               </ScrollArea>
             </PopoverContent>
           </Popover>
-
-       
         </div>
 
         {/* Due Date Section */}
@@ -184,11 +185,12 @@ const AddTaskForm = () => {
             placeholder="Task description goes here..."
             className="min-h-[100px]"
           />
-          {errors.description && typeof errors.description.message === "string" && (
-            <span className="text-red-500 text-sm">
-              {errors.description.message}
-            </span>
-          )}
+          {errors.description &&
+            typeof errors.description.message === "string" && (
+              <span className="text-red-500 text-sm">
+                {errors.description.message}
+              </span>
+            )}
         </div>
 
         {/* Attachment Section */}
@@ -217,7 +219,7 @@ const AddTaskForm = () => {
               >
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                    {file.name}
+                    {file.fileName}
                   </span>
                 </div>
                 <button

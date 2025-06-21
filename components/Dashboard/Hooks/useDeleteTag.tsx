@@ -11,8 +11,8 @@ const useDeleteTag = () => {
 
   const deleteTag = async (tagId: string) => {
     const response = await axios.delete(
-      `https://task-management-backend-kohl-omega.vercel.app/api/tags/delete-tag/${tagId}`,
-      );
+      `https://task-management-backend-seven-tan.vercel.app/api/tags/delete-tag/${tagId}`
+    );
     return response.data;
   };
 
@@ -23,7 +23,9 @@ const useDeleteTag = () => {
       toast.success("Tag deleted successfully");
     },
     onError: (error) => {
-      const err = error as unknown as { response?: { data?: { message?: string } } };
+      const err = error as unknown as {
+        response?: { data?: { message?: string } };
+      };
       toast.error(err?.response?.data?.message || "Failed to delete tag");
     },
   });

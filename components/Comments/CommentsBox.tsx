@@ -2,7 +2,7 @@
 //@ts-except-ignore
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Send, Trash2, Edit3, MessageCircle, AtSign, X } from "lucide-react";
-import {UserData} from "@/context/AppContext";
+import { UserData } from "@/context/AppContext";
 
 // Types
 interface User {
@@ -73,7 +73,7 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const baseURL =
-    "https://task-management-backend-kohl-omega.vercel.app/api/comments";
+    "https://task-management-backend-seven-tan.vercel.app/api/comments";
 
   // Improved positioning function
   const calculateMentionPosition = useCallback(
