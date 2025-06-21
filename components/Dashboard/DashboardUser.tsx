@@ -134,14 +134,14 @@ const StatusIndicator = ({ status }: { status: string }) => {
 };
 
 const DashboardUsers = () => {
-  const { cookieData, selectedTasksType,viewOfData,taskSearchQuery   } = useAppContext();
+  const { cookieData, selectedTasksType, viewOfData, taskSearchQuery } =
+    useAppContext();
   const { CreatedColumns, AssignedColumns } = useColumns();
-
 
   const filterTasks = (tasks: TaskDataProps[]) => {
     if (!taskSearchQuery) return tasks;
-    
-    return tasks.filter(task => 
+
+    return tasks.filter((task) =>
       task.title.toLowerCase().includes(taskSearchQuery.toLowerCase())
     );
   };
@@ -245,8 +245,6 @@ const DashboardUsers = () => {
     }
   };
 
-  
-
   const CreateTaskRenderRow = (item: TaskDataProps) => {
     if (!item) return null;
 
@@ -263,23 +261,34 @@ const DashboardUsers = () => {
           onClick={() => router.push(`/${role}/tasks/${item.id}`)}
           className="hover:underline"
         >
-          <h3 className="font-semibold font-Inter">{item.title.length > 12 ? item.title.slice(0, 12) + "..." : item.title}</h3>
+          <h3 className="font-semibold font-Inter">
+            {item.title.length > 12
+              ? item.title.slice(0, 12) + "..."
+              : item.title}
+          </h3>
           <p className="text-xs text-gray-500 truncate max-w-[200px]">
             {item.description}
           </p>
         </TableCell>
 
         <TableCell className="hidden md:table-cell">
-          <div className="flex justify-center">
-            <img
-              src={`https://api.dicebear.com/5.x/initials/svg?seed=${
-                item?.createdByAdmin?.name || item?.createdByUser?.name
-              }`}
-              alt="assignee"
-              loading="lazy"
-              className="size-10 rounded-full"
-            />
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex justify-center">
+                <img
+                  src={`https://api.dicebear.com/5.x/initials/svg?seed=${
+                    item?.createdByAdmin?.name || item?.createdByUser?.name
+                  }`}
+                  alt="assignee"
+                  loading="lazy"
+                  className="size-10 rounded-full"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{item?.createdByAdmin?.name || item?.createdByUser?.name}</p>
+            </TooltipContent>
+          </Tooltip>
         </TableCell>
 
         <TableCell className="hidden md:table-cell">
@@ -522,7 +531,13 @@ const DashboardUsers = () => {
     if (selectedTasksType === "Created" && viewOfData === "Table") {
       const filteredTasks = filterTasks(allTasks);
       return filteredTasks.length === 0 ? (
-        <EmptyState message={taskSearchQuery ? "No matching tasks found" : "No created tasks found."} />
+        <EmptyState
+          message={
+            taskSearchQuery
+              ? "No matching tasks found"
+              : "No created tasks found."
+          }
+        />
       ) : (
         <TableComponent
           columns={CreatedColumns}
@@ -535,7 +550,13 @@ const DashboardUsers = () => {
     if (selectedTasksType === "Assigned" && viewOfData === "Table") {
       const filteredTasks = filterTasks(assignedTasks);
       return filteredTasks.length === 0 ? (
-        <EmptyState message={taskSearchQuery ? "No matching tasks found" : "No assigned tasks found."} />
+        <EmptyState
+          message={
+            taskSearchQuery
+              ? "No matching tasks found"
+              : "No assigned tasks found."
+          }
+        />
       ) : (
         <TableComponent
           columns={AssignedColumns}
@@ -548,7 +569,7 @@ const DashboardUsers = () => {
     if (selectedTasksType === "Created" && viewOfData === "Board") {
       return <BoardView data={filterTasks(allTasks)} />;
     }
-    
+
     if (selectedTasksType === "Assigned" && viewOfData === "Board") {
       return <BoardView data={filterTasks(assignedTasks)} />;
     }

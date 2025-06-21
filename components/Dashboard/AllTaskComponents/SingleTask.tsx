@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import assignTo from "../../../public/images/assignlogo.png";
-import Image from "next/image";
 import {
   CalendarIcon,
   PaperclipIcon,
@@ -10,6 +8,8 @@ import {
 } from "lucide-react";
 import SubTasks from "./SubTasks/SubTasks";
 import CommentsWrapper from "@/components/Comments/CommentsWrapper";
+import { Tooltip } from "@radix-ui/react-tooltip";
+import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface User {
   id: string;
@@ -158,15 +158,23 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
       <div className="w-2/3 pr-4">
         {/*------ image and title -------- */}
         <div className="flex gap-2 items-center mb-4">
-          <div>
-            <Image
-              src={assignTo}
-              alt="assignTo"
-              width={100}
-              height={100}
-              className="w-10 h-10 rounded-full"
-            />
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex justify-center">
+                <img
+                  src={`https://api.dicebear.com/5.x/initials/svg?seed=${
+                    data?.createdByAdmin?.name || data?.createdByUser?.name
+                  }`}
+                  alt="assignee"
+                  loading="lazy"
+                  className="size-10 rounded-full"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{data?.createdByAdmin?.name || data?.createdByUser?.name}</p>
+            </TooltipContent>
+          </Tooltip>
           <h2 className="text-xl font-semibold text-[#323336FF]">
             {data.title}
           </h2>

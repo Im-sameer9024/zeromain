@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
 import Providers from "@/provider/providers";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const righteous = Righteous({
   weight: "400",
@@ -33,8 +34,10 @@ export default function RootLayout({
       <body className={`${righteous.variable} ${inter.variable} antialiased`}>
         <AppContextProvider>
           <Providers>
-            <Toaster />
-            {children}
+            <TooltipProvider>
+              <Toaster />
+              {children}
+            </TooltipProvider>
           </Providers>
         </AppContextProvider>
       </body>
