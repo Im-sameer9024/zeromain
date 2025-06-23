@@ -13,6 +13,7 @@ import { TaskDataProps } from "@/types/Task.types";
 const useAddTask = () => {
   const { cookieData, open, setOpen, setAllTasks } = useAppContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = React.useState(false);
 
   const { refreshTasks } = useGetTasks();
 
@@ -90,6 +91,7 @@ const useAddTask = () => {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoading(true);
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
 
@@ -99,6 +101,8 @@ const useAddTask = () => {
       }
 
       try {
+        const toastId = toast.loading("Uploading files..."); // save the toast ID
+
         const res = await fetch(
           "https://task-management-backend-seven-tan.vercel.app/api/upload",
           {
@@ -112,11 +116,19 @@ const useAddTask = () => {
 
         setValue("attachments", [
           ...watch("attachments"),
-
           ...result.files, // ✅ Use the uploaded file metadata from response
         ]);
+
+        toast.success("Files uploaded successfully!");
+        toast.dismiss(toastId); // ✅ dismiss the loading toast
       } catch (error) {
+        toast.error("Failed to upload files. Please try again.");
         console.error("Instant upload failed:", error);
+      } finally {
+        setLoading(false);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""; // Clear the input field
+        }
       }
     }
   };
