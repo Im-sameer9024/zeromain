@@ -5,7 +5,7 @@ import type { Tag } from "@/types/other";
 
 import Image from "next/image";
 import { Button } from "../../ui/button";
-import { CalendarIcon, Tags, X } from "lucide-react";
+import { CalendarIcon, Loader2, Tags, X } from "lucide-react";
 import { Textarea } from "../../ui/textarea";
 import { CgAttachment, CgClose } from "react-icons/cg";
 import { motion } from "framer-motion";
@@ -44,6 +44,7 @@ const AddTaskForm = () => {
     isSubmitting,
     setValue,
     setOpen,
+    uploadingFiles,
   } = useAddTask();
 
   const { allTags }: { allTags: Tag[] } = useGetTags();
@@ -212,15 +213,27 @@ const AddTaskForm = () => {
           </div>
 
           <div className="mt-2 space-y-2  ">
+            {uploadingFiles && (
+              <div className="flex items-center justify-center p-2 bg-gray-50 rounded">
+                <Loader2 className="animate-spin mr-2" size={16} />
+                <span className="text-sm text-gray-600">
+                  Uploading files...
+                </span>
+              </div>
+            )}
             {attachments.map((file: any, index: any) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-2 bg-gray-50 rounded"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                    {file.fileName}
-                  </span>
+                  {file ? (
+                    <span className="text-sm text-gray-600 truncate max-w-[200px]">
+                      {file.fileName}
+                    </span>
+                  ) : (
+                    <Loader2 size={24} />
+                  )}
                 </div>
                 <button
                   type="button"

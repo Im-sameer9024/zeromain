@@ -207,22 +207,23 @@ const DashboardUsers = () => {
           </p>
         </TableCell>
         <TableCell className="hidden md:table-cell">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex justify-center">
-                <Image
-                  src={assginBy}
-                  alt="assignee"
-                  width={40}
-                  height={40}
-                  className="size-10 rounded-full"
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{item.createdByAdmin?.name || item.createdByUser?.name}</p>
-            </TooltipContent>
-          </Tooltip>
+         <Tooltip>
+                     <TooltipTrigger asChild>
+                       <div className="flex justify-center">
+                         <img
+                           src={`https://api.dicebear.com/5.x/initials/svg?seed=${
+                             item?.createdByAdmin?.name || item?.createdByUser?.name
+                           }`}
+                           alt="assignee"
+                           loading="lazy"
+                           className="size-10 rounded-full"
+                         />
+                       </div>
+                     </TooltipTrigger>
+                     <TooltipContent>
+                       <p>{item?.createdByAdmin?.name || item?.createdByUser?.name}</p>
+                     </TooltipContent>
+                   </Tooltip>
         </TableCell>
         {/* <TableCell className="hidden md:table-cell">
           <div className="flex gap-2 items-center justify-center">

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Send, Trash2, Edit3, MessageCircle, AtSign, X } from "lucide-react";
 import { UserData } from "@/context/AppContext";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 // Types
 interface User {
@@ -671,11 +672,21 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
                   <div className="w-full bg-white rounded-lg p-4 group relative">
                     <div className="flex items-start gap-4 flex-row-reverse">
                       {/* Avatar */}
-                      <div className="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-medium text-sm">
-                          {author?.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex justify-center">
+                            <img
+                              src={`https://api.dicebear.com/5.x/initials/svg?seed=${author?.name}`}
+                              alt="assignee"
+                              loading="lazy"
+                              className="size-10 rounded-full"
+                            />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{author?.name}</p>
+                        </TooltipContent>
+                      </Tooltip>
 
                       {/* Message Content */}
                       <div className="flex-1 min-w-0">
@@ -780,6 +791,7 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
                       <div className="h-10 w-10 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-white font-medium text-sm">
                           {author?.name.charAt(0).toUpperCase()}
+                          {"soifdhwis"}
                         </span>
                       </div>
 

@@ -1,11 +1,12 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarIcon, PaperclipIcon, FileIcon } from "lucide-react";
+import { CalendarIcon, PaperclipIcon, FileIcon,  } from "lucide-react";
 import SubTasks from "./SubTasks/SubTasks";
 import CommentsWrapper from "@/components/Comments/CommentsWrapper";
 import { Tooltip } from "@radix-ui/react-tooltip";
 import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface User {
   id: string;
@@ -114,6 +115,9 @@ const getFileExtension = (url: string): string => {
 // };
 
 const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
+
+  const [previewAttachment, setPreviewAttachment] = useState<Attachment | null>(null);
+
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ["task", taskId],
     queryFn: () => fetchTask(taskId),
@@ -121,6 +125,60 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
     staleTime: 5 * 60 * 1000, // Data is fresh for 5 minutes
     retry: 3, // Retry failed requests 3 times
   });
+
+   const handleAttachmentClick = (attachment: Attachment) => {
+    setPreviewAttachment(attachment);
+  };
+
+  const handleClosePreview = () => {
+    setPreviewAttachment(null);
+  };
+
+  const renderFilePreview = () => {
+    if (!previewAttachment) return null;
+
+    const fileExtension = getFileExtension(previewAttachment.fileUrl);
+    const fileName = getFileName(previewAttachment.fileUrl);
+
+    if (["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
+      return (
+        <div className="flex justify-center">
+          <img
+            src={previewAttachment.fileUrl}
+            alt={fileName}
+            className="max-w-full max-h-[70vh] object-contain"
+          />
+        </div>
+      );
+    }
+
+    if (fileExtension === "pdf") {
+      return (
+        <iframe
+          src={previewAttachment.fileUrl}
+          className="w-full h-[70vh] border rounded"
+          title={`PDF Preview - ${fileName}`}
+        />
+      );
+    }
+
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <FileIcon size={48} className="text-gray-400 mb-4" />
+        <p className="text-gray-600 mb-4">
+          Preview not available for this file type
+        </p>
+        <a
+          href={previewAttachment.fileUrl}
+          download={fileName}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        >
+          Download File
+        </a>
+      </div>
+    );
+  };
+
 
   if (isLoading) {
     return (
@@ -207,9 +265,8 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
         </div>
 
         {/*------------- attachments ----------- */}
-        {data.attachments && data.attachments.length > 0 && (
+       {data.attachments && data.attachments.length > 0 && (
           <div className="mb-6">
-            {/* Attachments Header with Clip Icon */}
             <div className="flex items-center gap-2 mb-4">
               <PaperclipIcon size={18} className="text-[#525456FF]" />
               <h3 className="text-base font-medium text-[#525456FF]">
@@ -220,7 +277,6 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
               </span>
             </div>
 
-            {/* Attachments Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {data.attachments.map((attachment) => {
                 const fileName = getFileName(attachment.fileUrl);
@@ -229,27 +285,22 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
                 return (
                   <div
                     key={attachment.id}
-                    className="group relative  hover:bg-gray-50  rounded-lg p-3 transition-all duration-200  cursor-pointer"
+                    className="group relative hover:bg-gray-50 rounded-lg p-3 transition-all duration-200 cursor-pointer"
+                    onClick={() => handleAttachmentClick(attachment)}
                   >
                     {/* File Preview/Icon */}
                     <div className="flex flex-col items-center mb-3">
                       <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center mb-2 group-hover:bg-gray-300 transition-colors">
                         {fileExtension === "pdf" ? (
-                          <div className="text-red-500 font-bold text-xs">
-                            PDF
-                          </div>
+                          <div className="text-red-500 font-bold text-xs">PDF</div>
                         ) : fileExtension === "jpg" ||
                           fileExtension === "jpeg" ||
                           fileExtension === "png" ||
                           fileExtension === "gif" ? (
-                          <div className="text-blue-500 font-bold text-xs">
-                            IMG
-                          </div>
+                          <div className="text-blue-500 font-bold text-xs">IMG</div>
                         ) : fileExtension === "doc" ||
                           fileExtension === "docx" ? (
-                          <div className="text-blue-600 font-bold text-xs">
-                            DOC
-                          </div>
+                          <div className="text-blue-600 font-bold text-xs">DOC</div>
                         ) : (
                           <FileIcon size={24} className="text-gray-500" />
                         )}
@@ -257,29 +308,23 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
                     </div>
 
                     {/* File Info */}
-                    <div className="text-center mb-3 border-2">
+                    <div className="text-center mb-3">
                       <p
                         className="text-sm font-medium text-gray-900 truncate px-1"
                         title={fileName}
                       >
-                        {fileName.length > 15
-                          ? fileName.substring(0, 15) + "..."
-                          : fileName}
+                        {fileName}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
                         {new Date(attachment.uploadedAt).toLocaleDateString()}
                       </p>
                     </div>
-
-                    {/* Hover overlay effect */}
-                    <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-20 rounded-lg transition-opacity duration-200 pointer-events-none"></div>
                   </div>
                 );
               })}
             </div>
           </div>
         )}
-
         {/*------------- subtasks ----------- */}
         {/* {data.subtasks && data.subtasks.length > 0 && (
           <div className="mb-4">
@@ -307,6 +352,24 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
       <div className="w-1/3 pl-4 border-l">
         <CommentsWrapper taskId={taskId} />
       </div>
+
+
+      {/* file preview  */}
+      <Dialog open={!!previewAttachment} onOpenChange={(open) => !open && handleClosePreview()}>
+        <DialogContent className="max-w-[90vw] max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle className="flex justify-between items-center">
+              <span className="truncate max-w-[80%]">
+                {previewAttachment?.fileUrl && getFileName(previewAttachment.fileUrl)}
+              </span>
+             
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {previewAttachment && renderFilePreview()}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

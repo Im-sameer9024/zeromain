@@ -141,8 +141,8 @@ const Navbar = () => {
               />
               {cookieData && (
                 <div className=" group-hover:block hidden absolute right-6 top-14 w-fit  bg-white z-40 space-y-2  shadow-lg rounded-lg p-3">
-                  <p className=" text-center">{cookieData?.role}</p>
-                  <Button onClick={LogOut} className=" hover:cursor-pointer ">
+                  <p className=" text-center">{cookieData?.name}</p>
+                  <Button onClick={LogOut} className=" hover:cursor-pointer w-full">
                     LogOut
                   </Button>
                 </div>

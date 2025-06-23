@@ -4,7 +4,7 @@
 import { useAppContext } from "@/context/AppContext";
 
 import axios from "axios";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import useGetTasks from "./useGetTasks";
@@ -15,6 +15,7 @@ const useAddTask = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { refreshTasks } = useGetTasks();
+  const [uploadingFiles, setUploadingFiles] = useState<boolean>(false);
 
   const {
     register,
@@ -62,7 +63,6 @@ const useAddTask = () => {
         attachments: data.attachments,
       };
 
-      debugger;
       // Submit to API
       const response = await axios.post<{ data: TaskDataProps }>(
         "https://task-management-backend-seven-tan.vercel.app/api/tasks/create-task",
@@ -92,6 +92,7 @@ const useAddTask = () => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
+       setUploadingFiles(true); 
 
       const formData = new FormData();
       for (const file of newFiles) {
@@ -117,6 +118,8 @@ const useAddTask = () => {
         ]);
       } catch (error) {
         console.error("Instant upload failed:", error);
+      }finally{
+        setUploadingFiles(false); 
       }
     }
   };
@@ -168,6 +171,7 @@ const useAddTask = () => {
     setValue,
     open,
     setOpen,
+    uploadingFiles
   };
 };
 
