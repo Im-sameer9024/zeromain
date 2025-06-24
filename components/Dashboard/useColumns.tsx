@@ -24,7 +24,7 @@ interface columnsProps {
       classes: "font-bold text-md text-text",
     },
     {
-      header: "Assign by",
+      header: "Assign To",
       accessor: "assignBy",
       classes: "hidden md:table-cell font-bold text-md text-text text-center",
     },
