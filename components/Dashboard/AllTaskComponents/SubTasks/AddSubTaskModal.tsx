@@ -93,10 +93,9 @@ const AddSubTaskModal = ({
       try {
         setLoadingUsers(true);
         const response = await fetch(
-          `https://task-management-backend-seven-tan.vercel.app/api/auth/company-users/${
-            cookieData?.role === "Admin"
-              ? cookieData?.id
-              : cookieData?.companyAdminId
+          `https://task-management-backend-seven-tan.vercel.app/api/auth/company-users/${cookieData?.role === "Admin"
+            ? cookieData?.id
+            : cookieData?.companyAdminId
           }?search=${term}`
         );
 
@@ -105,7 +104,13 @@ const AddSubTaskModal = ({
         }
 
         const data = await response.json();
-        setUsers(data.data.users || []);
+        const admin = {
+          id: data.data.company.adminId,
+          name: `${data.data.company.adminName} (Admin)`,
+          email: data.data.company.email || "No email provided",
+        };
+        const usersList = data.data.users || [];
+        setUsers([admin, ...usersList]);
       } catch (error) {
         console.error("Error fetching users:", error);
         toast.error("Failed to load users");
@@ -246,11 +251,10 @@ const AddSubTaskModal = ({
                     !createSubTaskMutation.isPending &&
                     handleUserSelect(user.id)
                   }
-                  className={`p-3 cursor-pointer hover:bg-gray-100 ${
-                    taskData.userId === user.id
-                      ? "bg-blue-50 border-l-2 border-blue-500"
-                      : ""
-                  }`}
+                  className={`p-3 cursor-pointer hover:bg-gray-100 ${taskData.userId === user.id
+                    ? "bg-blue-50 border-l-2 border-blue-500"
+                    : ""
+                    }`}
                 >
                   <div className="font-medium">{user.name}</div>
                   <div className="text-sm text-gray-500">{user.email}</div>
