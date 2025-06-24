@@ -7,6 +7,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppContext } from "@/context/AppContext";
 import { debounce } from "lodash";
 import Popup from "@/components/Modal/Popup";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 interface AddSubTaskModalProps {
   isOpen: boolean;
@@ -65,6 +67,7 @@ const AddSubTaskModal = ({
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const createSubTaskMutation = useMutation({
     mutationFn: createSubTask,
@@ -78,8 +81,10 @@ const AddSubTaskModal = ({
         expectedTime: 6,
         userId: "",
       });
+      setSearchTerm("");
+      setIsDropdownOpen(false);
       toast.success("Subtask created successfully!");
-      onOpenChange(false); // Close the modal on success
+      onOpenChange(false);
     },
     onError: (error) => {
       console.error("Error creating subtask:", error);
@@ -124,6 +129,7 @@ const AddSubTaskModal = ({
   useEffect(() => {
     if (isOpen && cookieData?.id) {
       fetchUsers("");
+      setIsDropdownOpen(true); // Open dropdown initially
     }
   }, [isOpen, fetchUsers, cookieData?.id]);
 
@@ -148,12 +154,20 @@ const AddSubTaskModal = ({
       ...prev,
       userId,
     }));
+    setIsDropdownOpen(false); // Close dropdown after selection
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
     setSearchTerm(term);
     fetchUsers(term);
+    if (!isDropdownOpen) {
+      setIsDropdownOpen(true);
+    }
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -175,10 +189,21 @@ const AddSubTaskModal = ({
       title: trimmedTitle,
       userId: taskData.userId,
       expectedTime: taskData.expectedTime,
-      requiresFeedback: true, // Hardcode to true since it's removed from the UI
+      requiresFeedback: true,
     };
 
     createSubTaskMutation.mutate(payload);
+  };
+
+  // Get selected user for display
+  const selectedUser = users.find(user => user.id === taskData.userId);
+
+  // Organize users to show selected user at top
+  const organizedUsers = () => {
+    if (!selectedUser) return users;
+
+    const otherUsers = users.filter(user => user.id !== taskData.userId);
+    return [selectedUser, ...otherUsers];
   };
 
   // Content for the Popup
@@ -229,42 +254,116 @@ const AddSubTaskModal = ({
           <label className="block text-sm font-medium mb-1">
             Assign to User*
           </label>
-          <Input
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="flex-1"
-            disabled={createSubTaskMutation.isPending}
-          />
-          <div className="border rounded-md h-60 overflow-y-auto">
-            {loadingUsers ? (
-              <div className="text-center py-4">Loading users...</div>
-            ) : users.length === 0 ? (
-              <div className="text-center py-4 text-sm text-gray-500">
-                No users found
-              </div>
-            ) : (
-              users.map((user) => (
-                <div
-                  key={user.id}
-                  onClick={() =>
-                    !createSubTaskMutation.isPending &&
-                    handleUserSelect(user.id)
-                  }
-                  className={`p-3 cursor-pointer hover:bg-gray-100 ${taskData.userId === user.id
-                    ? "bg-blue-50 border-l-2 border-blue-500"
-                    : ""
-                    }`}
-                >
-                  <div className="font-medium">{user.name}</div>
-                  <div className="text-sm text-gray-500">{user.email}</div>
-                </div>
-              ))
-            )}
+
+          {/* Search Input with Dropdown Toggle */}
+          <div className="relative">
+            <Input
+              placeholder={selectedUser ? selectedUser.name : "Search users..."}
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="pr-10"
+              disabled={createSubTaskMutation.isPending}
+              onFocus={() => setIsDropdownOpen(true)}
+            />
+            <button
+              type="button"
+              onClick={toggleDropdown}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded transition-colors"
+              disabled={createSubTaskMutation.isPending}
+            >
+              <motion.div
+                animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+              </motion.div>
+            </button>
           </div>
+
+          {/* Selected User Display */}
+          {selectedUser && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-2 bg-blue-50 border border-blue-200 rounded-md"
+            >
+              <div className="text-sm font-medium text-blue-900">
+                Selected: {selectedUser.name}
+              </div>
+              <div className="text-xs text-blue-700">{selectedUser.email}</div>
+            </motion.div>
+          )}
+
+          {/* Dropdown List - Fixed height container */}
+          <AnimatePresence>
+            {isDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="overflow-hidden"
+              >
+                <div className="border rounded-md bg-white shadow-lg max-h-48 overflow-y-auto">
+                  {loadingUsers ? (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center py-4"
+                    >
+                      Loading users...
+                    </motion.div>
+                  ) : users.length === 0 ? (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center py-4 text-sm text-gray-500"
+                    >
+                      No users found
+                    </motion.div>
+                  ) : (
+                    <div>
+                      {organizedUsers().map((user, index) => (
+                        <motion.div
+                          key={user.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          onClick={() =>
+                            !createSubTaskMutation.isPending &&
+                            handleUserSelect(user.id)
+                          }
+                          className={`p-3 cursor-pointer transition-colors hover:bg-gray-100 ${taskData.userId === user.id
+                            ? "bg-blue-50 border-l-4 border-blue-500"
+                            : ""
+                            }`}
+                        >
+                          <div>
+                            <div className="font-medium flex items-center gap-2">
+                              {user.name}
+                              {taskData.userId === user.id && (
+                                <motion.span
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded-full"
+                                >
+                                  ✓
+                                </motion.span>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-500">{user.email}</div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex justify-end gap-2 mt-6">
           <Button
             type="button"
             variant="outline"
