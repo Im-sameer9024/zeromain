@@ -8,7 +8,7 @@ import assginBy from "../../public/images/assignlogo.png";
 import { X, Check, Circle } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { TableCell, TableRow } from "../ui/table";
-import { Tag, TaskDataProps, } from "@/types/Task.types";
+import { Tag, TaskDataProps } from "@/types/Task.types";
 import TableComponent from "../TableComponent";
 import { useAppContext } from "@/context/AppContext";
 import useGetAllTasks from "./Hooks/useGetAllTasks";
@@ -207,23 +207,23 @@ const DashboardUsers = () => {
           </p>
         </TableCell>
         <TableCell className="hidden md:table-cell">
-         <Tooltip>
-                     <TooltipTrigger asChild>
-                       <div className="flex justify-center">
-                         <img
-                           src={`https://api.dicebear.com/5.x/initials/svg?seed=${
-                             item?.createdByAdmin?.name || item?.createdByUser?.name
-                           }`}
-                           alt="assignee"
-                           loading="lazy"
-                           className="size-10 rounded-full"
-                         />
-                       </div>
-                     </TooltipTrigger>
-                     <TooltipContent>
-                       <p>{item?.createdByAdmin?.name || item?.createdByUser?.name}</p>
-                     </TooltipContent>
-                   </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex justify-center">
+                <img
+                  src={`https://api.dicebear.com/5.x/initials/svg?seed=${
+                    item?.createdByAdmin?.name || item?.createdByUser?.name
+                  }`}
+                  alt="assignee"
+                  loading="lazy"
+                  className="size-10 rounded-full"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{item?.createdByAdmin?.name || item?.createdByUser?.name}</p>
+            </TooltipContent>
+          </Tooltip>
         </TableCell>
         {/* <TableCell className="hidden md:table-cell">
           <div className="flex gap-2 items-center justify-center">
@@ -269,7 +269,7 @@ const DashboardUsers = () => {
         </TableCell>
         <TableCell>
           <div className=" items-center justify-center  flex-wrap flex gap-2">
-            {item.tags?.map((tag:Tag, i:number) => (
+            {item.tags?.map((tag: Tag, i: number) => (
               <span
                 className="odd:bg-[#f7e9ee] rounded odd:text-[#E8618CFF] p-1 w-fit px-2 even:text-[#636AE8FF] even:bg-[#F2F2FDFF] text-xs"
                 key={tag?.id || i}
