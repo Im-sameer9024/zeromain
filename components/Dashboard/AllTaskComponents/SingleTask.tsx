@@ -126,6 +126,10 @@ const SingleTask: React.FC<SingleTaskProps> = ({ taskId }) => {
     retry: 3, // Retry failed requests 3 times
   });
 
+
+
+  console.log("data of single task",data)
+
    const handleAttachmentClick = (attachment: Attachment) => {
     setPreviewAttachment(attachment);
   };

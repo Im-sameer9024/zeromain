@@ -11,6 +11,7 @@ interface FormValues {
   password: string;
   priority: string;
   companyAdminId?: string;
+  teamMemberIds:string[]
 }
 
 const useAddUser = () => {
@@ -21,6 +22,7 @@ const useAddUser = () => {
   const {
     register,
     handleSubmit,
+    watch,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -29,8 +31,32 @@ const useAddUser = () => {
       email: "",
       password: "",
       priority: "",
+      teamMemberIds:[]
     },
   });
+
+
+  const handleSelectTeamMembers = (user: any) => {
+    const currentUser = watch("teamMemberIds");
+    if (currentUser.includes(user.id)) {
+      setValue(
+        "teamMemberIds",
+        currentUser.filter((t: any) => t !== user.id)
+      );
+    } else  {
+      setValue("teamMemberIds", [...currentUser, user.id]);
+    }
+  };
+
+  const handleRemoveMember = (tagId: string) => {
+    setValue(
+      "teamMemberIds",
+      watch("teamMemberIds").filter((t: any) => t !== tagId)
+    );
+  };
+
+
+  const selectedTeamMembers = watch("teamMemberIds")
 
   const onSubmit = async (data: FormValues) => {
     const actualData = {
@@ -39,15 +65,25 @@ const useAddUser = () => {
       password: data?.password,
       priority: parseInt(data?.priority),
       companyAdminId: cookieData?.id,
+      teamMemberIds: selectedTeamMembers
+      
     };
+
+    console.log("actual Data of User create",actualData)
+    debugger;
 
     const toastId = toast.loading("Creating user...");
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const response = await axios.post(
-        "https://task-management-backend-seven-tan.vercel.app/api/auth/register-user",
+        "https://task-management-backend-kohl-omega.vercel.app/api/auth/register-user",
         actualData
       );
+
+
+      console.log("response of user create",response)
+      debugger;
+
+
 
       toast.success("User created successfully!", { id: toastId });
       setOpenAddModal(false);
@@ -73,6 +109,9 @@ const useAddUser = () => {
     setValue,
     errors,
     isSubmitting,
+    handleRemoveMember,
+    handleSelectTeamMembers,
+    selectedTeamMembers
   };
 };
 

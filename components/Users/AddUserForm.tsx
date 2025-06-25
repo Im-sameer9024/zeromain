@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import {
@@ -13,11 +15,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { User, X } from "lucide-react";
 import useAddUser from "./Hooks/useAddUser";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { ScrollArea } from "../ui/scroll-area";
+import { motion } from "framer-motion";
+import useGetUsers from "../Dashboard/Hooks/useGetUsers";
+import { CgClose } from "react-icons/cg";
 
+const popupVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.8 },
+};
 
 const AddUserForm = () => {
+  const { companyUsers } = useGetUsers();
+
   const {
     register,
     onSubmit,
@@ -26,6 +40,9 @@ const AddUserForm = () => {
     setValue,
     errors,
     isSubmitting,
+    handleRemoveMember,
+    handleSelectTeamMembers,
+    selectedTeamMembers,
   } = useAddUser();
 
   return (
@@ -117,6 +134,72 @@ const AddUserForm = () => {
               {errors.password.message}
             </span>
           )}
+        </div>
+
+        {/* Add team members  */}
+        <div className="flex flex-col gap-2">
+          <h2 className="font-Inter font-semibold">Team Members</h2>
+          <div className="flex gap-2 items-center flex-wrap">
+            {selectedTeamMembers.map((userId: any) => {
+              const user = companyUsers.find((user: any) => user.id === userId);
+              return user ? (
+                <div key={user.id} className="relative inline-block m-1 group ">
+                  <span
+                    className={`px-3 py-1 bg-gray-400 rounded-full text-white text-xs  relative`}
+                  >
+                    {user.name}
+                    <CgClose
+                      className="absolute -top-2 text-lg text-black cursor-pointer 
+                            opacity-0 group-hover:opacity-100 transition-opacity
+                            bg-white rounded-full p-0.5 shadow-sm"
+                      onClick={() => handleRemoveMember(user.id)}
+                    />
+                  </span>
+                </div>
+              ) : null;
+            })}
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  disabled={selectedTeamMembers.length >= 2}
+                  variant="outline"
+                  className=" text-text flex gap-2"
+                >
+                  <User size={16} />
+                  Users
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-auto p-2" align="start">
+                <ScrollArea className="h-22 w-fit  rounded-md border">
+                  <motion.div
+                    variants={popupVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    transition={{ duration: 0.2 }}
+                    className="grid grid-cols-4 gap-2 "
+                  >
+                    {companyUsers.map((user: any) => (
+                      <Button
+                        key={user.id}
+                        variant="outline"
+                        className="hover:cursor-pointer bg-blue-200 disabled:cursor-not-allowed"
+                        disabled={selectedTeamMembers.includes(user.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSelectTeamMembers(user);
+                        }}
+                      >
+                        {user.name}
+                      </Button>
+                    ))}
+                  </motion.div>
+                </ScrollArea>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
         {/* Priority */}

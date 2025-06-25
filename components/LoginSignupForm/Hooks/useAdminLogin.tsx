@@ -56,7 +56,7 @@ const useAdminLogin = () => {
       if (error.response) {
         errorMessage = error.response.data.message || errorMessage;
       }
-      toast.error(errorMessage, { id: toastId });
+      toast.error(errorMessage, { id: toastId,duration:3000 });
     } finally {
       toast.dismiss(toastId);
     }

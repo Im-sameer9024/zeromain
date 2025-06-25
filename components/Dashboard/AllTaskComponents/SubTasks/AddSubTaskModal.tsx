@@ -21,6 +21,12 @@ interface User {
   email: string;
 }
 
+// interface TeamMember {
+//   id: string;
+//   name: string;
+//   email: string;
+// }
+
 interface CreateSubTaskPayload {
   taskId: string;
   title: string;
@@ -65,6 +71,11 @@ const AddSubTaskModal = ({
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  // const [teamMemberList, setTeamMemberList] = useState<TeamMember[]>([]);
+
+          console.log("cookieData where role is User",cookieData)
+
+  console.log("teammembers", users);
 
   const createSubTaskMutation = useMutation({
     mutationFn: createSubTask,
@@ -92,25 +103,57 @@ const AddSubTaskModal = ({
     debounce(async (term: string) => {
       try {
         setLoadingUsers(true);
-        const response = await fetch(
-          `https://task-management-backend-seven-tan.vercel.app/api/auth/company-users/${cookieData?.role === "Admin"
-            ? cookieData?.id
-            : cookieData?.companyAdminId
-          }?search=${term}`
-        );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
+        console.log("cookieData?.role", cookieData);
+
+        if (cookieData?.role === "Admin") {
+          const response = await fetch(
+            `https://task-management-backend-seven-tan.vercel.app/api/auth/company-users/${
+              cookieData?.role === "Admin"
+                ? cookieData?.id
+                : cookieData?.companyAdminId
+            }?search=${term}`
+          );
+
+          
+
+          if (!response?.ok) {
+
+            throw new Error("Failed to fetch users");
+
+          }
+
+          const data = await response?.json();
+
+            console.log("respons when admin login",data)
+            debugger;
+
+          const admin = {
+            id: data.data.company.adminId,
+            name: `${data.data.company.adminName} (Admin)`,
+            email: data.data.company.email || "No email provided",
+          };
+
+          const usersList = data.data.users || [];
+          setUsers([admin, ...usersList]);
+        } else if (cookieData?.role === "User") {
+
+
+          const response = await fetch(
+            `https://task-management-backend-kohl-omega.vercel.app/api/auth/getTeamMembers/${cookieData?.id}`
+          );
+          if (!response?.ok) {
+
+            throw new Error("Failed to fetch users");
+          }
+
+          const data = await response.json();
+            console.log("respons when user user user login",data)
+            debugger;
+
+
+          setUsers([...data.data?.teamMembers]);
         }
-
-        const data = await response.json();
-        const admin = {
-          id: data.data.company.adminId,
-          name: `${data.data.company.adminName} (Admin)`,
-          email: data.data.company.email || "No email provided",
-        };
-        const usersList = data.data.users || [];
-        setUsers([admin, ...usersList]);
       } catch (error) {
         console.error("Error fetching users:", error);
         toast.error("Failed to load users");
@@ -251,10 +294,11 @@ const AddSubTaskModal = ({
                     !createSubTaskMutation.isPending &&
                     handleUserSelect(user.id)
                   }
-                  className={`p-3 cursor-pointer hover:bg-gray-100 ${taskData.userId === user.id
-                    ? "bg-blue-50 border-l-2 border-blue-500"
-                    : ""
-                    }`}
+                  className={`p-3 cursor-pointer hover:bg-gray-100 ${
+                    taskData.userId === user.id
+                      ? "bg-blue-50 border-l-2 border-blue-500"
+                      : ""
+                  }`}
                 >
                   <div className="font-medium">{user.name}</div>
                   <div className="text-sm text-gray-500">{user.email}</div>

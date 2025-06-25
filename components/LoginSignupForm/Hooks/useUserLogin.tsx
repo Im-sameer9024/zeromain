@@ -38,8 +38,10 @@ const useUserLogin = () => {
     try {
       const response = await axios.post(
         "https://task-management-backend-seven-tan.vercel.app/api/auth/login-user",
-        data
+        data~
       );
+
+      console.log("response  of user login ",response)
 
       if (response.status === 200) {
         router.push("/user/dashboard");
@@ -58,7 +60,7 @@ const useUserLogin = () => {
       if (error.response) {
         errorMessage = error.response.data.message || errorMessage;
       }
-      toast.error(errorMessage, { id: toastId });
+      toast.error(errorMessage, { id: toastId,duration:3000 });
     } finally {
       toast.dismiss(toastId);
     }

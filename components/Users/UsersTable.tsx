@@ -60,6 +60,8 @@ const UsersTable = () => {
   const { companyUsers, isLoading, isError, error, refetchCompanyUsers } =
     useGetUsers();
 
+    console.log("compnay uses",companyUsers)
+
   const { setOpen ,open, setUserId,searchQuery  } = useAppContext();
   const { mutate: deleteUser } = useDeleteUser();
 

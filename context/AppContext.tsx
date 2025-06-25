@@ -10,12 +10,21 @@ import React, {
 import Cookies from "js-cookie";
 import { TagDataProps, TaskDataProps } from "@/types/Task.types";
 
+interface teamMemberProps{
+  id: string;
+  name: string;
+  email: string;
+  priority: string;
+}
+
+
 export interface UserData {
   id: string;
   role: string;
   companyAdminId?: string;
   name: string;
   email: string;
+  teamMembers?:teamMemberProps
   // Add other user properties as needed
 }
 
