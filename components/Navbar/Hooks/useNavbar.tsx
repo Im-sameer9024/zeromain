@@ -51,9 +51,9 @@ const useNavbar = () => {
   const { cookieData } = useAppContext();
 
   const notificationBaseURL =
-    "https://task-management-backend-seven-tan.vercel.app/api/notifications";
+    "https://task-management-server-rouge-tau.vercel.app/api/notifications";
   const clockBaseURL =
-    "https://task-management-backend-seven-tan.vercel.app/api/worksession";
+    "https://task-management-server-rouge-tau.vercel.app/api/worksession";
 
   // Modal click outside handler
   useEffect(() => {

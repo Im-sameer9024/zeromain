@@ -74,7 +74,7 @@ const CommentsBox: React.FC<CommentSystemProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const baseURL =
-    "https://task-management-backend-seven-tan.vercel.app/api/comments";
+    "https://task-management-server-rouge-tau.vercel.app/api/comments";
 
   // Improved positioning function
   const calculateMentionPosition = useCallback(

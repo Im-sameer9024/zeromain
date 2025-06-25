@@ -29,7 +29,7 @@ const updateSubTaskFeedback = async (
   payload: UpdateFeedbackPayload
 ) => {
   const response = await fetch(
-    `https://task-management-backend-seven-tan.vercel.app/api/subtasks/update-subtask/${subtaskId}`,
+    `https://task-management-server-rouge-tau.vercel.app/api/subtasks/update-subtask/${subtaskId}`,
     {
       method: "PUT",
       headers: {

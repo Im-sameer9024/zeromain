@@ -50,7 +50,7 @@ const updateSubTaskStatus = async (
   payload: UpdateStatusPayload
 ) => {
   const response = await fetch(
-    `https://task-management-backend-seven-tan.vercel.app/api/subtasks/update-subtask/${subtaskId}`,
+    `https://task-management-server-rouge-tau.vercel.app/api/subtasks/update-subtask/${subtaskId}`,
     {
       method: "PATCH",
       headers: {

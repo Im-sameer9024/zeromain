@@ -8,7 +8,7 @@ const useRemoveTask = () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const response = await axios.delete(
-        `https://task-management-backend-seven-tan.vercel.app/api/tasks/delete-task/${id}`
+        `https://task-management-server-rouge-tau.vercel.app/api/tasks/delete-task/${id}`
       );
 
       toast.success("Task Removed Successfully", { id: toastId });

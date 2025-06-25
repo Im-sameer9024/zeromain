@@ -14,7 +14,7 @@ const useGetTags = () => {
     if (!cookieData?.id) return []; // Return empty array if no cookieData.id
 
     const response = await axios.get(
-      `https://task-management-backend-seven-tan.vercel.app/api/tags/get-tags/${cookieData.id}`
+      `https://task-management-server-rouge-tau.vercel.app/api/tags/get-tags/${cookieData.id}`
     );
     return response.data?.data || [];
   };

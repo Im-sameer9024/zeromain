@@ -16,7 +16,7 @@ const useGetUsers = () => {
     }
 
     const response = await axios.get(
-      `https://task-management-backend-seven-tan.vercel.app/api/auth/company-users/${cookieData?.id}`
+      `https://task-management-server-rouge-tau.vercel.app/api/auth/company-users/${cookieData?.id}`
     );
 
     return response.data?.data?.users || [];

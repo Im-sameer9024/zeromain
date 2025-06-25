@@ -53,7 +53,7 @@ const useTaskTimer = (
 
         // Make API call to update only the status
         const response = await axios.put(
-          `https://task-management-backend-seven-tan.vercel.app/api/tasks/update-status/${taskId}`,
+          `https://task-management-server-rouge-tau.vercel.app/api/tasks/update-status/${taskId}`,
           {
             status: newStatus, // Only send status to API
           }
