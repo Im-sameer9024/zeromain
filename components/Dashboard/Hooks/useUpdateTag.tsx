@@ -28,7 +28,7 @@ const useUpdateTag = () => {
 
   const updateTag = async (data: TagForm) => {
     const response = await axios.put(
-      `https://task-management-backend-seven-tan.vercel.app/api/tags/update-tag/${tagId}`,
+      `https://task-management-server-rouge-tau.vercel.app/api/tags/update-tag/${tagId}`,
       {
         name: data.name,
         color: data.color,

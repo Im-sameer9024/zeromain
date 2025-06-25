@@ -36,7 +36,7 @@ const useGetTasks = () => {
         }
 
         const response = await axios.get(
-          "https://task-management-backend-seven-tan.vercel.app/api/tasks/get-all-tasks",
+          "https://task-management-server-rouge-tau.vercel.app/api/tasks/get-all-tasks",
           {
             params,
             cancelToken: cancelToken.token,

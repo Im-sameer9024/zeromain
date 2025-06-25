@@ -2,11 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -15,13 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User, X } from "lucide-react";
+import { User, X, Crown } from "lucide-react";
 import useAddUser from "./Hooks/useAddUser";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { ScrollArea } from "../ui/scroll-area";
 import { motion } from "framer-motion";
 import useGetUsers from "../Dashboard/Hooks/useGetUsers";
+
 import { CgClose } from "react-icons/cg";
+import useGetAdmins from "./Hooks/useGetAdmin";
 
 const popupVariants = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -31,7 +28,8 @@ const popupVariants = {
 
 const AddUserForm = () => {
   const { companyUsers } = useGetUsers();
-
+  const { companyAdmins } = useGetAdmins();
+  console.log("companyAdmins",companyAdmins)
   const {
     register,
     onSubmit,
@@ -43,6 +41,9 @@ const AddUserForm = () => {
     handleRemoveMember,
     handleSelectTeamMembers,
     selectedTeamMembers,
+    handleRemoveAdmin,
+    handleSelectAdminMembers,
+    selectedAdminMembers,
   } = useAddUser();
 
   return (
@@ -202,6 +203,78 @@ const AddUserForm = () => {
           </div>
         </div>
 
+        {/* Add admin members  */}
+        <div className="flex flex-col gap-2">
+          <h2 className="font-Inter font-semibold">Admin Team Members</h2>
+          <div className="flex gap-2 items-center flex-wrap">
+            {selectedAdminMembers.map((userId: any) => {
+              const admin = companyAdmins.find(
+                (admin: any) => admin.id === userId
+              );
+              return admin ? (
+                <div
+                  key={admin.id}
+                  className="relative inline-block m-1 group "
+                >
+                  <span
+                    className={`px-3 py-1 bg-orange-400 rounded-full text-white text-xs  relative flex items-center gap-1`}
+                  >
+                    <Crown size={12} />
+                    {admin.name}
+                    <CgClose
+                      className="absolute -top-2 text-lg text-black cursor-pointer 
+                            opacity-0 group-hover:opacity-100 transition-opacity
+                            bg-white rounded-full p-0.5 shadow-sm"
+                      onClick={() => handleRemoveAdmin(admin.id)}
+                    />
+                  </span>
+                </div>
+              ) : null;
+            })}
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  disabled={selectedAdminMembers.length >= 2}
+                  variant="outline"
+                  className=" text-text flex gap-2"
+                >
+                  <Crown size={16} />
+                  Admin
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-auto p-2" align="start">
+                <ScrollArea className="h-22 w-fit  rounded-md border">
+                  <motion.div
+                    variants={popupVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    transition={{ duration: 0.2 }}
+                    className="grid grid-cols-4 gap-2 "
+                  >
+                    {companyAdmins.map((admin: any) => (
+                      <Button
+                        key={admin.id}
+                        variant="outline"
+                        className="hover:cursor-pointer bg-orange-200 disabled:cursor-not-allowed"
+                        disabled={selectedAdminMembers.includes(admin.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSelectAdminMembers(admin);
+                        }}
+                      >
+                        {admin.name}
+                      </Button>
+                    ))}
+                  </motion.div>
+                </ScrollArea>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
         {/* Priority */}
         <div className="flex flex-col gap-2">
           <label className="font-Inter font-semibold" htmlFor="priority">
@@ -213,11 +286,11 @@ const AddUserForm = () => {
                 errors.priority ? "border-red-500" : "border-gray-300"
               }`}
             >
-              <SelectValue placeholder="Select priority (0-5)" />
+              <SelectValue placeholder="Select priority (1-20)" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {[1, 2, 3, 4, 5].map((num) => (
+                {[1, 2, 3, 4, 5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].map((num) => (
                   <SelectItem key={num} value={num.toString()}>
                     {num}
                   </SelectItem>

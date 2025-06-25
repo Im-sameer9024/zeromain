@@ -11,7 +11,8 @@ interface FormValues {
   password: string;
   priority: string;
   companyAdminId?: string;
-  teamMemberIds:string[]
+  teamMemberIds: string[];
+  adminTeamMemberIds: string[];
 }
 
 const useAddUser = () => {
@@ -31,10 +32,10 @@ const useAddUser = () => {
       email: "",
       password: "",
       priority: "",
-      teamMemberIds:[]
+      teamMemberIds: [],
+      adminTeamMemberIds: [],
     },
   });
-
 
   const handleSelectTeamMembers = (user: any) => {
     const currentUser = watch("teamMemberIds");
@@ -43,7 +44,7 @@ const useAddUser = () => {
         "teamMemberIds",
         currentUser.filter((t: any) => t !== user.id)
       );
-    } else  {
+    } else {
       setValue("teamMemberIds", [...currentUser, user.id]);
     }
   };
@@ -55,8 +56,27 @@ const useAddUser = () => {
     );
   };
 
+  const handleSelectAdminMembers = (user: any) => {
+    const currentAdminUsers = watch("adminTeamMemberIds");
+    if (currentAdminUsers.includes(user.id)) {
+      setValue(
+        "adminTeamMemberIds",
+        currentAdminUsers.filter((t: any) => t !== user.id)
+      );
+    } else {
+      setValue("adminTeamMemberIds", [...currentAdminUsers, user.id]);
+    }
+  };
 
-  const selectedTeamMembers = watch("teamMemberIds")
+  const handleRemoveAdmin = (tagId: string) => {
+    setValue(
+      "adminTeamMemberIds",
+      watch("adminTeamMemberIds").filter((t: any) => t !== tagId)
+    );
+  };
+
+  const selectedTeamMembers = watch("teamMemberIds");
+  const selectedAdminMembers = watch("adminTeamMemberIds");
 
   const onSubmit = async (data: FormValues) => {
     const actualData = {
@@ -65,25 +85,22 @@ const useAddUser = () => {
       password: data?.password,
       priority: parseInt(data?.priority),
       companyAdminId: cookieData?.id,
-      teamMemberIds: selectedTeamMembers
-      
+      teamMemberIds: selectedTeamMembers,
+      adminTeamMemberIds: selectedAdminMembers,
     };
 
-    console.log("actual Data of User create",actualData)
+    console.log("actual Data of User create", actualData);
     debugger;
 
     const toastId = toast.loading("Creating user...");
     try {
       const response = await axios.post(
-        "https://task-management-backend-kohl-omega.vercel.app/api/auth/register-user",
+        "https://task-management-server-rouge-tau.vercel.app/api/auth/register-user",
         actualData
       );
 
-
-      console.log("response of user create",response)
+      console.log("response of user create", response);
       debugger;
-
-
 
       toast.success("User created successfully!", { id: toastId });
       setOpenAddModal(false);
@@ -111,7 +128,10 @@ const useAddUser = () => {
     isSubmitting,
     handleRemoveMember,
     handleSelectTeamMembers,
-    selectedTeamMembers
+    selectedTeamMembers,
+    handleRemoveAdmin,
+    handleSelectAdminMembers,
+    selectedAdminMembers,
   };
 };
 

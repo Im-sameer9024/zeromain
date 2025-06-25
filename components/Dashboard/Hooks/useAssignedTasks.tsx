@@ -27,7 +27,7 @@ const useAssignedTasks = () => {
     }
 
     const response = await axios.get(
-      "https://task-management-backend-seven-tan.vercel.app/api/tasks/assigned-tasks",
+      "https://task-management-server-rouge-tau.vercel.app/api/tasks/assigned-tasks",
       { params }
     );
 

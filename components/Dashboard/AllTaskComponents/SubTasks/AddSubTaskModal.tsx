@@ -39,7 +39,7 @@ interface CreateSubTaskPayload {
 
 const createSubTask = async (payload: CreateSubTaskPayload) => {
   const response = await fetch(
-    "https://task-management-backend-seven-tan.vercel.app/api/subtasks/create-subtask",
+    "https://task-management-server-rouge-tau.vercel.app/api/subtasks/create-subtask",
     {
       method: "POST",
       headers: {
@@ -108,25 +108,20 @@ const AddSubTaskModal = ({
 
         if (cookieData?.role === "Admin") {
           const response = await fetch(
-            `https://task-management-backend-seven-tan.vercel.app/api/auth/company-users/${
+            `https://task-management-server-rouge-tau.vercel.app/api/auth/company-users/${
               cookieData?.role === "Admin"
                 ? cookieData?.id
                 : cookieData?.companyAdminId
             }?search=${term}`
           );
 
-          
-
           if (!response?.ok) {
-
             throw new Error("Failed to fetch users");
-
           }
 
           const data = await response?.json();
 
-            console.log("respons when admin login",data)
-            debugger;
+          console.log("response when admin login", data);
 
           const admin = {
             id: data.data.company.adminId,
@@ -137,22 +132,26 @@ const AddSubTaskModal = ({
           const usersList = data.data.users || [];
           setUsers([admin, ...usersList]);
         } else if (cookieData?.role === "User") {
-
-
           const response = await fetch(
-            `https://task-management-backend-kohl-omega.vercel.app/api/auth/getTeamMembers/${cookieData?.id}`
+            `https://task-management-server-rouge-tau.vercel.app/api/auth/getTeamMembers/${cookieData?.id}`
           );
           if (!response?.ok) {
-
             throw new Error("Failed to fetch users");
           }
 
           const data = await response.json();
-            console.log("respons when user user user login",data)
-            debugger;
+          console.log("response when user login", data);
 
+          // Get all team members from the 'all' array
+          const allTeamMembers = data.data?.teamMembers?.all || [];
 
-          setUsers([...data.data?.teamMembers]);
+          // Also include the current user in the list
+          const currentUser = data.data?.user;
+          const usersToSet = currentUser
+            ? [currentUser, ...allTeamMembers]
+            : allTeamMembers;
+
+          setUsers(usersToSet);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -234,13 +233,13 @@ const AddSubTaskModal = ({
   };
 
   // Get selected user for display
-  const selectedUser = users.find(user => user.id === taskData.userId);
+  const selectedUser = users.find((user) => user.id === taskData.userId);
 
   // Organize users to show selected user at top
   const organizedUsers = () => {
     if (!selectedUser) return users;
 
-    const otherUsers = users.filter(user => user.id !== taskData.userId);
+    const otherUsers = users.filter((user) => user.id !== taskData.userId);
     return [selectedUser, ...otherUsers];
   };
 
@@ -371,10 +370,11 @@ const AddSubTaskModal = ({
                             !createSubTaskMutation.isPending &&
                             handleUserSelect(user.id)
                           }
-                          className={`p-3 cursor-pointer transition-colors hover:bg-gray-100 ${taskData.userId === user.id
-                            ? "bg-blue-50 border-l-4 border-blue-500"
-                            : ""
-                            }`}
+                          className={`p-3 cursor-pointer transition-colors hover:bg-gray-100 ${
+                            taskData.userId === user.id
+                              ? "bg-blue-50 border-l-4 border-blue-500"
+                              : ""
+                          }`}
                         >
                           <div>
                             <div className="font-medium flex items-center gap-2">
@@ -389,7 +389,9 @@ const AddSubTaskModal = ({
                                 </motion.span>
                               )}
                             </div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div className="text-sm text-gray-500">
+                              {user.email}
+                            </div>
                           </div>
                         </motion.div>
                       ))}
