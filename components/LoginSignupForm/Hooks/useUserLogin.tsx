@@ -38,8 +38,7 @@ const useUserLogin = () => {
     try {
       const response = await axios.post(
         "https://task-management-backend-seven-tan.vercel.app/api/auth/login-user",
-        data~
-      );
+        data     );
 
       console.log("response  of user login ",response)
 
