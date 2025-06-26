@@ -101,7 +101,7 @@ const useAddTask = () => {
 
       try {
         const res = await fetch(
-          "hhttps://task-management-server-rouge-tau.vercel.app/api/upload",
+          "https://task-management-server-rouge-tau.vercel.app/api/upload",
           {
             method: "POST",
             body: formData,
