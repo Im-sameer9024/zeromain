@@ -12,7 +12,7 @@ const useDeleteUser = () => {
 
   const deleteUser = async (userId: string) => {
     const response = await axios.delete(
-      `https://task-management-backend-seven-tan.vercel.app/api/auth/delete-user/${userId}`
+      `https://task-management-server-rouge-tau.vercel.app/api/auth/delete-user/${userId}`
     );
     return response.data;
   };

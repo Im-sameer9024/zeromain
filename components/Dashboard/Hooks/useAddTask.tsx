@@ -65,7 +65,7 @@ const useAddTask = () => {
 
       // Submit to API
       const response = await axios.post<{ data: TaskDataProps }>(
-        "https://task-management-backend-seven-tan.vercel.app/api/tasks/create-task",
+        "https://task-management-server-rouge-tau.vercel.app/api/tasks/create-task",
         formData
       );
 
@@ -101,7 +101,7 @@ const useAddTask = () => {
 
       try {
         const res = await fetch(
-          "https://task-management-backend-seven-tan.vercel.app/api/upload",
+          "hhttps://task-management-server-rouge-tau.vercel.app/api/upload",
           {
             method: "POST",
             body: formData,

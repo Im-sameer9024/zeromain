@@ -11,7 +11,7 @@ const useDeleteTag = () => {
 
   const deleteTag = async (tagId: string) => {
     const response = await axios.delete(
-      `https://task-management-backend-seven-tan.vercel.app/api/tags/delete-tag/${tagId}`
+      `https://task-management-server-rouge-tau.vercel.app/api/tags/delete-tag/${tagId}`
     );
     return response.data;
   };

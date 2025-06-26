@@ -27,7 +27,7 @@ const useUpdateUser = () => {
 
   const updateUser = async (data: FormValues) => {
     const response = await axios.put(
-      `https://task-management-backend-seven-tan.vercel.app/api/auth/update-user/${userId}`,
+      `https://task-management-server-rouge-tau.vercel.app/api/auth/update-user/${userId}`,
       {
         name: data.name,
         email: data.email,

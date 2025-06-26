@@ -31,7 +31,7 @@ const useUpdateStatus = () => {
 
     try {
       const response = await axios.put(
-        `https://task-management-backend-seven-tan.vercel.app/api/tasks/update-task/${taskId}`,
+        `https://task-management-server-rouge-tau.vercel.app/api/tasks/update-task/${taskId}`,
         { status },
         {
           headers: {

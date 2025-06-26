@@ -42,7 +42,7 @@ interface SubTasksProps {
 
 const fetchSubTasks = async (taskId: string): Promise<SubTask[]> => {
   const response = await fetch(
-    `https://task-management-backend-seven-tan.vercel.app/api/tasks/get-task/${taskId}`
+    `https://task-management-server-rouge-tau.vercel.app/api/tasks/get-task/${taskId}`
   );
   if (!response.ok) {
     throw new Error("Failed to fetch subtasks");
