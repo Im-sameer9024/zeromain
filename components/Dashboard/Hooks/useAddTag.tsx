@@ -35,7 +35,7 @@ const useAddTag = () => {
 
   const addTag = async (data: TagForm): Promise<any> => {
     const response = await axios.post<TagResponse>(
-      "https://task-management-server-rouge-tau.vercel.app//api/tags/create-tag",
+      "https://task-management-server-rouge-tau.vercel.app/api/tags/create-tag",
       {
         name: data.name,
         color: data.color,
