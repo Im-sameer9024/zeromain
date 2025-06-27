@@ -92,21 +92,35 @@ const useAddTask = () => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-       setUploadingFiles(true); 
+      setUploadingFiles(true);
+
+      
+
+      console.log("newfiles",newFiles)
+      debugger;
 
       const formData = new FormData();
       for (const file of newFiles) {
         formData.append("attachments", file);
       }
 
+     
+
       try {
         const res = await fetch(
-          "hhttps://task-management-server-rouge-tau.vercel.app/api/upload",
+          "https://task-management-server-rouge-tau.vercel.app/api/upload",
           {
             method: "POST",
             body: formData,
           }
         );
+
+        if (
+          !res.ok ||
+          !res.headers.get("content-type")?.includes("application/json")
+        ) {
+          throw new Error("Server returned an invalid response");
+        }
 
         const result = await res.json();
         console.log("Instant upload result:", result);
@@ -118,8 +132,8 @@ const useAddTask = () => {
         ]);
       } catch (error) {
         console.error("Instant upload failed:", error);
-      }finally{
-        setUploadingFiles(false); 
+      } finally {
+        setUploadingFiles(false);
       }
     }
   };
@@ -171,7 +185,7 @@ const useAddTask = () => {
     setValue,
     open,
     setOpen,
-    uploadingFiles
+    uploadingFiles,
   };
 };
 
