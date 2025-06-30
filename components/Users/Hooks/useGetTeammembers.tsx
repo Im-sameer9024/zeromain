@@ -2,29 +2,45 @@
 // hooks/useGetTeamMembers.ts
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const useGetTeamMembers = (userId: string) => {
-  const fetchTeamMembers = async () => {
-    if (!userId) return null;
+  const [teamMembersData, setTeamMembersData] = useState<any>(null);
+  const [isLoadingTeamMembers, setIsLoadingTeamMembers] =
+    useState<boolean>(false);
+  const [teamMembersError, setTeamMembersError] = useState<any>(null);
 
-    const response = await axios.get(
-      `https://task-management-server-rouge-tau.vercel.app/api/auth/getTeamMembers/${userId}`
-    );
-    return response.data;
+  const fetchTeamMembers = async () => {
+    if (!userId) {
+      setTeamMembersData(null);
+      return;
+    }
+
+    setIsLoadingTeamMembers(true);
+    setTeamMembersError(null);
+
+    try {
+      const response = await axios.get(
+        `https://task-management-server-rouge-tau.vercel.app/api/auth/getTeamMembers/${userId}`
+      );
+      setTeamMembersData(response.data);
+    } catch (error) {
+      setTeamMembersError(error);
+    } finally {
+      setIsLoadingTeamMembers(false);
+    }
   };
 
-  const {
-    data: teamMembersData,
-    isLoading: isLoadingTeamMembers,
-    error: teamMembersError,
-    refetch: refetchTeamMembers,
-  } = useQuery({
-    queryKey: ["teamMembers", userId],
-    queryFn: fetchTeamMembers,
-    enabled: !!userId,
-  });
+  // Fetch team members when userId changes
+  useEffect(() => {
+    fetchTeamMembers();
+  }, [userId]);
+
+  // Function to manually refetch team members
+  const refetchTeamMembers = () => {
+    fetchTeamMembers();
+  };
 
   console.log("teamMembersData", teamMembersData);
 
