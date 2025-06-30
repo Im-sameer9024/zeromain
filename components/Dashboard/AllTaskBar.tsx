@@ -1,28 +1,18 @@
 "use client";
 
-import { Eye, Plus, Table, User } from "lucide-react";
+import { Eye, Table, User } from "lucide-react";
 import { FaEllipsisH } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import Popup from "../Modal/Popup";
 import AddTaskForm from "./AllTaskComponents/AddTaskForm";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { CgBoard } from "react-icons/cg";
 
 const DashboardBar = () => {
   const {
     open,
-    setOpen,
-    selectedTasksType,
-    setSelectedTasksType,
     setViewOfData,
   } = useAppContext();
 
