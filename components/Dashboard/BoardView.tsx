@@ -4,6 +4,7 @@ import React from "react";
 import { TagDataProps, TaskDataProps } from "@/types/Task.types";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/AppContext";
+import SubTasks from "./AllTaskComponents/SubTasks/SubTasks";
 
 interface BoardViewProps {
   data: TaskDataProps[]; // Using any[] since we don't have the exact TaskDataProps
@@ -18,7 +19,7 @@ const BoardView = ({ data }: BoardViewProps) => {
   //   }
   // };
 
-const{cookieData} = useAppContext()
+  const { cookieData } = useAppContext();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -31,12 +32,18 @@ const{cookieData} = useAppContext()
     }
   };
 
-  const router = useRouter()
+  const router = useRouter();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 p-4">
       {data.map((task) => (
-        <div key={task.id} onClick={() =>router.push(`/${cookieData?.role.toLowerCase()}/tasks/${task.id}`) }  className="flex flex-col gap-3 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-white">
+        <div
+          key={task.id}
+          onClick={() =>
+            router.push(`/${cookieData?.role.toLowerCase()}/tasks/${task.id}`)
+          }
+          className="flex flex-col gap-3 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-white"
+        >
           {/* Status Badge */}
           <span
             className={`px-2 py-1 text-xs rounded w-fit ${getStatusColor(
@@ -62,6 +69,8 @@ const{cookieData} = useAppContext()
               ))}
             </div>
           )}
+
+          <SubTasks taskId={task.id} />
         </div>
       ))}
     </div>

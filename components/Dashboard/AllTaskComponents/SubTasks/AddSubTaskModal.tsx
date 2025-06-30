@@ -171,6 +171,7 @@ const AddSubTaskModal = ({
   }, [isOpen, fetchUsers, cookieData?.id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     const { name, value } = e.target;
     setTaskData((prev) => ({
       ...prev,
@@ -179,6 +180,7 @@ const AddSubTaskModal = ({
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.stopPropagation();
     const { name, value } = e.target;
     setTaskData((prev) => ({
       ...prev,
@@ -195,6 +197,7 @@ const AddSubTaskModal = ({
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     const term = e.target.value;
     setSearchTerm(term);
     fetchUsers(term);
@@ -203,12 +206,15 @@ const AddSubTaskModal = ({
     }
   };
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
 
     const trimmedTitle = taskData.title.trim();
     if (!trimmedTitle) {
@@ -232,6 +238,17 @@ const AddSubTaskModal = ({
     createSubTaskMutation.mutate(payload);
   };
 
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    setIsDropdownOpen(true);
+  };
+
+  const handleCancelClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onOpenChange(false);
+  };
+
   // Get selected user for display
   const selectedUser = users.find((user) => user.id === taskData.userId);
 
@@ -245,7 +262,10 @@ const AddSubTaskModal = ({
 
   // Content for the Popup
   const modalContent = (
-    <div className="space-y-4 p-5 shadow-lg rounded-lg">
+    <div
+      className="space-y-4 p-5 shadow-lg rounded-lg"
+      onClick={(e) => e.stopPropagation()}
+    >
       <h2 className="text-lg font-medium">Add New Subtask</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -260,6 +280,7 @@ const AddSubTaskModal = ({
             required
             placeholder="Enter subtask title"
             disabled={createSubTaskMutation.isPending}
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
 
@@ -278,6 +299,7 @@ const AddSubTaskModal = ({
             className="border rounded-md p-2 w-full"
             required
             disabled={createSubTaskMutation.isPending}
+            onClick={(e) => e.stopPropagation()}
           >
             {Array.from({ length: 24 }, (_, i) => i + 1).map((hour) => (
               <option key={hour} value={hour}>
@@ -300,7 +322,8 @@ const AddSubTaskModal = ({
               onChange={handleSearchChange}
               className="pr-10"
               disabled={createSubTaskMutation.isPending}
-              onFocus={() => setIsDropdownOpen(true)}
+              onFocus={handleInputFocus}
+              onClick={(e) => e.stopPropagation()}
             />
             <button
               type="button"
@@ -323,6 +346,7 @@ const AddSubTaskModal = ({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="p-2 bg-blue-50 border border-blue-200 rounded-md"
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="text-sm font-medium text-blue-900">
                 Selected: {selectedUser.name}
@@ -340,6 +364,7 @@ const AddSubTaskModal = ({
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className="overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
               >
                 <div className="border rounded-md bg-white shadow-lg max-h-48 overflow-y-auto">
                   {loadingUsers ? (
@@ -366,10 +391,12 @@ const AddSubTaskModal = ({
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          onClick={() =>
-                            !createSubTaskMutation.isPending &&
-                            handleUserSelect(user.id)
-                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!createSubTaskMutation.isPending) {
+                              handleUserSelect(user.id);
+                            }
+                          }}
                           className={`p-3 cursor-pointer transition-colors hover:bg-gray-100 ${
                             taskData.userId === user.id
                               ? "bg-blue-50 border-l-4 border-blue-500"
@@ -407,12 +434,16 @@ const AddSubTaskModal = ({
           <Button
             type="button"
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={handleCancelClick}
             disabled={createSubTaskMutation.isPending}
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={createSubTaskMutation.isPending}>
+          <Button
+            type="submit"
+            disabled={createSubTaskMutation.isPending}
+            onClick={(e) => e.stopPropagation()}
+          >
             {createSubTaskMutation.isPending ? "Creating..." : "Create Subtask"}
           </Button>
         </div>
