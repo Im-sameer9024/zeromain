@@ -1,14 +1,30 @@
 "use client";
-//@ts-except-ignore
-import { Funnel, SortDescIcon, Table, User } from "lucide-react";
+
+import { Eye, Plus, Table, User } from "lucide-react";
 import { FaEllipsisH } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import Popup from "../Modal/Popup";
 import AddTaskForm from "./AllTaskComponents/AddTaskForm";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { CgBoard } from "react-icons/cg";
 
 const DashboardBar = () => {
-  const { open } = useAppContext();
+  const {
+    open,
+    setOpen,
+    selectedTasksType,
+    setSelectedTasksType,
+    setViewOfData,
+  } = useAppContext();
 
   return (
     <>
@@ -19,6 +35,8 @@ const DashboardBar = () => {
           <div>
             <span className="text-xl  font-bold">All Tasks</span>
           </div>
+
+         
         </div>
 
         {/*------------------- right side section ------------------  */}
@@ -32,22 +50,64 @@ const DashboardBar = () => {
 
           {/*------------------- Filters --------------------- */}
 
-          <Button className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
+          {/* <Button className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
             <Funnel />
             <span>Filter</span>
-          </Button>
+          </Button> */}
 
           {/*----------------- Sort -------------------------- */}
-          <Button className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
-            <SortDescIcon />
-            <span>Filter</span>
-          </Button>
+          {/* <Popover>
+            <PopoverTrigger asChild>
+              <Button className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
+                <SortDescIcon />
+                <span>Sort</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-fit">
+              <div className=" flex flex-col gap-2">
+                <Button
+                  onClick={() => setFilterPriority("Low-High")}
+                  className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer"
+                >
+                  <span>Low-High Priority</span>
+                </Button>
+                <Button
+                  onClick={() => setFilterPriority("High-Low")}
+                  className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer"
+                >
+                  <span>High-Low Priority</span>
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover> */}
 
-          {/*----------------- Table -------------------------- */}
-          <Button className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
-            <Table />
-            <span>Table</span>
-          </Button>
+          {/*----------------- View -------------------------- */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer">
+                <Eye />
+                <span>View</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-fit">
+              <div className=" flex flex-col gap-2">
+                <Button
+                  onClick={() => setViewOfData("Table")}
+                  className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer"
+                >
+                  <Table />
+                  <span>Table View</span>
+                </Button>
+                <Button
+                  onClick={() => setViewOfData("Board")}
+                  className=" !bg-transparent hover:bg-transparent text-text hover:scale-95 hover:cursor-pointer"
+                >
+                  <CgBoard />
+                  <span>Board View</span>
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
 
           {/*----------------- Ellipsis -------------------------- */}
           <FaEllipsisH className=" text-2xl text-text hover:cursor-pointer" />
