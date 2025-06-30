@@ -93,7 +93,11 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setIsModalOpen(true)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsModalOpen(true);
+          }}
           className="flex items-center gap-1"
         >
           <Plus size={16} />
