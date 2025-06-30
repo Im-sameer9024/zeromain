@@ -146,7 +146,8 @@ const AddSubTaskModal = ({
           const allTeamMembers = data.data?.teamMembers?.all || [];
 
           // Process team members and add proper labels for admins
-          const processedTeamMembers = allTeamMembers.map((member: any) => ({
+          //@ts-expect-error  Error: Unexpected any. Specify a different type.
+          const processedTeamMembers = allTeamMembers.map((member) => ({
             id: member.id,
             name:
               member.type === "admin" ? `${member.name} (Admin)` : member.name,
@@ -169,8 +170,10 @@ const AddSubTaskModal = ({
 
           // Filter out duplicates (in case current user is also in the team members list)
           const uniqueUsers = usersToSet.filter(
-            (user: any, index: any, self: any) =>
-              index === self.findIndex((u: any) => u.id === user.id)
+            //@ts-expect-error  Error: Unexpected any. Specify a different type.
+            (user, index, self) =>
+              //@ts-expect-error  Error: Unexpected any. Specify a different type.
+              index === self.findIndex((u) => u.id === user.id)
           );
 
           setUsers(uniqueUsers);

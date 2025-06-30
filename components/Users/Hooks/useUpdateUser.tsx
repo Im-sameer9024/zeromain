@@ -24,7 +24,7 @@ const useUpdateUser = () => {
 
   // Get existing team members for the user being edited
   const { existingTeamMembers, existingAdminMembers, isLoadingTeamMembers } =
-    //@ts-expect-error
+    //@ts-expect-error userId can be null also
     useGetTeamMembers(userId);
 
   // Track if we've already initialized the form data

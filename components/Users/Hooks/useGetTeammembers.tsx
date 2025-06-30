@@ -35,7 +35,7 @@ const useGetTeamMembers = (userId: string) => {
   // Fetch team members when userId changes
   useEffect(() => {
     fetchTeamMembers();
-  }, [userId]);
+  }, [userId,fetchTeamMembers]);
 
   // Function to manually refetch team members
   const refetchTeamMembers = () => {
