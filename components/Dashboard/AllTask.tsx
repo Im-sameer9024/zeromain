@@ -16,7 +16,7 @@ import useRemoveTask from "./Hooks/useRemoveTask";
 import useUpdateStatus from "./Hooks/useUpdateStatus";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import useAssignedTasks from "./Hooks/useAssignedTasks";
-
+import BoardView from "./BoardView";
 interface columnsProps {
   header: string;
   accessor: string;
@@ -37,7 +37,16 @@ const StatusIndicator = ({ status }: { status: string }) => {
 };
 
 const DashboardUsers = () => {
-  const { cookieData, selectedTasksType } = useAppContext();
+  const { cookieData, selectedTasksType, viewOfData, taskSearchQuery } =
+    useAppContext();
+
+  const filterTasks = (tasks: TaskDataProps[]) => {
+    if (!taskSearchQuery) return tasks;
+
+    return tasks.filter((task) =>
+      task.title.toLowerCase().includes(taskSearchQuery.toLowerCase())
+    );
+  };
 
   const CreatedColumns: columnsProps[] = [
     {
@@ -405,9 +414,13 @@ const DashboardUsers = () => {
   };
 
   if (isPending) {
-    <div className="bg-[#fafafbe9] p-1 rounded-md mt-10 h-64 flex items-center justify-center">
-      <div className="text-center text-gray-500">Loading Assigned tasks...</div>
-    </div>;
+    return (
+      <div className="bg-[#fafafbe9] p-1 rounded-md mt-10 h-64 flex items-center justify-center">
+        <div className="text-center text-gray-500">
+          Loading Assigned tasks...
+        </div>
+      </div>
+    );
   }
 
   if (loading) {
@@ -426,29 +439,63 @@ const DashboardUsers = () => {
     );
   }
 
-  return (
-    <div className="bg-[#fafafbe9] p-1 rounded-md mt-10">
-      {selectedTasksType === "Created" && allTasks.length === 0 ? (
-        <div className="text-center text-gray-500 h-64 flex items-center justify-center">
-          No created tasks found.
-        </div>
-      ) : selectedTasksType === "Assigned" && assignedTasks.length === 0 ? (
-        <div className="text-center text-gray-500 h-64 flex items-center justify-center">
-          No assigned tasks found.
-        </div>
-      ) : selectedTasksType === "Created" ? (
+  const EmptyState = ({ message }: { message: string }) => (
+    <div className="text-center text-gray-500 h-64 flex items-center justify-center">
+      {message}
+    </div>
+  );
+
+  const getTableContent = () => {
+    if (selectedTasksType === "Created" && viewOfData === "Table") {
+      const filteredTasks = filterTasks(allTasks);
+      return filteredTasks.length === 0 ? (
+        <EmptyState
+          message={
+            taskSearchQuery
+              ? "No matching tasks found"
+              : "No created tasks found."
+          }
+        />
+      ) : (
         <TableComponent
           columns={CreatedColumns}
-          data={allTasks}
+          data={filteredTasks}
           renderRow={CreateTaskRenderRow}
+        />
+      );
+    }
+
+    if (selectedTasksType === "Assigned" && viewOfData === "Table") {
+      const filteredTasks = filterTasks(assignedTasks);
+      return filteredTasks.length === 0 ? (
+        <EmptyState
+          message={
+            taskSearchQuery
+              ? "No matching tasks found"
+              : "No assigned tasks found."
+          }
         />
       ) : (
         <TableComponent
           columns={AssignedColumns}
-          data={assignedTasks}
+          data={filteredTasks}
           renderRow={AssignedTaskRow}
         />
-      )}
+      );
+    }
+
+    if (selectedTasksType === "Created" && viewOfData === "Board") {
+      return <BoardView data={filterTasks(allTasks)} />;
+    }
+
+    if (selectedTasksType === "Assigned" && viewOfData === "Board") {
+      return <BoardView data={filterTasks(assignedTasks)} />;
+    }
+  };
+
+  return (
+    <div className="bg-[#fafafbe9] p-1 rounded-md mt-10">
+      {getTableContent()}
     </div>
   );
 };

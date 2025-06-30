@@ -33,7 +33,11 @@ interface SubTask {
     name: string;
     email: string;
   } | null;
-  assignedToAdmin: null;
+  assignedToAdmin: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
 }
 
 interface SubTasksProps {
@@ -86,6 +90,7 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
     return <div>Error loading subtasks: {error.message}</div>;
   }
 
+  console.log("SUBTASKS", subTasks);
   return (
     <div className="mt-6 py-1 relative">
       <div className="flex justify-between items-center mb-2">
@@ -139,6 +144,13 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
                             <span>{task.assignedToUser.name}</span>
                             <span className="text-sm text-gray-500">
                               ({task.assignedToUser.email})
+                            </span>
+                          </>
+                        ) : task.assignedToAdmin ? (
+                          <>
+                            <span>{task.assignedToAdmin?.name}</span>
+                            <span className="text-sm text-gray-500">
+                              ({task.assignedToAdmin?.email})
                             </span>
                           </>
                         ) : (
