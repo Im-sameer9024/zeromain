@@ -21,18 +21,14 @@ interface User {
   id: string;
   name: string;
   email: string;
+  type?: string; // Add type to identify admin/user
 }
-
-// interface TeamMember {
-//   id: string;
-//   name: string;
-//   email: string;
-// }
 
 interface CreateSubTaskPayload {
   taskId: string;
   title: string;
-  userId: string;
+  userId?: string;
+  adminId?: string;
   expectedTime: number;
   requiresFeedback: boolean;
 }
@@ -127,6 +123,7 @@ const AddSubTaskModal = ({
             id: data.data.company.adminId,
             name: `${data.data.company.adminName} (Admin)`,
             email: data.data.company.email || "No email provided",
+            type: "admin",
           };
 
           const usersList = data.data.users || [];
@@ -142,16 +139,41 @@ const AddSubTaskModal = ({
           const data = await response.json();
           console.log("response when user login", data);
 
+          // Get current user
+          const currentUser = data.data?.user;
+
           // Get all team members from the 'all' array
           const allTeamMembers = data.data?.teamMembers?.all || [];
 
-          // Also include the current user in the list
-          const currentUser = data.data?.user;
-          const usersToSet = currentUser
-            ? [currentUser, ...allTeamMembers]
-            : allTeamMembers;
+          // Process team members and add proper labels for admins
+          const processedTeamMembers = allTeamMembers.map((member: any) => ({
+            id: member.id,
+            name:
+              member.type === "admin" ? `${member.name} (Admin)` : member.name,
+            email: member.email,
+            type: member.type,
+          }));
 
-          setUsers(usersToSet);
+          // Create the final users list
+          const usersToSet = currentUser
+            ? [
+                {
+                  id: currentUser.id,
+                  name: currentUser.name,
+                  email: currentUser.email,
+                  type: "user",
+                },
+                ...processedTeamMembers,
+              ]
+            : processedTeamMembers;
+
+          // Filter out duplicates (in case current user is also in the team members list)
+          const uniqueUsers = usersToSet.filter(
+            (user: any, index: any, self: any) =>
+              index === self.findIndex((u: any) => u.id === user.id)
+          );
+
+          setUsers(uniqueUsers);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -222,17 +244,24 @@ const AddSubTaskModal = ({
       return;
     }
 
-    if (!taskData.userId) {
+    const selected = users.find((user) => user.id === taskData.userId);
+
+    if (!selected) {
       toast.error("Please select a user");
       return;
     }
 
-    const payload: CreateSubTaskPayload = {
+    const payload: CreateSubTaskPayload & {
+      adminId?: string;
+      userId?: string;
+    } = {
       taskId,
       title: trimmedTitle,
-      userId: taskData.userId,
       expectedTime: taskData.expectedTime,
       requiresFeedback: true,
+      ...(selected.type === "admin"
+        ? { adminId: selected.id }
+        : { userId: selected.id }),
     };
 
     createSubTaskMutation.mutate(payload);
@@ -252,11 +281,25 @@ const AddSubTaskModal = ({
   // Get selected user for display
   const selectedUser = users.find((user) => user.id === taskData.userId);
 
-  // Organize users to show selected user at top
+  // Organize users to show selected user at top, then sort by type (admins first, then users)
   const organizedUsers = () => {
-    if (!selectedUser) return users;
+    if (!selectedUser) {
+      // Sort users: admins first, then regular users
+      return users.sort((a, b) => {
+        if (a.type === "admin" && b.type !== "admin") return -1;
+        if (a.type !== "admin" && b.type === "admin") return 1;
+        return a.name.localeCompare(b.name);
+      });
+    }
 
-    const otherUsers = users.filter((user) => user.id !== taskData.userId);
+    const otherUsers = users
+      .filter((user) => user.id !== taskData.userId)
+      .sort((a, b) => {
+        if (a.type === "admin" && b.type !== "admin") return -1;
+        if (a.type !== "admin" && b.type === "admin") return 1;
+        return a.name.localeCompare(b.name);
+      });
+
     return [selectedUser, ...otherUsers];
   };
 
@@ -345,13 +388,31 @@ const AddSubTaskModal = ({
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-2 bg-blue-50 border border-blue-200 rounded-md"
+              className={`p-2 border rounded-md ${
+                selectedUser.type === "admin"
+                  ? "bg-purple-50 border-purple-200"
+                  : "bg-blue-50 border-blue-200"
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="text-sm font-medium text-blue-900">
+              <div
+                className={`text-sm font-medium ${
+                  selectedUser.type === "admin"
+                    ? "text-purple-900"
+                    : "text-blue-900"
+                }`}
+              >
                 Selected: {selectedUser.name}
               </div>
-              <div className="text-xs text-blue-700">{selectedUser.email}</div>
+              <div
+                className={`text-xs ${
+                  selectedUser.type === "admin"
+                    ? "text-purple-700"
+                    : "text-blue-700"
+                }`}
+              >
+                {selectedUser.email}
+              </div>
             </motion.div>
           )}
 
@@ -399,18 +460,29 @@ const AddSubTaskModal = ({
                           }}
                           className={`p-3 cursor-pointer transition-colors hover:bg-gray-100 ${
                             taskData.userId === user.id
-                              ? "bg-blue-50 border-l-4 border-blue-500"
+                              ? user.type === "admin"
+                                ? "bg-purple-50 border-l-4 border-purple-500"
+                                : "bg-blue-50 border-l-4 border-blue-500"
                               : ""
                           }`}
                         >
                           <div>
                             <div className="font-medium flex items-center gap-2">
                               {user.name}
+                              {user.type === "admin" && (
+                                <span className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">
+                                  Admin
+                                </span>
+                              )}
                               {taskData.userId === user.id && (
                                 <motion.span
                                   initial={{ scale: 0 }}
                                   animate={{ scale: 1 }}
-                                  className="text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded-full"
+                                  className={`text-xs text-white px-1.5 py-0.5 rounded-full ${
+                                    user.type === "admin"
+                                      ? "bg-purple-500"
+                                      : "bg-blue-500"
+                                  }`}
                                 >
                                   ✓
                                 </motion.span>

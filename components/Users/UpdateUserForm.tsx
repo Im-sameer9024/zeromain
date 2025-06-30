@@ -3,7 +3,6 @@
 "use client";
 
 import { SubmitHandler } from "react-hook-form";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -55,7 +54,6 @@ const UpdateUserForm = () => {
     errors,
     isSubmitting,
     isLoadingTeamMembers,
-    reset,
     handleSelectTeamMembers,
     handleRemoveMember,
     handleSelectAdminMembers,
@@ -66,10 +64,9 @@ const UpdateUserForm = () => {
     existingAdminMembers,
   } = useUpdateUser();
 
-  // Initialize form with user data - FIXED VERSION
+  // Initialize form with user data
   useEffect(() => {
     if (userToEdit && !hasInitializedUserData.current) {
-      // Only set the basic user fields, don't reset team member arrays
       setValue("name", userToEdit.name);
       setValue("email", userToEdit.email);
       setValue("priority", userToEdit.priority.toString());
@@ -323,20 +320,22 @@ const UpdateUserForm = () => {
                     transition={{ duration: 0.2 }}
                     className="grid grid-cols-4 gap-2"
                   >
-                    {companyAdmins?.map((admin: any) => (
-                      <Button
-                        key={admin.id}
-                        variant="outline"
-                        className="hover:cursor-pointer bg-orange-200 disabled:cursor-not-allowed"
-                        disabled={selectedAdminMembers?.includes(admin.id)}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleSelectAdminMembers(admin);
-                        }}
-                      >
-                        {admin.name}
-                      </Button>
-                    ))}
+                    {companyAdmins
+                      ?.filter((admin: any) => admin.id !== userId) // Don't show the user being edited
+                      .map((admin: any) => (
+                        <Button
+                          key={admin.id}
+                          variant="outline"
+                          className="hover:cursor-pointer bg-orange-200 disabled:cursor-not-allowed"
+                          disabled={selectedAdminMembers?.includes(admin.id)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSelectAdminMembers(admin);
+                          }}
+                        >
+                          {admin.name}
+                        </Button>
+                      ))}
                   </motion.div>
                 </ScrollArea>
               </PopoverContent>

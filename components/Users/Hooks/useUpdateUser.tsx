@@ -48,38 +48,52 @@ const useUpdateUser = () => {
     },
   });
 
-  // Initialize team members when data is loaded - FIXED VERSION
+  // Initialize team members when data is loaded
   useEffect(() => {
-    if (existingTeamMembers && !hasInitializedTeamMembers.current) {
-      const teamMemberIds =
-        existingTeamMembers.length > 0
-          ? existingTeamMembers.map((member: any) => member.id)
-          : [];
+    if (
+      !isLoadingTeamMembers &&
+      existingTeamMembers &&
+      !hasInitializedTeamMembers.current
+    ) {
+      const teamMemberIds = Array.isArray(existingTeamMembers)
+        ? existingTeamMembers.map((member: any) => member.id)
+        : [];
 
       console.log("Setting team member IDs:", teamMemberIds); // Debug log
       setValue("teamMemberIds", teamMemberIds);
       hasInitializedTeamMembers.current = true;
     }
-  }, [existingTeamMembers]); // Remove setValue from dependencies
+  }, [isLoadingTeamMembers, existingTeamMembers, setValue]);
 
+  // Initialize admin members when data is loaded
   useEffect(() => {
-    if (existingAdminMembers && !hasInitializedAdminMembers.current) {
-      const adminMemberIds =
-        existingAdminMembers.length > 0
-          ? existingAdminMembers.map((admin: any) => admin.id)
-          : [];
+    if (
+      !isLoadingTeamMembers &&
+      existingAdminMembers &&
+      !hasInitializedAdminMembers.current
+    ) {
+      const adminMemberIds = Array.isArray(existingAdminMembers)
+        ? existingAdminMembers.map((admin: any) => admin.id)
+        : [];
 
       console.log("Setting admin member IDs:", adminMemberIds); // Debug log
       setValue("adminTeamMemberIds", adminMemberIds);
       hasInitializedAdminMembers.current = true;
     }
-  }, [existingAdminMembers]); // Remove setValue from dependencies
+  }, [isLoadingTeamMembers, existingAdminMembers, setValue]);
 
   // Reset initialization flags when userId changes (if editing different user)
   useEffect(() => {
     hasInitializedTeamMembers.current = false;
     hasInitializedAdminMembers.current = false;
-  }, [userId]);
+    reset({
+      name: "",
+      email: "",
+      priority: "",
+      teamMemberIds: [],
+      adminTeamMemberIds: [],
+    });
+  }, [userId, reset]);
 
   const handleSelectTeamMembers = (user: any) => {
     const currentUsers = watch("teamMemberIds") || [];
@@ -167,7 +181,7 @@ const useUpdateUser = () => {
     watch,
     isSubmitting: isSubmitting || mutation.status === "pending",
     isLoadingTeamMembers,
-    errors: errors,
+    errors,
     handleSelectTeamMembers,
     handleRemoveMember,
     handleSelectAdminMembers,
