@@ -13,6 +13,11 @@ import { useQuery } from "@tanstack/react-query";
 import AddSubTaskModal from "./AddSubTaskModal";
 import FeedbackDropdown from "./FeedbackDropdown";
 import StatusDropdown from "./StatusDropdown";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SubTask {
   id: string;
@@ -138,23 +143,31 @@ const SubTasks: React.FC<SubTasksProps> = ({ taskId }) => {
                       <p>{task.title}</p>
                     </TableCell>
                     <TableCell className="flex-1">
-                      <div className="flex items-center gap-2">
-                        {task.assignedToUser ? (
-                          <>
-                            <span>{task.assignedToUser.name}</span>
-                            <span className="text-sm text-gray-500">
-                              ({task.assignedToUser.email})
-                            </span>
-                          </>
-                        ) : task.assignedToAdmin ? (
-                          <>
-                            <span>{task.assignedToAdmin?.name}</span>
-                            <span className="text-sm text-gray-500">
-                              ({task.assignedToAdmin?.email})
-                            </span>
-                          </>
+                      <div className="flex items-center justify-center">
+                        {task.assignedToUser || task.assignedToAdmin ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex justify-center">
+                                <img
+                                  src={`https://api.dicebear.com/5.x/initials/svg?seed=${
+                                    task.assignedToUser?.name ||
+                                    task.assignedToAdmin?.name
+                                  }`}
+                                  alt="assignee"
+                                  loading="lazy"
+                                  className="size-10 rounded-full"
+                                />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                {task.assignedToUser?.name ||
+                                  task.assignedToAdmin?.name}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
                         ) : (
-                          <span>Unassigned</span>
+                          <span className="text-gray-500">Unassigned</span>
                         )}
                       </div>
                     </TableCell>
