@@ -98,7 +98,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [tagId, setTagId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [viewOfData, setViewOfData] = useState("Table");
+  const [viewOfData, setViewOfData] = useState("Board");
   const [filterPriority, setFilterPriority] = useState("Low-High");
   const [searchQuery, setSearchQuery] = useState("");
    const [tagSearchQuery, setTagSearchQuery] = useState("");
